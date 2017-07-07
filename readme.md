@@ -1,2 +1,2 @@
 # python-sandbox
-A place for creativity and fun.
+Weird stuff in here.
