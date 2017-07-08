@@ -90,7 +90,8 @@ for package in packages:
 
 # Install local packages
 draw_heading("PyProcessing")
-os.system("cd __packages__/pyprocessing & pip install .")
+os.chdir("__packages__/pyprocessing")
+os.system("pip install .")
 
 draw_line()
 
