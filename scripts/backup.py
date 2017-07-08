@@ -7,12 +7,16 @@ import os
 def xcopy(source, target, is_file):
     """Copies directory or file"""
     if os.path.exists(source):
-        if is_file:  # Copy files without arguments
-            os.system("xcopy \"{0}\" \"{1}\"".format(source, target))
-        else:  # Copy directories with arguments
-            os.system("xcopy \"{0}\" \"{1}\" /s/h/e/k/f/c".format(source, target))
 
-        return True
+        if is_file:  # Copy files without arguments
+            exit_code = os.system("xcopy \"{0}\" \"{1}\"".format(source, target))
+        else:  # Copy directories with arguments
+            exit_code = os.system("xcopy \"{0}\" \"{1}\" /s/h/e/k/f/c".format(source, target))
+
+        if exit_code != 0:
+            return False
+        else:
+            return True
     else:
         return False
 
