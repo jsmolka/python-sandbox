@@ -22,8 +22,8 @@ def __only_spaces_or_empty(string):
     if string == "":
         return True
     else:
-        for i in range(0, len(string)):
-            if string[i] != " ":
+        for char in string:
+            if char != " ":
                 return False
         return True
 
