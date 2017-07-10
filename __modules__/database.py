@@ -8,7 +8,6 @@ class Database:
         self.file_name = file_name
         if not os.path.isfile(self.file_name):  # Create database if it does not exist
             self.data = []
-            self.backup = []
             self.save()
         self.load()
 
@@ -30,29 +29,18 @@ class Database:
         if not os.path.isfile(self.file_name):
             raise Exception("{0} does not exist".format(self.file_name))
 
-        with open(self.file_name) as data_file:  # Load data
+        with open(self.file_name) as data_file:
             self.data = json.load(data_file)
-
-        with open(self.file_name) as data_file:  # Load backup data
-            self.backup = json.load(data_file)
 
     def save(self, fancy=True):
         """Saves data"""
         self.__check_data()
 
-        try:
-            with open(self.file_name, "w") as outfile:
-                if fancy:
-                    json.dump(self.data, outfile, indent=4)
-                else:
-                    json.dump(self.data, outfile)
-
-        except Exception as e:
-            print("Something went wrong while saving the data")
-            print("Error:", e)
-            with open(self.file_name, "w") as outfile:
-                json.dump(self.backup, outfile)
-            print("Saved backup data")
+        with open(self.file_name, "w") as outfile:
+            if fancy:
+                json.dump(self.data, outfile, indent=4)
+            else:
+                json.dump(self.data, outfile)
 
     def add(self, *data):
         """Adds data"""
@@ -121,7 +109,6 @@ class Database:
     def clear(self):
         """Clears database"""
         self.data = []
-        self.backup = []
 
     def get_by_criteria(self, *criteria):
         """Gets first item which matches the criteria"""
@@ -136,6 +123,7 @@ class Database:
                     should_return = False
             if should_return:
                 return data
+            
         print("No matching data")
         print("Returned first element")
         return self.data[0]
