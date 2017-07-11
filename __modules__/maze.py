@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import os.path
+import json
 from enum import Enum
 from PIL import Image
 
@@ -471,7 +472,7 @@ class Maze:
             x, y, stack = self.__solve_backtrack(stack, visited_cells)
 
     def save_maze_as_png(self, file_name="maze.png", upscale_factor=3):
-        """Saves maze as jpg"""
+        """Saves maze as png"""
         if self.maze is None:
             raise Exception("Maze is not assigned\n"
                             "Use \"create\" or \"load_maze\" method to create or load a maze")
@@ -485,8 +486,20 @@ class Maze:
             print("Something went wrong while saving the maze")
             print("Error:", e)
 
+    def save_maze_as_json(self, file_name="maze.json", fancy=False):
+        """Saves maze as json"""
+        if self.maze is None:
+            raise Exception("Maze is not assigned\n"
+                            "Use \"create\" or \"load_maze\" method to create or load a maze")
+
+        with open(file_name, "w") as outfile:
+            if fancy:
+                json.dump(self.maze.tolist(), outfile, indent=4)
+            else:
+                json.dump(self.maze.tolist(), outfile)
+
     def save_solution_as_png(self, file_name="solution.png", upscale_factor=3):
-        """Saves solution as jpg"""
+        """Saves solution as png"""
         if self.solution is None:
             raise Exception("Solution is not assigned\n"
                             "Use \"solve\" method to solve a maze")
@@ -500,8 +513,20 @@ class Maze:
             print("Something went wrong while saving the solution")
             print("Error:", e)
 
+    def save_solution_as_json(self, file_name="solution.json", fancy=False):
+        """Saves solution as json"""
+        if self.solution is None:
+            raise Exception("Solution is not assigned\n"
+                            "Use \"solve\" method to solve a maze")
+
+        with open(file_name, "w") as outfile:
+            if fancy:
+                json.dump(self.solution.tolist(), outfile, indent=4)
+            else:
+                json.dump(self.solution.tolist(), outfile)
+
     def load_maze_from_png(self, file_name="maze.png"):
-        """Loads maze from image"""
+        """Loads maze from png"""
         if not os.path.isfile(file_name):
             raise Exception("{0} does not exist".format(file_name))
 
