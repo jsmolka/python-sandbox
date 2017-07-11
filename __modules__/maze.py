@@ -528,6 +528,31 @@ class Maze:
         self.maze = np.array(image)
         self.maze = Maze.downscale(self.maze)
 
+    def load_maze_from_json(self, file_name="maze.json"):
+        """Loads maze from json"""
+        if not os.path.isfile(file_name):
+            raise Exception("{0} does not exist".format(file_name))
+
+        with open(file_name) as data_file:
+            self.maze = np.array(json.load(data_file))
+
+    def load_solution_from_png(self, file_name="solution.png"):
+        """Loads solution from png"""
+        if not os.path.isfile(file_name):
+            raise Exception("{0} does not exist".format(file_name))
+
+        image = Image.open(file_name)
+        self.solution = np.array(image)
+        self.solution = Maze.downscale(self.solution)
+
+    def load_solution_from_json(self, file_name="solution.json"):
+        """Loads solution from json"""
+        if not os.path.isfile(file_name):
+            raise Exception("{0} does not exist".format(file_name))
+
+        with open(file_name) as data_file:
+            self.solution = np.array(json.load(data_file))
+
     @staticmethod
     def upscale(maze, factor):
         """Upscales maze"""
