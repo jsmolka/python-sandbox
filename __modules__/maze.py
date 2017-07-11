@@ -479,12 +479,9 @@ class Maze:
 
         if type(self.maze) == list:  # List to array to use fromarray method
             self.maze = np.array(self.maze)
-        try:
-            img = Image.fromarray(Maze.upscale(self.maze, upscale_factor), "RGB")
-            img.save(file_name, "png")
-        except Exception as e:
-            print("Something went wrong while saving the maze")
-            print("Error:", e)
+
+        img = Image.fromarray(Maze.upscale(self.maze, upscale_factor), "RGB")
+        img.save(file_name, "png")
 
     def save_maze_as_json(self, file_name="maze.json", fancy=False):
         """Saves maze as json"""
@@ -506,12 +503,9 @@ class Maze:
 
         if type(self.solution) == list:  # List to array to use fromarray method
             self.solution = np.array(self.solution)
-        try:
-            img = Image.fromarray(Maze.upscale(self.solution, upscale_factor), "RGB")
-            img.save(file_name, "png")
-        except Exception as e:
-            print("Something went wrong while saving the solution")
-            print("Error:", e)
+
+        img = Image.fromarray(Maze.upscale(self.solution, upscale_factor), "RGB")
+        img.save(file_name, "png")
 
     def save_solution_as_json(self, file_name="solution.json", fancy=False):
         """Saves solution as json"""
@@ -530,13 +524,9 @@ class Maze:
         if not os.path.isfile(file_name):
             raise Exception("{0} does not exist".format(file_name))
 
-        try:
-            image = Image.open(file_name)
-            self.maze = np.array(image)
-            self.maze = Maze.downscale(self.maze)
-        except Exception as e:
-            print("Something went wrong while loading the maze")
-            print("Error:", e)
+        image = Image.open(file_name)
+        self.maze = np.array(image)
+        self.maze = Maze.downscale(self.maze)
 
     @staticmethod
     def upscale(maze, factor):
