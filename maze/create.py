@@ -47,7 +47,7 @@ sw.print_elapsed_time()
 draw.line()
 print("Saving maze...")
 sw.start()
-m.save_maze()
+m.save_maze_as_png()
 sw.stop()
 sw.print_elapsed_time()
 

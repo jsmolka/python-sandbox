@@ -19,7 +19,7 @@ draw.line()
 if os.path.isfile("maze.png"):
     print("Loading maze...")
     sw.start()
-    m.load_maze()
+    m.load_maze_from_png()
     sw.stop()
     sw.print_elapsed_time()
 
@@ -34,7 +34,7 @@ if os.path.isfile("maze.png"):
     draw.line()
     print("Saving solution...")
     sw.start()
-    m.save_solution()
+    m.save_solution_as_png()
     sw.stop()
     sw.print_elapsed_time()
 else:

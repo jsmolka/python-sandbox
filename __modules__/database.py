@@ -123,7 +123,7 @@ class Database:
                     should_return = False
             if should_return:
                 return data
-            
+
         print("No matching data")
         print("Returned first element")
         return self.data[0]

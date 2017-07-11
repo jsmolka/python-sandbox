@@ -470,7 +470,7 @@ class Maze:
                     return
             x, y, stack = self.__solve_backtrack(stack, visited_cells)
 
-    def save_maze(self, file_name="maze.png", upscale_factor=3):
+    def save_maze_as_png(self, file_name="maze.png", upscale_factor=3):
         """Saves maze as jpg"""
         if self.maze is None:
             raise Exception("Maze is not assigned\n"
@@ -485,7 +485,7 @@ class Maze:
             print("Something went wrong while saving the maze")
             print("Error:", e)
 
-    def save_solution(self, file_name="solution.png", upscale_factor=3):
+    def save_solution_as_png(self, file_name="solution.png", upscale_factor=3):
         """Saves solution as jpg"""
         if self.solution is None:
             raise Exception("Solution is not assigned\n"
@@ -500,7 +500,7 @@ class Maze:
             print("Something went wrong while saving the solution")
             print("Error:", e)
 
-    def load_maze(self, file_name="maze.png"):
+    def load_maze_from_png(self, file_name="maze.png"):
         """Loads maze from image"""
         if not os.path.isfile(file_name):
             raise Exception("{0} does not exist".format(file_name))
