@@ -1,38 +1,24 @@
-import platform
-
-
-def __default():
-    """Calculates default line for windows version"""
-    system = platform.release()
-    if system == "7":
-        default_line = "-" * 79
-    else:
-        default_line = "-" * 119
-    return default_line
+import os
 
 
 def line():
     """Prints line"""
-    default_line = __default()
-    print(default_line)
+    print("-" * (os.get_terminal_size()[0] - 1))
 
 
 def heading(text):
     """Prints heading"""
-    default_line = __default()
-    line_length = len(default_line)
+    cmd_length = os.get_terminal_size()[0] - 1
     text = " {0} ".format(text)
-    text_length = len(text)
-    if (text_length + 2) > line_length:
+    if len(text) + 2 > cmd_length:
         raise Exception("Heading is too long")
     else:
-        while text_length < line_length:
+        while len(text) < cmd_length:
             text = "-{0}-".format(text)
-            text_length = len(text)
-        if text_length == line_length:
+        if len(text) == cmd_length:
             print(text)
         else:
-            text = text[0: text_length - 1]
+            text = text[0: cmd_length - 1]
             print(text)
 
 

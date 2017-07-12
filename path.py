@@ -2,29 +2,17 @@
 # It adds the sub_dir if it is assigned
 # It adds the python_dir if the sub_dir is not assigned
 import os
-import platform
+
+
+def draw_line():
+    """Prints line"""
+    print("-" * (os.get_terminal_size()[0] - 1))
 
 
 def dialog_enter(action, message="Press enter to {0}..."):
     """Prints enter message"""
     message = message.format(action)
     input(message)
-
-
-def draw___default():
-    """Calculates default line for windows version"""
-    system = platform.release()
-    if system == "7":
-        default_line = "-" * 79
-    else:
-        default_line = "-" * 119
-    return default_line
-
-
-def draw_line():
-    """Prints line"""
-    default_line = draw___default()
-    print(default_line)
 
 
 # Define directories
