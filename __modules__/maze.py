@@ -479,6 +479,21 @@ class Maze:
                     return
             x, y, stack = self.__solve_backtrack(stack, visited_cells)
 
+    def __set_counts(self):
+        """Sets row and column counts"""
+        if self.maze is not None:
+            self.__row_count_with_walls = len(self.maze)
+            self.__col_count_with_walls = len(self.maze[0])
+            self.__row_count_without_walls = len(self.maze) // 2
+            self.__col_count_without_walls = len(self.maze) // 2
+        elif self.solution is not None:
+            self.__row_count_with_walls = len(self.solution)
+            self.__col_count_with_walls = len(self.solution[0])
+            self.__row_count_without_walls = len(self.solution) // 2
+            self.__col_count_without_walls = len(self.solution) // 2
+        else:
+            raise Exception("Maze and solution are not assigned")
+
     def save_maze_as_png(self, file_name="maze.png", upscale_factor=3):
         """Saves maze as png"""
         if self.maze is None:
@@ -536,6 +551,8 @@ class Maze:
         self.maze = np.array(image)
         self.maze = Maze.downscale(self.maze)
 
+        self.__set_counts()
+
     def load_maze_from_json(self, file_name="maze.json"):
         """Loads maze from json"""
         if not os.path.isfile(file_name):
@@ -543,6 +560,8 @@ class Maze:
 
         with open(file_name) as data_file:
             self.maze = np.array(json.load(data_file))
+
+        self.__set_counts()
 
     def load_solution_from_png(self, file_name="solution.png"):
         """Loads solution from png"""
@@ -553,6 +572,8 @@ class Maze:
         self.solution = np.array(image)
         self.solution = Maze.downscale(self.solution)
 
+        self.__set_counts()
+
     def load_solution_from_json(self, file_name="solution.json"):
         """Loads solution from json"""
         if not os.path.isfile(file_name):
@@ -560,6 +581,8 @@ class Maze:
 
         with open(file_name) as data_file:
             self.solution = np.array(json.load(data_file))
+
+        self.__set_counts()
 
     @staticmethod
     def upscale(maze, factor):
