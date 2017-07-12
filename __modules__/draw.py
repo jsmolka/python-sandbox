@@ -43,6 +43,6 @@ def progress_bar(iteration, total, prefix="Progress:", suffix="", decimals=1, le
     filled_length = int(length * iteration // total)
     bar = fill * filled_length + "-" * (length - filled_length - 1)
     print("\r%s |%s| %s%% %s" % (prefix, bar, percent, suffix), end="\r")
-    # Print New Line on Complete
+    # Print new line on complete
     if iteration == total:
         print()
