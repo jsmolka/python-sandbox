@@ -25,12 +25,6 @@ def admin_check(file_name):
         admin___restart(file_name)
 
 
-def dialog_enter(action, message="Press enter to {0}..."):
-    """Prints enter message"""
-    message = message.format(action)
-    input(message)
-
-
 def draw_line():
     """Prints line"""
     print("-" * (os.get_terminal_size()[0] - 1))
@@ -48,8 +42,14 @@ def draw_heading(text):
         if len(text) == cmd_length:
             print(text)
         else:
-            text = text[0: cmd_length - 1]
+            text = text[0: cmd_length]
             print(text)
+
+
+def dialog_enter(action, message="Press enter to {0}..."):
+    """Prints enter message"""
+    message = message.format(action)
+    input(message)
 
 
 def install(package):

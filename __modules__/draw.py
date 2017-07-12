@@ -18,7 +18,7 @@ def heading(text):
         if len(text) == cmd_length:
             print(text)
         else:
-            text = text[0: cmd_length - 1]
+            text = text[0: cmd_length]
             print(text)
 
 
