@@ -392,15 +392,23 @@ class Maze:
             raise Exception("Maze is not assigned\n"
                             "Use \"create\" or \"load_maze\" method to create or load a maze")
 
-        # Create row and column counts
+        # Define values for start and end
+        if start == 0:
+            start = (0, 0)
+        if end == 0:
+            end = (self.__row_count_without_walls - 1, self.__col_count_without_walls - 1)
+
+        if self.__col_count_without_walls < (start[0] or end[0]) < 0:
+            raise Exception("Start or end x value is out of range")
+        if self.__row_count_without_walls < (start[1] or end[1]) < 0:
+            raise Exception("Start or end y value is out of range")
+
+        start = tuple([2 * x + 1 for x in start])
+        end = tuple([2 * x + 1 for x in end])
+
+        # Create row and column counts with walls
         self.__row_count_with_walls = len(self.maze)
         self.__col_count_with_walls = len(self.maze[0])
-
-        # Define default values for start and end
-        if start == 0:
-            start = (1, 1)
-        if end == 0:
-            end = (self.__row_count_with_walls - 2, self.__col_count_with_walls - 2)
 
         # Create array if maze is a list
         if type(self.maze) == list:
