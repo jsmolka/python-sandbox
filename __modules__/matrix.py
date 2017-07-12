@@ -195,7 +195,7 @@ class Matrix:
                     for j in range(0, n1):
                         self.matrix[i][j] = self.matrix[i][j] - matrix.matrix[i][j]
             else:
-                print("Cannot add")
+                print("Cannot subtract")
                 print("Different row or column count")
                 print("Self: {0} rows and {1} columns".format(m1, n1))
                 print("Matrix: {0} rows and {1} columns".format(m2, n2))
