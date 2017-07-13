@@ -251,9 +251,9 @@ class Maze:
                 while True:
                     can_break = False
                     link_list = []  # Contains links [(set_index, column)]
-                    for y in range(0, len(sub_set_list)):
+                    for sub_set_item in sub_set_list:
                         if bool(random.getrandbits(1)):  # Create link
-                            link_list.append(sub_set_list[y])
+                            link_list.append(sub_set_item)
                             can_break = True
                     if can_break:
                         break
@@ -383,8 +383,7 @@ class Maze:
 
                     # Correct sets in xy sets
                     for pos in set_to_xy[new_set]:
-                        x, y = pos
-                        xy_to_set[x, y] = new_set
+                        xy_to_set[pos[0], pos[1]] = new_set
 
     def solve(self, start, end, algorithm):
         """Solves maze"""
@@ -409,10 +408,6 @@ class Maze:
         # Create row and column counts with walls
         self.__row_count_with_walls = len(self.maze)
         self.__col_count_with_walls = len(self.maze[0])
-
-        # Create array if maze is a list
-        if type(self.maze) == list:
-            self.maze = np.array(self.maze)
 
         # Copy maze
         self.solution = self.maze.copy()
@@ -500,9 +495,6 @@ class Maze:
             raise Exception("Maze is not assigned\n"
                             "Use \"create\" or \"load_maze\" method to create or load a maze")
 
-        if type(self.maze) == list:  # List to array to use fromarray method
-            self.maze = np.array(self.maze)
-
         img = Image.fromarray(Maze.upscale(self.maze, upscale_factor), "RGB")
         img.save(file_name, "png")
 
@@ -523,9 +515,6 @@ class Maze:
         if self.solution is None:
             raise Exception("Solution is not assigned\n"
                             "Use \"solve\" method to solve a maze")
-
-        if type(self.solution) == list:  # List to array to use fromarray method
-            self.solution = np.array(self.solution)
 
         img = Image.fromarray(Maze.upscale(self.solution, upscale_factor), "RGB")
         img.save(file_name, "png")
@@ -610,10 +599,10 @@ class Maze:
         factor = 0
         stop = False
         for x in range(1, row_count):  # Find out factor
-            for y in range(0, col_count):
+            for y in range(1, col_count):
                 if maze[x, y, 0] != 0:
                     stop = True
-                    factor = y
+                    factor = x
                     break
             if stop:
                 break
