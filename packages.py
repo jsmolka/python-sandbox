@@ -64,7 +64,6 @@ packages = [
     "Pillow",
     "NumPy",
     "OpenSimplex",
-    "Panda3D",
     "Pyglet"
 ]
 
