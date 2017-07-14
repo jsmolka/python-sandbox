@@ -77,8 +77,12 @@ class Backpack:
 
         return best_order
 
-    def pack(self, order_list):
+    def pack(self):
         """Creates a return backpack"""
+        order_list = list()
+        for binary in itertools.product([0, 1], repeat=len(self.items)):  # Count in binary
+            order_list.append(list(binary))
+            
         best_order = self.calculate_best_order(order_list)
         packed_backpack = PackedBackpack(
             self.items,
@@ -94,11 +98,8 @@ def knapsack_naive(items, max_weight):
     """Naively solves the knapsack problem"""
     # Items [[number, weight, use], [...]]
     backpack = Backpack(items, max_weight)
-    order_list = list()
-    for binary in itertools.product([0, 1], repeat=len(backpack.items)):  # Count in binary
-        order_list.append(list(binary))
 
-    return backpack.pack(order_list)
+    return backpack.pack()
 
 
 if __name__ == "__main__":
