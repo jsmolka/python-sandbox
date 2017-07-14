@@ -4,19 +4,19 @@ import datetime
 import os
 
 
-def xcopy(source, target, is_file):
+def xcopy(source, target):
     """Copies directory or file"""
     if os.path.exists(source):
 
-        if is_file:  # Copy files without arguments
+        if os.path.isfile(source):  # Copy file
             exit_code = os.system("xcopy \"{0}\" \"{1}\"".format(source, target))
-        else:  # Copy directories with arguments
+        else:  # Copy directory
             exit_code = os.system("xcopy \"{0}\" \"{1}\" /s/h/e/k/f/c".format(source, target))
 
-        if exit_code != 0:
-            return False
-        else:
+        if exit_code == 0:
             return True
+        else:
+            return False
     else:
         return False
 
@@ -28,75 +28,62 @@ backup_path = "D:\\Backup\\" + backup_name
 backup = [
     # (
     #   source,
-    #   target,
-    #   is_file
+    #   target
     # )
     (
         "C:\\Users\\Julian\\OneDrive\\Coding",
-        backup_path + "\\Coding\\",
-        False
+        backup_path + "\\Coding\\"
     ),
     (
         "C:\\Users\\Julian\\OneDrive\\Studium",
-        backup_path + "\\Studium\\",
-        False
+        backup_path + "\\Studium\\"
     ),
     (
         "C:\\Users\\Julian\\OneDrive\\Sonstiges",
-        backup_path + "\\Sonstiges\\",
-        False
+        backup_path + "\\Sonstiges\\"
     ),
     (
         "C:\\Users\\Julian\\OneDrive\\Pictures",
-        backup_path + "\\Pictures\\",
-        False
+        backup_path + "\\Pictures\\"
     ),
     (
         "C:\\Users\\Julian\\OneDrive\\Documents",
-        backup_path + "\\Documents\\",
-        False
+        backup_path + "\\Documents\\"
     ),
     (
         "C:\\Users\\Julian\\Documents\\Battlefield 1\\settings",
-        backup_path + "\\Documents\\Config\\Battlefield 1\\",
-        False
+        backup_path + "\\Documents\\Config\\Battlefield 1\\"
     ),
     (
         "C:\\Users\\Julian\\Documents\\Battlefield 3\\settings",
-        backup_path + "\\Documents\\Config\\Battlefield 3\\",
-        False
+        backup_path + "\\Documents\\Config\\Battlefield 3\\"
     ),
     (
         "C:\\Users\\Julian\\Documents\\Battlefield 4\\settings",
-        backup_path + "\\Documents\\Config\\Battlefield 4\\",
-        False
+        backup_path + "\\Documents\\Config\\Battlefield 4\\"
     ),
     (
         "C:\\Program Files (x86)\\Origin Games\\Battlefield 1\\user.cfg",
-        backup_path + "\\Documents\\Config\\Battlefield 1\\",
-        True
+        backup_path + "\\Documents\\Config\\Battlefield 1\\"
     ),
     (
         "D:\\Origin\\Battlefield 3\\user.cfg",
-        backup_path + "\\Documents\\Config\\Battlefield 3\\",
-        True
+        backup_path + "\\Documents\\Config\\Battlefield 3\\"
     ),
     (
         "D:\\Origin\\Battlefield 4\\user.cfg",
-        backup_path + "\\Documents\\Config\\Battlefield 4\\",
-        True
+        backup_path + "\\Documents\\Config\\Battlefield 4\\"
     ),
     (
         "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\csgo\\cfg",
-        backup_path + "\\Documents\\Config\\CSGO\\cfg\\",
-        False
+        backup_path + "\\Documents\\Config\\CSGO\\cfg\\"
     )
 ]
 
 failed = list()
 
 for element in backup:
-    if not xcopy(element[0],  element[1], element[2]):
+    if not xcopy(element[0],  element[1]):
         failed.append(element[0])
 
 draw.line()
@@ -106,7 +93,7 @@ print("##############################")
 draw.line()
 
 if failed:
-    print("Following files or directories were not found:")
+    print("Following files or directories were not found or failed copying:")
     for path in failed:
         print(path)
     draw.line()
