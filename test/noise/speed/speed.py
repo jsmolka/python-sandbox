@@ -1,8 +1,9 @@
 import numpy as np
 import dialog
+import utils
 from stopwatch import *
-from pyprocessing import *
-from opensimplex import *
+from pyprocessing import mathfunctions
+from opensimplex import OpenSimplex
 from PIL import Image
 
 sw = Stopwatch()
@@ -17,7 +18,7 @@ simplex = OpenSimplex()
 sw.start()
 for x in range(0, 1000):
     for y in range(0, 1000):
-        value = map(simplex.noise2d(x / precision, y / precision), -1, 1, 0, 255)
+        value = utils.remap(simplex.noise2d(x / precision, y / precision), -1, 1, 0, 255)
         arr1[x, y] = [value, value, value]
 sw.stop()
 sw.print_elapsed_time()
@@ -26,16 +27,16 @@ print("Generating perlin noise...")
 sw.start()
 for x in range(0, 1000):
     for y in range(0, 1000):
-        value = map(noise(x / precision, y / precision), -1, 1, 0, 255)
+        value = utils.remap(mathfunctions.noise(x / precision, y / precision), -1, 1, 0, 255)
         arr2[x, y] = [value, value, value]
 sw.stop()
 sw.print_elapsed_time()
 
 print("Saving images...")
 img1 = Image.fromarray(arr1, "RGB")
-img1.save("simplex_noise.png", "PNG")
+img1.save("simplex.png", "PNG")
 
 img2 = Image.fromarray(arr2, "RGB")
-img2.save("perlin_noise.png", "PNG")
+img2.save("perlin.png", "PNG")
 
 dialog.enter("exit")
