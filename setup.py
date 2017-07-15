@@ -2,6 +2,7 @@ import ctypes
 import os
 import pip
 import sys
+from subprocess import Popen, DEVNULL, STDOUT
 
 
 def admin___running():
@@ -52,20 +53,38 @@ def dialog_enter(action, message="Press enter to {0}..."):
     input(message)
 
 
-def install(package):
+def add_path(pth):
+    """Adds path to PYTHONPATH"""
+    if "PYTHONPATH" in os.environ:
+        if pth not in os.environ["PYTHONPATH"].split(";"):
+            Popen(["setx", "PYTHONPATH", os.environ.get("PYTHONPATH") + ";" + path], stdout=DEVNULL, stderr=STDOUT)
+    else:
+        Popen(["setx", "PYTHONPATH", path], stdout=DEVNULL, stderr=STDOUT)
+
+
+def install(pkg):
     """Installs or upgrades package"""
-    pip.main(["install", "--upgrade", package])
+    pip.main(["install", "--upgrade", pkg])
 
 
 admin_check(__file__)
+
+# List of paths
+paths = [
+    os.path.dirname(__file__) + "\\__modules__"
+]
 
 # List of packages
 packages = [
     "Pillow",
     "NumPy",
-    "OpenSimplex",
-    "Pyglet"
+    "Pyglet",
+    "OpenSimplex"
 ]
+
+# Add paths to PYTHONPATH
+for path in paths:
+    add_path(path)
 
 # Install or upgrade external packages
 for package in packages:
@@ -74,8 +93,7 @@ for package in packages:
 
 # Install local packages
 draw_heading("PyProcessing")
-os.chdir("__packages__/pyprocessing")
-os.system("pip install .")
+Popen(["pip", "install", "."], cwd="__packages__/pyprocessing").wait()
 
 draw_line()
 
