@@ -5,25 +5,11 @@ import sys
 from subprocess import Popen, DEVNULL, STDOUT
 
 
-def admin___running():
-    """Checks if program is running with admin privileges"""
-    try:
-        return ctypes.windll.shell32.IsUserAnAdmin()
-    except:
-        return False
-
-
-def admin___restart(file_name):
-    """Restarts program with admin privileges"""
-    # File name should be __file__ of executed file
-    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, file_name, None, 1)
-    sys.exit()
-
-
 def admin_check(file_name):
     """Checks if program is running with admin privileges and restarts it if it is not"""
-    if not admin___running():
-        admin___restart(file_name)
+    if not ctypes.windll.shell32.IsUserAnAdmin():  # Check if user is admin
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, file_name, None, 1)  # Restart as admin
+        sys.exit()  # Exit old instance
 
 
 def draw_line():
@@ -62,7 +48,7 @@ def add_path(pth):
         Popen(["setx", "PYTHONPATH", path], stdout=DEVNULL, stderr=STDOUT)
 
 
-def install(pkg):
+def install_package(pkg):
     """Installs or upgrades package"""
     pip.main(["install", "--upgrade", pkg])
 
@@ -89,7 +75,7 @@ for path in paths:
 # Install or upgrade external packages
 for package in packages:
     draw_heading(package)
-    install(package)
+    install_package(package)
 
 # Install local packages
 draw_heading("PyProcessing")
