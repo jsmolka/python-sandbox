@@ -1,7 +1,6 @@
 def yes_no(message):
     """Prints yes/no dialog"""
-    message = message + " (y/n)"
-    print(message)
+    print(message, "(y/n)")
     while True:
         answer = input()
         if answer == "y":
@@ -69,7 +68,7 @@ def user_input(*answers, create_range=False):
 
     except Exception as e:
         print("Something went wrong while processing the user input")
-        print(str(e))
+        print("Error:", str(e))
         if answers:
             print("Returned first value of answer list")
             return answers[0]
