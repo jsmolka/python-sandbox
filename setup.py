@@ -75,7 +75,8 @@ for package in packages:
 
 # Install local packages
 draw_heading("PyProcessing")
-Popen(["pip", "install", "."], cwd="__packages__/pyprocessing").wait()
+os.chdir("__packages__/pyprocessing")
+os.system("pip install .")
 
 draw_line()
 
