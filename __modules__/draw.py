@@ -8,18 +8,14 @@ def line():
 
 def heading(text):
     """Prints heading"""
-    cmd_length = os.get_terminal_size()[0] - 1
+    length = os.get_terminal_size()[0] - 1
     text = " {0} ".format(text)
-    if len(text) + 2 > cmd_length:
+    if len(text) + 2 > length:
         raise Exception("Heading is too long")
     else:
-        while len(text) < cmd_length:
+        while len(text) < length:
             text = "-{0}-".format(text)
-        if len(text) == cmd_length:
-            print(text)
-        else:
-            text = text[0: cmd_length]
-            print(text)
+        print(text) if len(text) == length else print(text[0: length])
 
 
 def menu(caption, *items):
