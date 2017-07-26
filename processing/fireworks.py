@@ -111,7 +111,7 @@ class Fireworks:
 
 
 def setup():
-    global HEIGHT, WIDTH, fireworks, fireworks_count
+    global fireworks, fireworks_count
     size(WIDTH, HEIGHT)
     frameRate(45)
     for i in range(0, fireworks_count):
