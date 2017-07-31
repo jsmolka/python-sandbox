@@ -32,13 +32,13 @@ def user_input(*answers, create_range=False):
     if not answers:
         raise Exception("Answers cannot be empty")
 
+    if len(answers) == 1 and type(answers[0]) == list:  # Extract list
+        answers = answers[0]
+
     if create_range and len(answers) != 2:
         raise Exception("Create range is only defines for two values in the answer list")
 
     try:
-        if len(answers) == 1 and type(answers[0]) == list:  # Extract list
-            answers = answers[0]
-
         answers = list(answers)
         if create_range:
             if type(answers[0]) == int and type(answers[1]) == int:
