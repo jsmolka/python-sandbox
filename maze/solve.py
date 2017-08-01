@@ -7,13 +7,13 @@ m = Maze()
 sw = Stopwatch()
 
 draw.menu("Which algorithm do you want to use?",
-          Algorithm.Solve.BACKTRACKING.value)
+          Algorithm.Solve.DEPTH.value)
 
 algorithm_count = 1
 algorithm = dialog.user_input(1, algorithm_count + 1, create_range=True)
 
 if algorithm == 1:
-    algorithm = Algorithm.Solve.BACKTRACKING
+    algorithm = Algorithm.Solve.DEPTH
 draw.line()
 
 if os.path.isfile("maze.png"):
@@ -27,7 +27,7 @@ if os.path.isfile("maze.png"):
 
     print("Solving maze...")
     sw.start()
-    m.solve(0, 0, Algorithm.Solve.BACKTRACKING)
+    m.solve(0, 0, algorithm)
     sw.stop()
     sw.print_elapsed_time()
 

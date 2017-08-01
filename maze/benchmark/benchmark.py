@@ -85,15 +85,15 @@ if method == 1:
     db.add("create", algorithm.value, version, system, str(iteration), size, str(sw.average_time))
 else:
     algorithm_list = [
-        Algorithm.Solve.BACKTRACKING.value
+        Algorithm.Solve.DEPTH.value
     ]
 
     draw.menu("Which algorithm do you want to use?", algorithm_list)
 
-    algorithm = dialog.user_input(len(algorithm_list))
+    algorithm = dialog.user_input(1, len(algorithm_list) + 1, create_range=True)
 
     if algorithm == 1:
-        algorithm = Algorithm.Solve.BACKTRACKING
+        algorithm = Algorithm.Solve.DEPTH
 
     # Input data
     draw.line()

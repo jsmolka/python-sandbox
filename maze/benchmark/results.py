@@ -30,7 +30,7 @@ else:  # Show solve
     method = "solve"
 
     algorithm_list = [
-        Algorithm.Solve.BACKTRACKING.value
+        Algorithm.Solve.DEPTH.value
     ]
 
 draw.menu("Which algorithm do you want to display?", algorithm_list)
