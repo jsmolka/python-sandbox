@@ -1,7 +1,5 @@
-import time
 import dialog
 import draw
-from datetime import timedelta
 from database import *
 from maze import *
 from stopwatch import *
@@ -92,7 +90,7 @@ else:
 
     draw.menu("Which algorithm do you want to use?", algorithm_list)
 
-    algorithm = dialog.user_input(1, len(algorithm_list), create_range=True)
+    algorithm = dialog.user_input(len(algorithm_list))
 
     if algorithm == 1:
         algorithm = Algorithm.Solve.BACKTRACKING
