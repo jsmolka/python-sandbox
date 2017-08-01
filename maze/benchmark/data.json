@@ -343,7 +343,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.0",
         "XPS",
         "100",
@@ -352,7 +352,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.0",
         "XPS",
         "50",
@@ -361,7 +361,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.0",
         "XPS",
         "50",
@@ -406,7 +406,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.0",
         "XPS",
         "10",
@@ -415,7 +415,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.0",
         "XPS",
         "10",
@@ -424,7 +424,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.1",
         "XPS",
         "100",
@@ -433,7 +433,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.1",
         "XPS",
         "50",
@@ -442,7 +442,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.1",
         "XPS",
         "50",
@@ -451,7 +451,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.1",
         "XPS",
         "10",
@@ -460,7 +460,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.1",
         "XPS",
         "10",
@@ -631,7 +631,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.2",
         "XPS",
         "100",
@@ -640,7 +640,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.2",
         "XPS",
         "50",
@@ -649,7 +649,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.2",
         "XPS",
         "50",
@@ -658,7 +658,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.2",
         "XPS",
         "10",
@@ -667,7 +667,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.2",
         "XPS",
         "10",
@@ -676,7 +676,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.3",
         "XPS",
         "100",
@@ -685,7 +685,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.3",
         "XPS",
         "50",
@@ -694,7 +694,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.3",
         "XPS",
         "50",
@@ -703,7 +703,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.3",
         "XPS",
         "10",
@@ -712,7 +712,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.3",
         "XPS",
         "10",
@@ -721,7 +721,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.4",
         "XPS",
         "100",
@@ -730,7 +730,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.4",
         "XPS",
         "50",
@@ -739,7 +739,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.4",
         "XPS",
         "50",
@@ -748,7 +748,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.4",
         "XPS",
         "10",
@@ -757,7 +757,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.4",
         "XPS",
         "10",
@@ -973,7 +973,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.5",
         "XPS",
         "100",
@@ -982,7 +982,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.5",
         "XPS",
         "50",
@@ -991,7 +991,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.5",
         "XPS",
         "50",
@@ -1000,7 +1000,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.5",
         "XPS",
         "10",
@@ -1009,7 +1009,7 @@
     ],
     [
         "solve",
-        "Recursive backtracking algorithm",
+        "Depth-first search",
         "1.0.5",
         "XPS",
         "10",
@@ -1087,5 +1087,50 @@
         "10",
         "300 x 300",
         "0:00:12.424764"
+    ],
+    [
+        "solve",
+        "Depth-first search",
+        "1.0.6",
+        "XPS",
+        "100",
+        "100 x 100",
+        "0:00:00.096362"
+    ],
+    [
+        "solve",
+        "Depth-first search",
+        "1.0.6",
+        "XPS",
+        "50",
+        "200 x 200",
+        "0:00:00.363945"
+    ],
+    [
+        "solve",
+        "Depth-first search",
+        "1.0.6",
+        "XPS",
+        "50",
+        "300 x 300",
+        "0:00:00.893743"
+    ],
+    [
+        "solve",
+        "Depth-first search",
+        "1.0.6",
+        "XPS",
+        "10",
+        "400 x 400",
+        "0:00:01.891897"
+    ],
+    [
+        "solve",
+        "Depth-first search",
+        "1.0.6",
+        "XPS",
+        "10",
+        "500 x 500",
+        "0:00:02.035480"
     ]
 ]
