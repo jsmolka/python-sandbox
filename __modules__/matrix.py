@@ -1,379 +1,197 @@
 class Matrix:
     def __init__(self, matrix):
         """Constructor"""
-        if type(matrix) == str:
-            self.__build(matrix)
-        else:
-            self.matrix = matrix
-        if self.__validate():
-            self.__update()
-        else:
-            self.matrix = []
-            print("Matrix is not valid")
-
-    def __build(self, matrix_string):
-        """Builds matrix out of a string"""
-        matrix_string = matrix_string.replace(" ", "")
-        if "|" in matrix_string:
-            matrix_string = matrix_string.replace("|", "],[")
-            matrix_string = "[[{0}]]".format(matrix_string)
-        else:
-            matrix_string = "[{0}]".format(matrix_string)
-        try:
-            matrix = eval(matrix_string)
-            self.matrix = matrix
-        except Exception as e:
-            print(str(e))
+        self.matrix = matrix
+        if not self.__validate():
+            raise Exception("Invalid matrix")
 
     def __validate(self):
         """Validates matrix"""
-        try:
-            if type(self.matrix[0]) == list:
-                row_length = len(self.matrix[0])
-                for i in range(0, len(self.matrix)):
-                    if row_length != len(self.matrix[i]):
-                        print("Invalid matrix")
-                        return False
-                return True
-            else:
-                return True
-        except Exception as e:
-            print(str(e))
+        if not (type(self.matrix) and type(self.matrix)) == list:
             return False
 
-    def __update(self):
-        """Updates matrix properties"""
-        if type(self.matrix[0]) != list:  # Row
-            self.__row = True
-            self.__col = False
-            self.row_count = 1
-            self.col_count = len(self.matrix)
-        elif type(self.matrix[0]) == list and len(self.matrix[0]) == 1:  # Column
-            self.__col = True
-            self.__row = False
-            self.row_count = len(self.matrix)
-            self.col_count = 1
-        else:  # Matrix
-            self.__row = False
-            self.__col = False
-            self.row_count = len(self.matrix)
-            self.col_count = len(self.matrix[0])
+        length = len(self.matrix[0])
+        for row in self.matrix:
+            if len(row) != length:
+                return False
+        return True
+
+    @property
+    def row_count(self):
+        """Returns row count"""
+        return len(self.matrix)
+
+    @property
+    def col_count(self):
+        """Returns col count"""
+        return len(self.matrix[0])
+
+    @property
+    def __is_row(self):
+        """Checks if matrix is a row"""
+        return True if len(self.matrix) == 1 else False
+
+    @property
+    def __is_col(self):
+        """Checks if matrix is a column"""
+        return True if len(self.matrix[0]) == 1 else False
+
+    @property
+    def __is_square(self):
+        """Checks if matrix is square matrix"""
+        return True if len(self.matrix) == len(self.matrix[0]) else False
 
     @staticmethod
-    def create(m, n, unit_matrix=False):
-        """Creates empty (m x n) matrix or a unit matrix"""
-        if m > 0 and n > 0:
-            if not unit_matrix:
-                if m == 1:  # Row
-                    matrix = list()
-                    for i in range(0, n):
-                        matrix.append(None)
-                else:  # Matrix / column
-                    matrix = list()
-                    for i in range(0, m):
-                        matrix.append(list())
-                        for j in range(0, n):
-                            matrix[i].append(None)
-                matrix = Matrix(matrix)
-                return matrix
-            else:  # Unit matrix
-                matrix = Matrix.create(m, n)
-                for i in range(0, m):
-                    for j in range(0, n):
-                        if i != j:
-                            matrix.matrix[i][j] = 0
-                        else:
-                            matrix.matrix[i][j] = 1
-                return matrix
-        else:
-            if m <= 0:
-                print("Row count cannot be", m)
-            if n <= 0:
-                print("Column count cannot be", n)
+    def create(m, n, default=0, unit=False):
+        """Creates empty (m x n) or unit matrix"""
+        if (m or n) <= 0:
+            raise Exception("Invalid row or column count")
+
+        if not unit:  # Empty matrix
+            matrix = list()
+            for i in range(0, m):
+                matrix.append(list())
+                for j in range(0, n):
+                    matrix[i].append(default)
+            return Matrix(matrix)
+        else:  # Unit matrix
+            matrix = Matrix.create(m, n)
+            for i in range(0, m):
+                for j in range(0, n):
+                    matrix.matrix[i][j] = 0 if i != j else 1
+            return matrix
 
     def print_rows(self):
         """Prints matrix in rows"""
-        try:
-            if not self.__row:  # Matrix / column
-                m = self.row_count
-                for i in range(0, m):
-                    print(self.matrix[i])
-            else:  # Row
-                print(self.matrix)
-        except Exception as e:
-            print(str(e))
+        for row in self.matrix:
+            print(row)
 
-    def duplicate(self, row_number=None):
-        """Creates copy"""
-        if row_number is None:
-            if not self.__row:  # Matrix / column
-                m = self.row_count
-                n = self.col_count
-                return_matrix = Matrix.create(m, n)
-                for i in range(0, m):
-                    for j in range(0, n):
-                        return_matrix.matrix[i][j] = self.matrix[i][j]
-            else:  # Row
-                n = self.col_count
-                return_matrix = Matrix.create(1, n)
-                for i in range(0, n):
-                    return_matrix.matrix[i] = self.matrix[i]
+    def duplicate(self):
+        """Duplicates matrix"""
+        matrix = Matrix.create(self.row_count, self.col_count)
+        for i in range(0, self.row_count):
+            for j in range(0, self.col_count):
+                matrix.matrix[i][j] = self.matrix[i][j]
+        return matrix
 
-            return return_matrix
-
-        else:  # Specific row
-            n = len(self.matrix[row_number])
-            return_row = Matrix.create(1, n)
-            for i in range(0, n):
-                return_row.matrix[i] = self.matrix[row_number][i]
-
-            return return_row
+    def __duplicate_row(self, m):
+        """Duplicates row"""
+        row = Matrix.create(1, self.col_count)
+        for i in range(0, self.col_count):
+            row.matrix[i] = self.matrix[m][i]
+        return row
 
     def transpose(self):
         """Transposes matrix"""
-        if not self.__row:
-            m = self.row_count
-            n = self.col_count
-            trans_matrix = Matrix.create(n, m)
-            if not self.__col:  # Matrix
-                for i in range(0, m):
-                    for j in range(0, n):
-                        trans_matrix.matrix[j][i] = self.matrix[i][j]
-                self.matrix = trans_matrix.matrix
-            else:  # Column
-                for i in range(0, m):
-                    trans_matrix.matrix[i] = self.matrix[i][0]
-                self.matrix = trans_matrix.matrix
-        else:  # Row
-            n = self.col_count
-            trans_matrix = Matrix.create(n, 1)
-            for i in range(0, n):
-                trans_matrix.matrix[i][0] = self.matrix[i]
-            self.matrix = trans_matrix.matrix
-
-        self.__update()
+        matrix = Matrix.create(self.col_count, self.row_count)
+        for i in range(0, self.row_count):
+            for j in range(0, self.col_count):
+                matrix.matrix[j][i] = self.matrix[i][j]
+        self.matrix = matrix.matrix
 
     def add(self, matrix):
         """Adds matrices"""
-        if not self.__row and not matrix.__row:  # Matrix / column
-            m1 = self.row_count
-            m2 = matrix.row_count
-            n1 = self.col_count
-            n2 = matrix.col_count
-            if m1 == m2 and n1 == n2:
-                for i in range(0, m1):
-                    for j in range(0, n1):
-                        self.matrix[i][j] = self.matrix[i][j] + matrix.matrix[i][j]
-            else:
-                print("Cannot add")
-                print("Different row or column count")
-                print("Self: {0} rows and {1} columns".format(m1, n1))
-                print("Matrix: {0} rows and {1} columns".format(m2, n2))
-                self.matrix = []
-        else:  # Row
-            n1 = self.col_count
-            n2 = matrix.col_count
-            if n1 == n2:
-                for i in range(0, n1):
-                    self.matrix[i] = self.matrix[i] + matrix.matrix[i]
-            else:
-                print("Cannot add")
-                print("Different column count")
-                print("Self: 1 row and {0} columns".format(n1))
-                print("Matrix: 1 row and {0} columns".format(n2))
-                self.matrix = []
+        if not self.row_count == matrix.row_count:
+            raise Exception("Different row count")
+        if not self.col_count == matrix.col_count:
+            raise Exception("Different column count")
+
+        for i in range(0, self.row_count):
+            for j in range(0, self.col_count):
+                self.matrix[i][j] = self.matrix[i][j] + matrix.matrix[i][j]
+        return self.duplicate()
 
     def subtract(self, matrix):
         """Subtracts matrices"""
-        if not self.__row and not matrix.__row:  # Matrix / column
-            m1 = self.row_count
-            m2 = matrix.row_count
-            n1 = self.col_count
-            n2 = matrix.col_count
-            if m1 == m2 and n1 == n2:
-                for i in range(0, m1):
-                    for j in range(0, n1):
-                        self.matrix[i][j] = self.matrix[i][j] - matrix.matrix[i][j]
-            else:
-                print("Cannot subtract")
-                print("Different row or column count")
-                print("Self: {0} rows and {1} columns".format(m1, n1))
-                print("Matrix: {0} rows and {1} columns".format(m2, n2))
-                self.matrix = []
-        else:
-            n1 = self.row_count
-            n2 = matrix.col_count
-            if n1 == n2:  # Row
-                for i in range(0, n1):
-                    self.matrix[i] = self.matrix[i] - matrix.matrix[i]
-            else:
-                print("Cannot add")
-                print("Different column count")
-                print("Self: 1 row and {0} columns".format(n1))
-                print("Matrix: 1 row and {0} columns".format(n2))
-                self.matrix = []
+        if not self.row_count == matrix.row_count:
+            raise Exception("Different row count")
+        if not self.col_count == matrix.col_count:
+            raise Exception("Different column count")
+
+        for i in range(0, self.row_count):
+            for j in range(0, self.col_count):
+                self.matrix[i][j] = self.matrix[i][j] - matrix.matrix[i][j]
+        return self.duplicate()
 
     def multiply(self, matrix):
         """Multiplies matrices"""
-        if not self.__row and not matrix.__row:  # Matrix
-            m1 = self.row_count
-            m2 = matrix.row_count
-            n1 = self.col_count
-            n2 = matrix.col_count
-            if m1 == n2 and m2 == n1:
-                result_matrix = Matrix.create(m1, m1)
-                for i in range(0, m1):
-                    for j in range(0, m1):
-                        result = 0
-                        for k in range(0, n1):
-                            result += self.matrix[i][k] * matrix.matrix[k][j]
-                        result_matrix.matrix[i][j] = result
+        if not self.row_count == matrix.col_count:
+            raise Exception("Different row / column count")
+        if not self.col_count == matrix.row_count:
+            raise Exception("Different row / column count")
 
-                self.matrix = result_matrix.matrix
-            else:
-                print("Cannot multiply")
-                print("Self row count unequal to matrix col count")
-                print("Self: {0} rows and {1} columns".format(m1, n1))
-                print("Matrix: {0} rows and {1} columns".format(m2, n2))
-        else:
-            if self.__col and matrix.__row:  # Column
-                m1 = self.row_count
-                n2 = matrix.col_count
-                if m1 == n2:
-                    result_matrix = Matrix.create(m1, m1)
-                    for i in range(0, m1):
-                        for j in range(0, m1):
-                            result_matrix.matrix[i][j] = self.matrix[i][0] * matrix.matrix[j]
+        result = Matrix.create(self.row_count, self.row_count)
+        for i in range(0, self.row_count):
+            for j in range(0, self.row_count):
+                for k in range(0, self.col_count):
+                    result.matrix[i][j] += self.matrix[i][k] * matrix.matrix[k][j]
+        self = result
+        return self.duplicate()
 
-                    self.matrix = result_matrix.matrix
-                else:
-                    print("Cannot multiply")
-                    print("Self row count unequal to matrix col count")
-                    print("Self: {0} rows and 1 columns".format(m1))
-                    print("Matrix: 1 rows and {0} columns".format(n2))
-
-            elif self.__row and matrix.__col:  # Row
-                n1 = self.col_count
-                m2 = matrix.row_count
-                if n1 == m2:
-                    result_matrix = Matrix.create(1, 1)
-                    result = 0
-                    for i in range(0, n1):
-                        result += self.matrix[i] * matrix.matrix[i][0]
-                    result_matrix.matrix[0] = result
-
-                    self.matrix = result_matrix.matrix
-                else:
-                    print("Cannot multiply")
-                    print("Self row count unequal to matrix col count")
-                    print("Self: 1 rows and {0} columns.".format(n1))
-                    print("Matrix: {0} rows and 1 columns.".format(m2))
-            else:
-                if self.__row and matrix.__row:
-                    print("Cannot multiply two rows")
-                if self.__col and matrix.__col:
-                    print("Cannot multiply two columns")
-
-        self.__update()
-
-    def multiply_scalar(self, scalar, row=None):
+    def multiply_scalar(self, scalar):
         """Multiplies matrix with a scalar"""
-        if row is None:
-            if not self.__row:  # Matrix / column
-                m = self.row_count
-                n = self.col_count
-                for i in range(0, m):
-                    for j in range(0, n):
-                        self.matrix[i][j] *= scalar
-            else:  # Row
-                n = self.col_count
-                for i in range(0, n):
-                    self.matrix[i] *= scalar
-        else:  # Specific row
-            n = len(self.matrix[row])
-            for i in range(0, n):
-                self.matrix[row][i] = self.matrix[row][i] * scalar
+        for i in range(0, self.row_count):
+            for j in range(0, self.col_count):
+                self.matrix[i][j] *= scalar
+        return self.duplicate
 
-    def __square_matrix(self):
-        """Checks if matrix is square matrix"""
-        if self.__row or self.__col:
-            return False
-        else:
-            if self.row_count == self.col_count:
-                return True
-            else:
-                return False
+    def __multiply_row_scalar(self, m):
+        """Multiplies row with a scalar"""
+        for i in range(0, self.col_count):
+            self.matrix[m][i] = self.matrix[m][i] * scalar
+        return self.duplicate
 
     def determinant(self, result=0):
         """Calculates determinant recursively"""
-        if not self.__square_matrix():
-            print("No square matrix")
-            print("Cannot calculate the determinant")
-            return
-        self.__update()
-        m = self.row_count
-        if m == 1:
+        if not self.__is_square:
+            raise Exception("No square matrix")
+
+        if self.row_count == 1:
             result += self.matrix[0][0]
         else:
-            for i in range(0, m):
-                rec_matrix = self.duplicate()
-                for j in range(0, m):  # Delete first column
-                    del rec_matrix.matrix[j][0]
-                del rec_matrix.matrix[i]  # Delete i row
-                sign = pow(-1, i + 2)
-                factor = self.matrix[i][0]  # Factor for deleted row and column
-                result += factor * sign * Matrix.determinant(rec_matrix)
-
+            for i in range(0, self.row_count):
+                matrix = self.duplicate()
+                for j in range(0, self.row_count):  # Delete first column
+                    del matrix.matrix[j][0]
+                del matrix.matrix[i]  # Delete i-th row
+                # Multiply sign and factor for deleted row / column with smaller determinant
+                result += pow(-1, i + 2) * self.matrix[i][0] * Matrix.determinant(matrix)
         return result
 
     def regular(self):
         """Checks if matrix is regular"""
         # regular matrix = invertible square matrix (determinant != 0)
-        if self.__square_matrix():
-            if self.determinant() != 0:
-                return True
-            else:
-                return False
+        if self.__is_square:
+            return True if self.determinant() != 0 else False
         else:
-            print("Regular is only defined for square matrices")
+            return False
 
     def singular(self):
         """Checks if matrix is singular"""
         # singular matrix = not invertible square matrix (determinant == 0)
-        if self.__square_matrix():
-            if Matrix.determinant(self) == 0:
-                return True
-            else:
-                return False
+        if self.__is_square:
+            return True if self.determinant() == 0 else False
         else:
-            print("Singular is only defined for square matrices")
+            return False
 
-    def __add_rows(self, row1, row2, external_row=None):
+    def __add_rows(self, m1, m2):
         """Adds rows"""
-        if external_row is None:  # Rows in matrix
-            n = self.col_count
-            for i in range(0, n):
-                self.matrix[row2][i] = self.matrix[row1][i] + self.matrix[row2][i]
-        else:  # Row in matrix and external row
-            n1 = self.col_count
-            n2 = len(external_row.matrix)
-            if n1 == n2:
-                help_row = Matrix.create(1, n1)
-                for i in range(0, n1):
-                    help_row.matrix[i] = self.matrix[row1][i] + external_row.matrix[i]
-                self.matrix[row2] = help_row.matrix
-            else:
-                print("Different row length")
-                print("Row 1 length:", n1)
-                print("External row length:", n2)
+        for i in range(0, self.col_count):  # Add row m1 to row m2
+            self.matrix[m2][i] += self.matrix[m1][i]
 
-    def __change_rows(self, row1, row2):
+    def __add_external_row(self, m, row):
+        """Adds external row"""
+        if not self.col_count == row.col_count:
+            raise Exception("Different column count")
+
+        for i in range(0, self.col_count):
+            self.matrix[m][i] += row.matrix[0][i]
+
+    def __change_rows(self, m1, m2):
         """Changes rows"""
-        list1 = self.matrix[row1]
-        list2 = self.matrix[row2]
-        self.matrix[row1] = list2
-        self.matrix[row2] = list1
+        self.matrix[m1], self.matrix[m2] = self.matrix[m2], self.matrix[m1]
 
+    # TODO: Continue here!
     def gauss(self, round_float=True, digits=8):
         """Creates lower triangular matrix with the gauss algorithm"""
         if not self.__row and not self.__col:  # Matrix
