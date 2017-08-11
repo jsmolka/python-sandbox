@@ -327,7 +327,7 @@ class Matrix:
         result = self.duplicate()
         unit = Matrix.create(result.row_count, result.row_count, unit=True)
         combined = result.__combine(unit)
-        combined.gauss_jordan(round_=round_, digits=digits)
+        combined = combined.gauss_jordan(round_=round_, digits=digits)
         for r in range(0, result.row_count):  # Cut out old matrix
             for c in range(0, result.col_count):
                 result[r, c] = combined[r, c + result.col_count]
@@ -339,8 +339,7 @@ class Matrix:
             return 1
 
         rank = self.row_count
-        matrix = self.duplicate()
-        matrix.gauss()
+        matrix = self.gauss()
         for r in range(0, matrix.row_count):
             for c in range(0, matrix.col_count):
                 if matrix[r, c] != 0:  # Check if element is unequal to zero
