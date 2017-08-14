@@ -2,6 +2,7 @@ def remap(value, low1, high1, low2, high2):
     """Re-maps a number from one range to another"""
     return float(value - low1) / (high1 - low1) * (high2 - low2) + low2
 
+
 def pi(n):
     """Calculates n digits of pi using the spigot algorithm"""
     l = list()
@@ -17,6 +18,7 @@ def pi(n):
             d, d1 = a / b, a1 / b1
     return l
 
+
 def pi_float(n):
     """Returns float value of spigot algorithm"""
     l = pi(n)
@@ -25,14 +27,18 @@ def pi_float(n):
         f += str(l[i])
     return float(f)
 
+
 def int_to_rgb(v):
     """Converts int to rgb"""
     rgb = "{:024b}".format(v)
-    return [int(rgb[:8], 2), int(rgb[8:16], 2), int(rgb[16:], 2)]
+    return int(rgb[:8], 2), int(rgb[8:16], 2), int(rgb[16:], 2)
 
-def rgb_to_int(v):
+
+def rgb_to_int(*rgb):
     """Converts rgb to int"""
-    r = "{:08b}".format(v[0])
-    g = "{:08b}".format(v[1])
-    b = "{:08b}".format(v[2])
+    if len(rgb) == 1:
+        rgb = rgb[0]
+    r = "{:08b}".format(rgb[0])
+    g = "{:08b}".format(rgb[1])
+    b = "{:08b}".format(rgb[2])
     return int(r + g + b, 2)
