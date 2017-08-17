@@ -27,7 +27,7 @@ def __only_spaces_or_empty(string):
         return True
 
 
-def user_input(*answers, create_range=False):
+def user_input(*answers, range_=False):
     """Processes user input"""
     if not answers:
         raise Exception("Answers cannot be empty")
@@ -35,43 +35,32 @@ def user_input(*answers, create_range=False):
     if len(answers) == 1 and type(answers[0]) == list:  # Extract list
         answers = answers[0]
 
-    if create_range and len(answers) != 2:
+    if range_ and len(answers) != 2:
         raise Exception("Create range is only defines for two values in the answer list")
 
-    try:
-        answers = list(answers)
-        if create_range:
-            if type(answers[0]) == int and type(answers[1]) == int:
-                answers.sort()
-                start = answers[0]
-                end = answers[1]
-                answers = []
-                for i in range(start, end):
-                    answers.append(i)
+    answers = list(answers)
+    if range_:
+        if type(answers[0]) == int and type(answers[1]) == int:
+            answers.sort()
+            start = answers[0]
+            end = answers[1] + 1
+            answers = []
+            for i in range(start, end):
+                answers.append(i)
 
-        answer_type = type(answers[0])
+    answer_type = type(answers[0])
 
-        while True:
+    while True:
+        answer = input()
+        while __only_spaces_or_empty(answer):
+            print("Invalid answer! Try again!")
             answer = input()
-            while __only_spaces_or_empty(answer):
-                print("Invalid answer! Try again!")
-                answer = input()
 
-            try:
-                answer = answer_type(answer)
-                if answer in answers:
-                    return answer
-                else:
-                    print("Invalid answer! Try again!")
-            except:
+        try:
+            answer = answer_type(answer)
+            if answer in answers:
+                return answer
+            else:
                 print("Invalid answer! Try again!")
-
-    except Exception as e:
-        print("Something went wrong while processing the user input")
-        print("Error:", str(e))
-        if answers:
-            print("Returned first value of answer list")
-            return answers[0]
-        else:
-            print("Returned empty string")
-            return ""
+        except:
+            print("Invalid answer! Try again!")

@@ -19,7 +19,7 @@ draw.menu("Which algorithm do you want to use?",
           Algorithm.Create.KRUSKAL.value)
 
 algorithm_count = 6
-algorithm = dialog.user_input(1, algorithm_count + 1, create_range=True)
+algorithm = dialog.user_input(1, algorithm_count, range_=True)
 
 if algorithm == 1:
     algorithm = Algorithm.Create.BACKTRACKING

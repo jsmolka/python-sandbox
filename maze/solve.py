@@ -1,6 +1,7 @@
 import dialog
 import draw
 from maze import *
+from os.path import isfile
 from stopwatch import *
 
 m = Maze()
@@ -10,13 +11,13 @@ draw.menu("Which algorithm do you want to use?",
           Algorithm.Solve.DEPTH.value)
 
 algorithm_count = 1
-algorithm = dialog.user_input(1, algorithm_count + 1, create_range=True)
+algorithm = dialog.user_input(1, algorithm_count, range_=True)
 
 if algorithm == 1:
     algorithm = Algorithm.Solve.DEPTH
 draw.line()
 
-if os.path.isfile("maze.png"):
+if isfile("maze.png"):
     print("Loading maze...")
     sw.start()
     m.load_maze_from_png()

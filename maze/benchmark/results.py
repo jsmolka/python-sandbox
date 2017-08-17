@@ -34,7 +34,7 @@ else:  # Show solve
     ]
 
 draw.menu("Which algorithm do you want to display?", algorithm_list)
-algorithm = algorithm_list[dialog.user_input([1, len(algorithm_list) + 1], create_range=True) - 1]
+algorithm = algorithm_list[dialog.user_input(1, len(algorithm_list), range_=True) - 1]
 
 draw.heading(algorithm)
 value_list = db.filter(algorithm, method)

@@ -28,7 +28,7 @@ if method == 1:
 
     draw.menu("Which algorithm do you want to use?", algorithm_list)
 
-    algorithm = dialog.user_input(1, len(algorithm_list), create_range=True)
+    algorithm = dialog.user_input(1, len(algorithm_list), range_=True)
 
     if algorithm == 1:
         algorithm = Algorithm.Create.BACKTRACKING
@@ -90,7 +90,7 @@ else:
 
     draw.menu("Which algorithm do you want to use?", algorithm_list)
 
-    algorithm = dialog.user_input(1, len(algorithm_list) + 1, create_range=True)
+    algorithm = dialog.user_input(1, len(algorithm_list), range_=True)
 
     if algorithm == 1:
         algorithm = Algorithm.Solve.DEPTH
