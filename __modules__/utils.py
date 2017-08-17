@@ -1,6 +1,9 @@
-def remap(value, low1, high1, low2, high2):
+from random import shuffle
+
+
+def remap(v, l1, h1, l2, h2):
     """Re-maps a number from one range to another"""
-    return float(value - low1) / (high1 - low1) * (high2 - low2) + low2
+    return float(v - l1) / (h1 - l1) * (h2 - l2) + l2
 
 
 def pi(n):
@@ -42,3 +45,10 @@ def rgb_to_int(*rgb):
     g = "{:08b}".format(rgb[1])
     b = "{:08b}".format(rgb[2])
     return int(r + g + b, 2)
+
+
+def shuffled(l):
+    """Returns shuffled list"""
+    result = l[:]
+	shuffle(result)
+	return result
