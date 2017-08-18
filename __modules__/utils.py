@@ -50,5 +50,5 @@ def rgb_to_int(*rgb):
 def shuffled(l):
     """Returns shuffled list"""
     result = l[:]
-	shuffle(result)
-	return result
+    shuffle(result)
+    return result
