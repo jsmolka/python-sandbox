@@ -1132,5 +1132,212 @@
         "10",
         "500 x 500",
         "0:00:02.035480"
+    ],
+    [
+        "create",
+        "Recursive backtracking algorithm",
+        "1.0.6",
+        "XPS",
+        "100",
+        "100 x 100",
+        "0:00:00.250763"
+    ],
+    [
+        "create",
+        "Recursive backtracking algorithm",
+        "1.0.6",
+        "XPS",
+        "50",
+        "200 x 200",
+        "0:00:01.019483"
+    ],
+    [
+        "create",
+        "Recursive backtracking algorithm",
+        "1.0.6",
+        "XPS",
+        "10",
+        "300 x 300",
+        "0:00:02.299054"
+    ],
+    [
+        "create",
+        "Recursive backtracking algorithm",
+        "1.0.6",
+        "XPS",
+        "10",
+        "400 x 400",
+        "0:00:04.128113"
+    ],
+    [
+        "create",
+        "Recursive backtracking algorithm",
+        "1.0.6",
+        "XPS",
+        "5",
+        "500 x 500",
+        "0:00:06.450335"
+    ],
+    [
+        "create",
+        "Hunt and kill algorithm",
+        "1.0.7",
+        "XPS",
+        "100",
+        "100 x 100",
+        "0:00:00.586000"
+    ],
+    [
+        "create",
+        "Hunt and kill algorithm",
+        "1.0.7",
+        "XPS",
+        "10",
+        "200 x 200",
+        "0:00:03.423802"
+    ],
+    [
+        "create",
+        "Hunt and kill algorithm",
+        "1.0.7",
+        "XPS",
+        "10",
+        "300 x 300",
+        "0:00:11.755057"
+    ],
+    [
+        "create",
+        "Eller's algorithm",
+        "1.0.4",
+        "XPS",
+        "100",
+        "100 x 100",
+        "0:00:00.059693"
+    ],
+    [
+        "create",
+        "Eller's algorithm",
+        "1.0.4",
+        "XPS",
+        "50",
+        "200 x 200",
+        "0:00:00.287219"
+    ],
+    [
+        "create",
+        "Eller's algorithm",
+        "1.0.4",
+        "XPS",
+        "10",
+        "300 x 300",
+        "0:00:00.761009"
+    ],
+    [
+        "create",
+        "Eller's algorithm",
+        "1.0.4",
+        "XPS",
+        "10",
+        "400 x 400",
+        "0:00:01.530729"
+    ],
+    [
+        "create",
+        "Eller's algorithm",
+        "1.0.4",
+        "XPS",
+        "5",
+        "500 x 500",
+        "0:00:02.660793"
+    ],
+    [
+        "create",
+        "Sidewinder algorithm",
+        "1.0.2",
+        "XPS",
+        "100",
+        "100 x 100",
+        "0:00:00.033868"
+    ],
+    [
+        "create",
+        "Sidewinder algorithm",
+        "1.0.2",
+        "XPS",
+        "50",
+        "200 x 200",
+        "0:00:00.134700"
+    ],
+    [
+        "create",
+        "Sidewinder algorithm",
+        "1.0.2",
+        "XPS",
+        "50",
+        "300 x 300",
+        "0:00:00.298467"
+    ],
+    [
+        "create",
+        "Sidewinder algorithm",
+        "1.0.2",
+        "XPS",
+        "10",
+        "400 x 400",
+        "0:00:00.532861"
+    ],
+    [
+        "create",
+        "Sidewinder algorithm",
+        "1.0.2",
+        "XPS",
+        "5",
+        "500 x 500",
+        "0:00:00.835964"
+    ],
+    [
+        "create",
+        "Prim's algorithm",
+        "1.0.4",
+        "XPS",
+        "100",
+        "100 x 100",
+        "0:00:00.269872"
+    ],
+    [
+        "create",
+        "Prim's algorithm",
+        "1.0.4",
+        "XPS",
+        "10",
+        "200 x 200",
+        "0:00:01.105063"
+    ],
+    [
+        "create",
+        "Prim's algorithm",
+        "1.0.4",
+        "XPS",
+        "5",
+        "300 x 300",
+        "0:00:02.523778"
+    ],
+    [
+        "create",
+        "Kruskal's algorithm",
+        "1.0.3",
+        "XPS",
+        "50",
+        "100 x 100",
+        "0:00:00.851342"
+    ],
+    [
+        "create",
+        "Kruskal's algorithm",
+        "1.0.3",
+        "XPS",
+        "5",
+        "200 x 200",
+        "0:00:19.343546"
     ]
 ]
