@@ -1,138 +1,91 @@
-import json
-import os.path
+import simplejson
+from os.path import isfile
 
 
 class Database:
     def __init__(self, file_name):
         """Constructor"""
         self.file_name = file_name
-        if not os.path.isfile(self.file_name):  # Create database if it does not exist
+        self.__fields = None  # List of object fields
+        if not isfile(self.file_name):  # Create database if it does not exist
             self.data = []
-            self.save()
+            self.save(safe_mode=False)
         self.load()
 
-    def __check_data(self):
-        """Checks if data is assigned"""
-        if self.data is None:
-            raise Exception("Data is not assigned")
-
     @staticmethod
-    def __extract_list(arguments):
+    def __extract(args):
         """Extracts list from arguments"""
-        if len(arguments) == 1 and type(arguments[0]) == list:
-            return arguments[0]
-        else:
-            return arguments
+        return args[0] if len(args) == 1 and type(args[0]) == list else args
+
+    def __assign_fields(self):
+        """Assigns object fields of data"""
+        if self.__fields is not None:
+            return
+
+        with open(self.file_name) as data_file:
+            data = data_file.read()
+        tuples = simplejson.json_to_namedtuple(data)
+        self.__fields = [f for f in tuples[0]._fields] if type(tuples) == list else [f for f in tuples._fields]
 
     def load(self):
         """Loads data"""
-        if not os.path.isfile(self.file_name):
-            raise Exception("{0} does not exist".format(self.file_name))
+        self.data = simplejson.load(self.file_name)
 
-        with open(self.file_name) as data_file:
-            self.data = json.load(data_file)
-
-    def save(self, fancy=True):
+    def save(self, indent=4, safe_mode=True):
         """Saves data"""
-        self.__check_data()
+        backup = []
+        if safe_mode:
+            if not self.data or self.data == []:
+                raise Exception("Data is not assigned or empty")
+            backup = simplejson.load(self.file_name)  # Create backup in case of exception
 
-        with open(self.file_name, "w") as outfile:
-            if fancy:
-                json.dump(self.data, outfile, indent=4)
-            else:
-                json.dump(self.data, outfile)
+        try:
+            simplejson.save(self.file_name, self.data, indent=indent)
+        except Exception as e:  # Save backup
+            simplejson.save(self.file_name, backup, indent=indent)
+            raise Exception("Something went wrong: {0}".format(str(e)))
 
     def add(self, *data):
         """Adds data"""
-        self.__check_data()
-
-        data = Database.__extract_list(data)
-
-        add_data = list()
-        for value in data:
-            add_data.append(value)
-        self.data.append(add_data)
-
-    def print_data(self):
-        """Prints data"""
-        self.__check_data()
-
-        for data in self.data:
-            print(data)
+        for value in Database.__extract_args(data):
+            self.data.append(value)
 
     def filter(self, *criteria):
-        """Filters data"""
-        self.__check_data()
+        """Filters data which matches the criteria"""
+        self.__assign_fields()
 
-        criteria = Database.__extract_list(criteria)
-
-        filter_list = []
-        for data in self.data:
+        result = []
+        for datum in self.data:
             should_add = True
-            for value in criteria:
-                if value not in data:
+            values = []
+            for field in self.__fields:
+                values.append(getattr(datum, field))
+            for criterium in Database.__extract(criteria):
+                if criterium not in values:
                     should_add = False
             if should_add:
-                filter_list.append(data)
-        return filter_list
+                result.append(datum)
+        return result
 
-    def delete_criteria(self, *criteria):
+    def delete(self, *criteria):
         """Deletes data which matches the criteria"""
-        self.__check_data()
+        self.__assign_fields()
 
-        criteria = Database.__extract_list(criteria)
-
-        index_list = list()
-        for index, data in enumerate(self.data):
+        indices = list()
+        for index, datum in enumerate(self.data):
             should_delete = True
-            for value in criteria:
-                if value not in data:
+            values = []
+            for field in self.__fields:
+                values.append(getattr(datum, field))
+            for criterium in Database.__extract(criteria):
+                if criterium not in values:
                     should_delete = False
             if should_delete:
-                index_list.append(index)
+                indices.append(index)
 
-        index_list = sorted(index_list, reverse=True)
-        while index_list:
-            index = index_list.pop()
-            del self.data[index]
-
-    def delete_indices(self, *indices):
-        """Deletes indices"""
-        self.__check_data()
-
-        indices = Database.__extract_list(indices)
-
-        indices = sorted(indices, reverse=True)
-        for index in indices:
+        for index in sorted(indices, reverse=True):
             del self.data[index]
 
     def clear(self):
         """Clears database"""
         self.data = []
-
-    def get_by_criteria(self, *criteria):
-        """Gets first item which matches the criteria"""
-        self.__check_data()
-
-        criteria = self.__extract_list(criteria)
-
-        for data in self.data:
-            should_return = True
-            for value in criteria:
-                if value not in data:
-                    should_return = False
-            if should_return:
-                return data
-
-        print("No matching data")
-        print("Returned first element")
-        return self.data[0]
-
-    def get_by_index(self, index):
-        """Gets item which matches the index"""
-        self.__check_data()
-
-        if 0 <= index < len(self.data):
-            return self.data[index]
-        else:
-            print("Index out of range")
