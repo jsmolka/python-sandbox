@@ -1,9 +1,20 @@
 from random import shuffle
 
 
-def remap(v, l1, h1, l2, h2):
-    """Re-maps a number from one range to another"""
-    return float(v - l1) / (h1 - l1) * (h2 - l2) + l2
+def create_class(name, arg_names):
+    """Creates class dynamically"""
+    class BaseClass(object):
+        def __init__(self):
+            pass
+
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            if key not in arg_names:
+                raise TypeError("Argument %s not valid for %s"
+                    % (key, self.__class__.__name__))
+            setattr(self, key, value)
+
+    return type(name, (BaseClass,),{"__init__": __init__})
 
 
 def pi(n):
@@ -31,20 +42,9 @@ def pi_float(n):
     return float(f)
 
 
-def int_to_rgb(v):
-    """Converts int to rgb"""
-    rgb = "{:024b}".format(v)
-    return int(rgb[:8], 2), int(rgb[8:16], 2), int(rgb[16:], 2)
-
-
-def rgb_to_int(*rgb):
-    """Converts rgb to int"""
-    if len(rgb) == 1:
-        rgb = rgb[0]
-    r = "{:08b}".format(rgb[0])
-    g = "{:08b}".format(rgb[1])
-    b = "{:08b}".format(rgb[2])
-    return int(r + g + b, 2)
+def remap(v, l1, h1, l2, h2):
+    """Re-maps a number from one range to another"""
+    return float(v - l1) / (h1 - l1) * (h2 - l2) + l2
 
 
 def shuffled(l):
