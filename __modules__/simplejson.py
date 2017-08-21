@@ -13,10 +13,10 @@ def __create_class(name, arg_names):
         for key, value in kwargs.items():
             if key not in arg_names:
                 raise TypeError("Argument %s not valid for %s"
-                    % (key, self.__class__.__name__))
+                                % (key, self.__class__.__name__))
             setattr(self, key, value)
 
-    return type(name, (BaseClass,),{"__init__": __init__})
+    return type(name, (BaseClass,), {"__init__": __init__})
 
 
 def load(file_name):
