@@ -1,20 +1,30 @@
 from random import shuffle
 
 
-def create_class(name, arg_names):
-    """Creates class dynamically"""
-    class BaseClass(object):
-        def __init__(self):
-            pass
+def create_class(name, fields):
+    """Creates object dynamically"""
+    class_ = type(name, (object,), {})
+    for field in fields:
+        setattr(class_, field, None)
+    return class_
 
-    def __init__(self, **kwargs):
-        for key, value in kwargs.items():
-            if key not in arg_names:
-                raise TypeError("Argument %s not valid for %s"
-                    % (key, self.__class__.__name__))
-            setattr(self, key, value)
 
-    return type(name, (BaseClass,),{"__init__": __init__})
+def my_dict(obj):
+    """Converts object into dictionary"""
+    if not hasattr(obj, "__dict__"):
+        return obj
+    result = {}
+    for key, value in obj.__dict__.items():
+        if key.startswith("_"):
+            continue
+        element = []
+        if isinstance(value, list):
+            for item in value:
+                element.append(my_dict(item))
+        else:
+            element = my_dict(value)
+        result[key] = element
+    return result
 
 
 def pi(n):
