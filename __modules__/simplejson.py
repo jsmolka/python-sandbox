@@ -3,80 +3,72 @@ from json import dump, dumps, loads
 from os.path import isfile
 
 
-def __create_class(name, arg_names):
+def __create_object(name, kv_pairs, index=0):
     """Creates class dynamically"""
-    class BaseClass(object):
-        def __init__(self):
-            pass
+    obj = type(name, (object,), {})() # Create object of new class
+    for key, value in kv_pairs:
+        if isinstance(value, tuple):  # Create sub object if value is a tuple
+            index += 1  # Increment index of sub objects
+            value = __create_object("JsonLoadSub" + str(index), [tuple(e) for e in value._asdict().items()], index=index)
+        setattr(obj, key, value)
+    return obj
 
-    def __init__(self, **kwargs):
-        for key, value in kwargs.items():
-            if key not in arg_names:
-                raise TypeError("Argument %s not valid for %s"
-                                % (key, self.__class__.__name__))
-            setattr(self, key, value)
 
-    return type(name, (BaseClass,), {"__init__": __init__})
+def __dict(obj):
+    """Converts object into dictionary"""
+    if not hasattr(obj, "__dict__"):
+        return obj
+    result = {}
+    for key, value in obj.__dict__.items():
+        if key.startswith("_"):
+            continue
+        element = []
+        if isinstance(value, list):
+            for item in value:
+                element.append(__dict(item))
+        else:
+            element = __dict(value)
+        result[key] = element
+    return result
 
 
 def load(file_name):
-    """Loads objects from json"""
+    """Loads object from json"""
     if not isfile(file_name):
         raise Exception("{0} does not exist".format(file_name))
 
     with open(file_name) as data_file:
         data = data_file.read()
 
-    return json_to_object(data)
+    return decode(data)
 
 
-def json_to_namedtuple(data):
-    """Converts json to object-like tuple"""
-    def hook(d):
-        """Hook to access json data"""
-        return namedtuple("X", d.keys())(*d.values())
-
-    return loads(data, object_hook=hook)
-
-
-def json_to_object(data):
+def decode(data):
     """Converts json to object"""
-    # Create class dynamically
-    tuples = json_to_namedtuple(data)
-    try:  # Try to parse for object fields
-        fields = [f for f in tuples[0]._fields] if type(tuples) == list else [f for f in tuples._fields]
-    except:  # Return simple list if it fails
+    tuples = loads(data, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
+    try:  # Try to parse tuple for key, value pairs
+        if isinstance(tuples, list):  # Create list of objects
+            kv_pairs = [[tuple(e) for e in tuple_._asdict().items()] for tuple_ in tuples]
+            return [__create_object("JsonLoad", e) for e in kv_pairs]
+        else:  # Create single object
+            kv_pairs = [tuple(e) for e in tuples._asdict().items()]
+            return __create_object("JsonLoad", kv_pairs)
+    except:  # Return namedtuple if it fails
         return tuples
-    LoadClass = __create_class("LoadClass", fields)
-
-    # Load objects
-    if type(tuples) == list:  # Load list of objects
-        obj_list = list()
-        for tuple_ in tuples:
-            obj = LoadClass()
-            for field in tuple_._fields:
-                setattr(obj, field, getattr(tuple_, field))
-            obj_list.append(obj)
-        return obj_list
-    else:  # Load single object
-        obj = LoadClass()
-        for field in tuples._fields:
-            setattr(obj, field, getattr(tuples, field))
-        return obj
 
 
-def object_to_json(obj, indent=4):
+def encode(obj, indent=4):
     """Converts object to json"""
-    if type(obj) == list:
-        return dumps([e.__dict__ for e in obj], indent=indent)
-    else:
-        return dumps(obj.__dict__, indent=indent)
+    if isinstance(obj, list):  # Convert list of objects
+        return dumps([__dict(e) for e in obj], indent=indent) if indent != 0 else dumps([__dict(e) for e in obj])
+    else:  # Convert single object
+        return dumps(__dict(obj), indent=indent) if indent != 0 else dumps(__dict(obj))
 
 
 def save(file_name, data, indent=4):
-    """Saves objects as json"""
+    """Saves object as json"""
     with open(file_name, "w") as outfile:
         try:  # Try to save objects
-            outfile.write(object_to_json(data, indent=indent))
+            outfile.write(encode(data, indent=indent))
         except:  # Save simple list if it fails
-            dump(data, outfile, indent=indent)
+            dump(data, outfile, indent=indent) if indent != 0 else dump(data, outfile)
