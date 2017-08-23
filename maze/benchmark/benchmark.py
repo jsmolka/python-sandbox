@@ -4,144 +4,98 @@ from database import *
 from maze import *
 from stopwatch import *
 
-# Load data
+
+class Data:
+    def __init__(self):
+        self.name = None
+        self.version = None
+        self.system = None
+        self.iterations = None
+        self.size = None
+        self.time = None
+
+
 db = Database("data.json")
 
-method_list = [
-    "Create",
-    "Solve",
+algorithms_create = [
+    Algorithm.Create.BACKTRACKING,
+    Algorithm.Create.HUNT,
+    Algorithm.Create.ELLER,
+    Algorithm.Create.SIDEWINDER,
+    Algorithm.Create.PRIM,
+    Algorithm.Create.KRUSKAL
 ]
-draw.menu("Which method do you want to benchmark?", method_list)
 
-method = dialog.user_input(1, len(method_list))
+algorithms_solve = [
+    Algorithm.Solve.DEPTH
+]
+
+algorithms_all = list()
+algorithms_all.extend(algorithms_create)
+algorithms_all.extend(algorithms_solve)
+
+draw.menu("Which algorithm do you want to use?", [algorithm.value for algorithm in algorithms_all])
+
+index = dialog.user_input(1, len(algorithms_all), range_=True) - 1
+algorithm = algorithms_all[index]
+
+data = Data()
+data.name = algorithm.value
 
 draw.line()
-if method == 1:
-    algorithm_list = [
-        Algorithm.Create.BACKTRACKING.value,
-        Algorithm.Create.HUNT.value,
-        Algorithm.Create.ELLER.value,
-        Algorithm.Create.SIDEWINDER.value,
-        Algorithm.Create.PRIM.value,
-        Algorithm.Create.KRUSKAL.value
-    ]
+print("Which version are you testing?")
+data.version = input()
 
-    draw.menu("Which algorithm do you want to use?", algorithm_list)
+draw.line()
+print("Which system are you using? (PC/XPS)")
+data.system = dialog.user_input("PC", "XPS")
 
-    algorithm = dialog.user_input(1, len(algorithm_list), range_=True)
+draw.line()
+print("How many times do you want to repeat the benchmark?")
+data.iterations = int(input())
 
-    if algorithm == 1:
-        algorithm = Algorithm.Create.BACKTRACKING
-    elif algorithm == 2:
-        algorithm = Algorithm.Create.HUNT
-    elif algorithm == 3:
-        algorithm = Algorithm.Create.ELLER
-    elif algorithm == 4:
-        algorithm = Algorithm.Create.SIDEWINDER
-    elif algorithm == 5:
-        algorithm = Algorithm.Create.PRIM
-    elif algorithm == 6:
-        algorithm = Algorithm.Create.KRUSKAL
+draw.line()
+print("How many rows should the maze have?")
+row_count = int(input())
 
-    # Input data
-    draw.line()
-    print("Which version are you testing?")
-    version = input()
+draw.line()
+print("How many columns should the maze have?")
+col_count = int(input())
+data.size = "{0} x {1}".format(row_count, col_count)
 
-    draw.line()
-    print("Which system are you using? (PC/XPS)")
-    system = dialog.user_input("PC", "XPS")
+draw.line()
+sw = Stopwatch()
+m = Maze()
+draw.progress_bar(0, data.iterations, "Benchmark progress:")
 
-    draw.line()
-    print("How many times do you want to repeat the benchmark?")
-    iteration = int(input())
-
-    draw.line()
-    print("How many rows should the maze have?")
-    row_count = int(input())
-
-    draw.line()
-    print("How many columns should the maze have?")
-    col_count = int(input())
-
-    # Benchmark
-    draw.line()
-    sw = Stopwatch()
-    m = Maze()
-    draw.progress_bar(0, iteration, "Benchmark progress:")
+if algorithm in algorithms_create:
     sw.start()
-    for i in range(0, iteration):
+    for i in range(0, data.iterations):
         m.create(row_count, col_count, algorithm)
         sw.round()
-        draw.progress_bar(i + 1, iteration, "Benchmark progress:")
+        draw.progress_bar(i + 1, data.iterations, "Benchmark progress:")
     sw.stop()
 
-    # Print result
     draw.line()
     sw.print_average_time()
-
-    # Add data
-    size = "{0} x {1}".format(row_count, col_count)
-    db.add("create", algorithm.value, version, system, str(iteration), size, str(sw.average_time))
+    data.time = str(sw.average_time)
 else:
-    algorithm_list = [
-        Algorithm.Solve.DEPTH.value
-    ]
-
-    draw.menu("Which algorithm do you want to use?", algorithm_list)
-
-    algorithm = dialog.user_input(1, len(algorithm_list), range_=True)
-
-    if algorithm == 1:
-        algorithm = Algorithm.Solve.DEPTH
-
-    # Input data
-    draw.line()
-    print("Which version are you testing?")
-    version = input()
-
-    draw.line()
-    print("Which system are you using? (PC/XPS)")
-    system = dialog.user_input("PC", "XPS")
-
-    draw.line()
-    print("How many times do you want to repeat the benchmark?")
-    iteration = int(input())
-
-    draw.line()
-    print("How many rows should the maze have?")
-    row_count = int(input())
-
-    draw.line()
-    print("How many columns should the maze have?")
-    col_count = int(input())
-
-    draw.line()
-
-    # Benchmark
-    sw = Stopwatch()
-    m = Maze()
     total_time = timedelta(0, 0)
-    draw.progress_bar(0, iteration, "Benchmark progress:")
-    for i in range(0, iteration):
+    for i in range(0, data.iterations):
         m.create(row_count, col_count, Algorithm.Create.BACKTRACKING)
         sw.start()
         m.solve(0, 0, algorithm)
         sw.stop()
         total_time += sw.elapsed_time
-        draw.progress_bar(i + 1, iteration, "Benchmark progress:")
+        draw.progress_bar(i + 1, data.iterations, "Benchmark progress:")
 
-    # Print result
     draw.line()
-    average_time = total_time / iteration
-    print("Average time for {0} rounds: {1}".format(iteration, average_time))
+    average_time = total_time / data.iterations
+    print("Average time for {0} rounds: {1}".format(data.iterations, average_time))
+    data.time = str(average_time)
 
-    # Add data
-    size = "{0} x {1}".format(row_count, col_count)
-    db.add("solve", algorithm.value, version, system, str(iteration), size, str(average_time))
-
-# Save to JSON
-db.save("data.json")
+db.add(data)
+db.save()
 
 draw.line()
 dialog.enter("exit")
