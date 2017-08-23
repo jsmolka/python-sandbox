@@ -1,16 +1,16 @@
-from collections import namedtuple
 from json import dump, dumps, loads
 from os.path import isfile
+from types import SimpleNamespace
 
 
-def __create_object(name, kv_pairs, index=0):
-    """Creates class dynamically"""
-    obj = type(name, (object,), {})() # Create object of new class
-    for key, value in kv_pairs:
-        if isinstance(value, tuple):  # Create sub object if value is a tuple
-            index += 1  # Increment index of sub objects
-            value = __create_object("JsonLoadSub" + str(index), [tuple(e) for e in value._asdict().items()], index=index)
-        setattr(obj, key, value)
+def __object(namespace, target):
+    """Converts namespace into target object"""
+    obj = target()
+    for attr in namespace.__dict__:
+        value = getattr(namespace, attr)
+        if isinstance(value, SimpleNamespace):  # Create nested object
+            value = __object(value, type(getattr(obj, attr)))
+        setattr(obj, attr, value)
     return obj
 
 
@@ -32,43 +32,40 @@ def __dict(obj):
     return result
 
 
-def load(file_name):
+def decode(data, target=None):
+    """Converts json into object"""
+    namespaces = loads(data, object_hook=lambda d: SimpleNamespace(**d))
+    if not target:  # Return namespaces
+        return namespaces
+    try:  # Convert namespace into object of target class, takes around 3x the time
+        if isinstance(namespaces, list):  # Create list of objects
+            return [__object(namespace, target) for namespace in namespaces]
+        else:  # Create single object
+            return __object(namespaces, target)
+    except:  # Return namespaces if converting fails
+        return namespaces
+
+
+def load(file_name, target=None):
     """Loads object from json"""
     if not isfile(file_name):
         raise Exception("{0} does not exist".format(file_name))
-
-    with open(file_name) as data_file:
-        data = data_file.read()
-
-    return decode(data)
-
-
-def decode(data):
-    """Converts json to object"""
-    tuples = loads(data, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
-    try:  # Try to parse tuple for key, value pairs
-        if isinstance(tuples, list):  # Create list of objects
-            kv_pairs = [[tuple(e) for e in tuple_._asdict().items()] for tuple_ in tuples]
-            return [__create_object("JsonLoad", e) for e in kv_pairs]
-        else:  # Create single object
-            kv_pairs = [tuple(e) for e in tuples._asdict().items()]
-            return __create_object("JsonLoad", kv_pairs)
-    except:  # Return namedtuple if it fails
-        return tuples
+    with open(file_name) as data:
+        return decode(data.read(), target=target)
 
 
 def encode(obj, indent=4):
-    """Converts object to json"""
+    """Converts object into json"""
     if isinstance(obj, list):  # Convert list of objects
         return dumps([__dict(e) for e in obj], indent=indent) if indent != 0 else dumps([__dict(e) for e in obj])
     else:  # Convert single object
         return dumps(__dict(obj), indent=indent) if indent != 0 else dumps(__dict(obj))
 
 
-def save(file_name, data, indent=4):
+def save(file_name, obj, indent=4):
     """Saves object as json"""
-    with open(file_name, "w") as outfile:
-        try:  # Try to save objects
-            outfile.write(encode(data, indent=indent))
-        except:  # Save simple list if it fails
-            dump(data, outfile, indent=indent) if indent != 0 else dump(data, outfile)
+    with open(file_name, "w") as json:
+        try:  # Try to save object
+            json.write(encode(obj, indent=indent))
+        except:  # Save primitive type if it fails
+            dump(obj, json, indent=indent) if indent != 0 else dump(obj, json)
