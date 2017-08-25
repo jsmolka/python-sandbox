@@ -12,7 +12,7 @@ for i in range(0, 10000):
     for j, e in enumerate(l):
         pass
 sw.stop()
-sw.print_elapsed_time(message="Elapsed time for enumerate:")
+print("Elapsed time for enumerate: " + str(sw.elapsed))
 
 sw.reset()
 
@@ -21,6 +21,6 @@ for i in range(0, 10000):
     for j in range(0, len(l)):
         pass
 sw.stop()
-sw.print_elapsed_time(message="Elapsed time for range:")
+print("Elapsed time for range: " + str(sw.elapsed))
 
 dialog.enter("exit")

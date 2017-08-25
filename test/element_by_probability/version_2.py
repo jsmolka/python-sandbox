@@ -40,6 +40,6 @@ for i in range(0, len(pool)):
         break
 
 sw.stop()
-sw.print_elapsed_time()
+print(sw.elapsed_str)
 
 input()

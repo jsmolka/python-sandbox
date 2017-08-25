@@ -34,6 +34,6 @@ print("Pool length:", len(pool))
 print("R:", r)
 print("Element value:", elem.value)
 print("Element probability:", elem.prob)
-sw.print_elapsed_time()
+print(sw.elapsed_str)
 
 input()

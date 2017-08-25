@@ -21,7 +21,7 @@ for x in range(0, 1000):
         value = utils.remap(simplex.noise2d(x / precision, y / precision), -1, 1, 0, 255)
         arr1[x, y] = [value, value, value]
 sw.stop()
-sw.print_elapsed_time()
+print(sw.elapsed_str)
 
 print("Generating perlin noise...")
 sw.start()
@@ -30,7 +30,7 @@ for x in range(0, 1000):
         value = utils.remap(mathfunctions.noise(x / precision, y / precision), -1, 1, 0, 255)
         arr2[x, y] = [value, value, value]
 sw.stop()
-sw.print_elapsed_time()
+print(sw.elapsed_str)
 
 print("Saving images...")
 img1 = Image.fromarray(arr1, "RGB")

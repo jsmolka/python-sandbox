@@ -77,8 +77,8 @@ if algorithm in algorithms_create:
     sw.stop()
 
     draw.line()
-    sw.print_average_time()
-    data.time = str(sw.average_time)
+    print(sw.average_str)
+    data.time = str(sw.average)
 else:
     total_time = timedelta(0, 0)
     for i in range(0, data.iterations):
@@ -86,7 +86,7 @@ else:
         sw.start()
         m.solve(0, 0, algorithm)
         sw.stop()
-        total_time += sw.elapsed_time
+        total_time += sw.elapsed
         draw.progress_bar(i + 1, data.iterations, "Benchmark progress:")
 
     draw.line()

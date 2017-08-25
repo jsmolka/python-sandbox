@@ -37,6 +37,6 @@ for elem in l:  # Go through elements
         break
 
 sw.stop()
-sw.print_elapsed_time()
+print(sw.elapsed_str)
 
 input()

@@ -22,7 +22,7 @@ if isfile("maze.png"):
     sw.start()
     m.load_maze_from_png()
     sw.stop()
-    sw.print_elapsed_time()
+    print(sw.elapsed_str)
 
     draw.line()
 
@@ -30,18 +30,17 @@ if isfile("maze.png"):
     sw.start()
     m.solve(0, 0, algorithm)
     sw.stop()
-    sw.print_elapsed_time()
+    print(sw.elapsed_str)
 
     draw.line()
     print("Saving solution...")
     sw.start()
     m.save_solution_as_png()
     sw.stop()
-    sw.print_elapsed_time()
+    print(sw.elapsed_str)
 else:
     draw.line()
     print("No maze.png found!")
 
 draw.line()
 dialog.enter("exit")
-
