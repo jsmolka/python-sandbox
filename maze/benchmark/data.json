@@ -1190,5 +1190,45 @@
         "iterations": 5,
         "size": "200 x 200",
         "time": "0:00:19.343546"
+    },
+    {
+        "name": "Eller's algorithm",
+        "version": "1.0.5",
+        "system": "XPS",
+        "iterations": 100,
+        "size": "100 x 100",
+        "time": "0:00:00.059601"
+    },
+    {
+        "name": "Eller's algorithm",
+        "version": "1.0.5",
+        "system": "XPS",
+        "iterations": 50,
+        "size": "200 x 200",
+        "time": "0:00:00.279290"
+    },
+    {
+        "name": "Eller's algorithm",
+        "version": "1.0.5",
+        "system": "XPS",
+        "iterations": 10,
+        "size": "300 x 300",
+        "time": "0:00:00.734453"
+    },
+    {
+        "name": "Eller's algorithm",
+        "version": "1.0.5",
+        "system": "XPS",
+        "iterations": 10,
+        "size": "400 x 400",
+        "time": "0:00:01.484523"
+    },
+    {
+        "name": "Eller's algorithm",
+        "version": "1.0.5",
+        "system": "XPS",
+        "iterations": 5,
+        "size": "500 x 500",
+        "time": "0:00:02.619009"
     }
 ]
