@@ -10,30 +10,21 @@ col_count = int(input())
 
 draw.line()
 
+algorithms = [
+    Algorithm.Create.BACKTRACKING,
+    Algorithm.Create.HUNT,
+    Algorithm.Create.ELLER,
+    Algorithm.Create.SIDEWINDER,
+    Algorithm.Create.PRIM,
+    Algorithm.Create.KRUSKAL
+]
+
 draw.menu("Which algorithm do you want to use?",
-          Algorithm.Create.BACKTRACKING.value,
-          Algorithm.Create.HUNT.value,
-          Algorithm.Create.ELLER.value,
-          Algorithm.Create.SIDEWINDER.value,
-          Algorithm.Create.PRIM.value,
-          Algorithm.Create.KRUSKAL.value)
+          [algorithm.value for algorithm in algorithms])
 
-algorithm_count = 6
-algorithm = dialog.user_input(1, algorithm_count, range_=True)
+index = dialog.user_input(1, len(algorithms), range_=True)
 
-if algorithm == 1:
-    algorithm = Algorithm.Create.BACKTRACKING
-elif algorithm == 2:
-    algorithm = Algorithm.Create.HUNT
-elif algorithm == 3:
-    algorithm = Algorithm.Create.ELLER
-elif algorithm == 4:
-    algorithm = Algorithm.Create.SIDEWINDER
-elif algorithm == 5:
-    algorithm = Algorithm.Create.PRIM
-elif algorithm == 6:
-    algorithm = Algorithm.Create.KRUSKAL
-
+algorithm = algorithms[index - 1]
 draw.line()
 
 print("Creating maze...")
