@@ -7,14 +7,17 @@ from stopwatch import *
 m = Maze()
 sw = Stopwatch()
 
+algorithms = [
+    Algorithm.Solve.DEPTH,
+    Algorithm.Solve.BREADTH
+]
+
 draw.menu("Which algorithm do you want to use?",
-          Algorithm.Solve.DEPTH.value)
+          [algorithm.value for algorithm in algorithms])
 
-algorithm_count = 1
-algorithm = dialog.user_input(1, algorithm_count, range_=True)
+index = dialog.user_input(1, len(algorithms), range_=True)
 
-if algorithm == 1:
-    algorithm = Algorithm.Solve.DEPTH
+algorithm = algorithms[index - 1]
 draw.line()
 
 if isfile("maze.png"):
