@@ -14,7 +14,8 @@ algorithms = [
     Algorithm.Create.PRIM.value,
     Algorithm.Create.KRUSKAL.value,
 
-    Algorithm.Solve.DEPTH.value
+    Algorithm.Solve.DEPTH.value,
+    Algorithm.Solve.BREADTH.value
 ]
 
 draw.menu("Which algorithm do you want to display?", algorithms)

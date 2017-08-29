@@ -27,7 +27,8 @@ algorithms_create = [
 ]
 
 algorithms_solve = [
-    Algorithm.Solve.DEPTH
+    Algorithm.Solve.DEPTH,
+    Algorithm.Solve.BREADTH
 ]
 
 algorithms_all = list()

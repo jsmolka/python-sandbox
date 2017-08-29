@@ -1230,5 +1230,53 @@
         "iterations": 5,
         "size": "500 x 500",
         "time": "0:00:02.619009"
+    },
+    {
+        "name": "Breadth-first search",
+        "version": "1.0.0",
+        "system": "XPS",
+        "iterations": 100,
+        "size": "100 x 100",
+        "time": "0:00:00.115653"
+    },
+    {
+        "name": "Breadth-first search",
+        "version": "1.0.0",
+        "system": "XPS",
+        "iterations": 50,
+        "size": "200 x 200",
+        "time": "0:00:01.080082"
+    },
+    {
+        "name": "Breadth-first search",
+        "version": "1.0.0",
+        "system": "XPS",
+        "iterations": 10,
+        "size": "300 x 300",
+        "time": "0:00:04.843620"
+    },
+    {
+        "name": "Breadth-first search",
+        "version": "1.0.1",
+        "system": "XPS",
+        "iterations": 100,
+        "size": "100 x 100",
+        "time": "0:00:00.119503"
+    },
+    {
+        "name": "Breadth-first search",
+        "version": "1.0.1",
+        "system": "XPS",
+        "iterations": 50,
+        "size": "200 x 200",
+        "time": "0:00:00.580388"
+    },
+    {
+        "name": "Breadth-first search",
+        "version": "1.0.1",
+        "system": "PC",
+        "iterations": 25,
+        "size": "300 x 300",
+        "time": "0:00:01.434930"
     }
 ]
