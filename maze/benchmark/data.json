@@ -1274,7 +1274,7 @@
     {
         "name": "Breadth-first search",
         "version": "1.0.1",
-        "system": "PC",
+        "system": "XPS",
         "iterations": 25,
         "size": "300 x 300",
         "time": "0:00:01.434930"
