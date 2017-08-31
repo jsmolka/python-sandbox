@@ -1278,5 +1278,85 @@
         "iterations": 25,
         "size": "300 x 300",
         "time": "0:00:01.434930"
+    },
+    {
+        "name": "Breadth-first search",
+        "version": "1.0.2",
+        "system": "XPS",
+        "iterations": 100,
+        "size": "100 x 100",
+        "time": "0:00:00.080407"
+    },
+    {
+        "name": "Breadth-first search",
+        "version": "1.0.2",
+        "system": "XPS",
+        "iterations": 50,
+        "size": "200 x 200",
+        "time": "0:00:00.304097"
+    },
+    {
+        "name": "Breadth-first search",
+        "version": "1.0.2",
+        "system": "XPS",
+        "iterations": 50,
+        "size": "300 x 300",
+        "time": "0:00:00.705074"
+    },
+    {
+        "name": "Breadth-first search",
+        "version": "1.0.2",
+        "system": "XPS",
+        "iterations": 10,
+        "size": "400 x 400",
+        "time": "0:00:01.261079"
+    },
+    {
+        "name": "Breadth-first search",
+        "version": "1.0.2",
+        "system": "XPS",
+        "iterations": 10,
+        "size": "500 x 500",
+        "time": "0:00:01.817386"
+    },
+    {
+        "name": "Depth-first search",
+        "version": "1.0.7",
+        "system": "XPS",
+        "iterations": 100,
+        "size": "100 x 100",
+        "time": "0:00:00.075476"
+    },
+    {
+        "name": "Depth-first search",
+        "version": "1.0.7",
+        "system": "XPS",
+        "iterations": 50,
+        "size": "200 x 200",
+        "time": "0:00:00.315032"
+    },
+    {
+        "name": "Depth-first search",
+        "version": "1.0.7",
+        "system": "XPS",
+        "iterations": 50,
+        "size": "300 x 300",
+        "time": "0:00:00.687888"
+    },
+    {
+        "name": "Depth-first search",
+        "version": "1.0.7",
+        "system": "XPS",
+        "iterations": 10,
+        "size": "400 x 400",
+        "time": "0:00:01.001670"
+    },
+    {
+        "name": "Depth-first search",
+        "version": "1.0.7",
+        "system": "XPS",
+        "iterations": 10,
+        "size": "500 x 500",
+        "time": "0:00:02.289314"
     }
 ]
