@@ -52,6 +52,7 @@ def install_package(package):
 admin_check(__file__)
 
 module_path = os.path.dirname(__file__) + "\\__modules__"
+add_path(module_path, "PYTHONPATH")
 
 packages = [
     "Pillow",
@@ -59,9 +60,6 @@ packages = [
     "Pyglet",
     "OpenSimplex"
 ]
-
-add_path(module_path, "PYTHONPATH")
-
 for pkg in packages:
     draw_heading(pkg)
     install_package(pkg)
