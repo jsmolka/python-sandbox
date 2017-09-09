@@ -35,28 +35,24 @@ def dialog_enter(action, message="Press enter to {0}..."):
     input(message)
 
 
-def add_path(pth):
-    """Adds path to PYTHONPATH"""
-    if "PYTHONPATH" in os.environ:
-        if pth not in os.environ["PYTHONPATH"].split(";"):
-            Popen(["setx", "PYTHONPATH", os.environ.get("PYTHONPATH") + ";" + path], stdout=DEVNULL, stderr=STDOUT)
+def add_path(path, variable):
+    """Adds path to system variable"""
+    if variable in os.environ:
+        if path not in os.environ[variable].split(";"):
+            Popen(["setx", variable, os.environ.get(variable) + ";" + path], stdout=DEVNULL, stderr=STDOUT)
     else:
-        Popen(["setx", "PYTHONPATH", path], stdout=DEVNULL, stderr=STDOUT)
+        Popen(["setx", variable, path], stdout=DEVNULL, stderr=STDOUT)
 
 
-def install_package(pkg):
+def install_package(package):
     """Installs or upgrades package"""
-    pip.main(["install", "--upgrade", pkg])
+    pip.main(["install", "--upgrade", package])
 
 
 admin_check(__file__)
 
-# List of paths
-paths = [
-    os.path.dirname(__file__) + "\\__modules__"
-]
+module_path = os.path.dirname(__file__) + "\\__modules__"
 
-# List of packages
 packages = [
     "Pillow",
     "NumPy",
@@ -64,16 +60,12 @@ packages = [
     "OpenSimplex"
 ]
 
-# Add paths to PYTHONPATH
-for path in paths:
-    add_path(path)
+add_path(module_path, "PYTHONPATH")
 
-# Install or upgrade external packages
-for package in packages:
-    draw_heading(package)
-    install_package(package)
+for pkg in packages:
+    draw_heading(pkg)
+    install_package(pkg)
 
-# Install local packages
 draw_heading("PyProcessing")
 os.chdir("__packages__/pyprocessing")
 os.system("pip install .")

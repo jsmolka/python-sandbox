@@ -1,4 +1,15 @@
+import os
 from random import shuffle
+from subprocess import Popen, STDOUT, DEVNULL
+
+
+def add_path(path, variable):
+    """Adds path to system variable"""
+    if variable in os.environ:
+        if path not in os.environ[variable].split(";"):
+            Popen(["setx", variable, os.environ.get(variable) + ";" + path], stdout=DEVNULL, stderr=STDOUT)
+    else:
+        Popen(["setx", variable, path], stdout=DEVNULL, stderr=STDOUT)
 
 
 def create_class(name, fields):
