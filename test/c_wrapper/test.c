@@ -1,15 +1,15 @@
 /* Command to create shared library
 gcc -o test.so -shared -fPIC test.c */
 
-# include <stdio.h>
-# include <stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 int init(int n)
 {
     return n;
 }
 
-char* hello(char *what)
+char* hello(char* what)
 {
     printf("Hello \"%s\" from inside the c function!\n", what);
     return what;
