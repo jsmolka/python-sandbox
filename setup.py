@@ -68,6 +68,10 @@ draw_heading("PyProcessing")
 os.chdir("__packages__/pyprocessing")
 os.system("pip install .")
 
+draw_heading("Maze")
+os.chdir("../maze")
+os.system("pip install .")
+
 draw_line()
 
 dialog_enter("exit")
