@@ -1,15 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void func(const void* input, int rows, int cols)
+void func(int** array)
 {
-    int** array = (int**) input;
-    for (int i = 0; i < rows; i++)
+    for (int i = 0; i < 10; i++)
     {
-        for (int j = 0; j < cols; j++)
+        for (int j = 0; j < 10; j++)
         {
             printf("%i\n", array[i][j]);
         }
     }
-
 }

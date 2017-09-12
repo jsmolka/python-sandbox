@@ -1,14 +1,16 @@
 import numpy as np
-from ctypes import cdll, c_void_p, c_int
+import ctypes
 
 rows = 10
 cols = 10
-input = np.zeros((rows, cols), dtype=np.uint32)
+infile = np.zeros((rows, cols), dtype=np.intp)
 for i in range(0, rows):
     for j in range(0, cols):
-        input[i, j] = (i + 1) * (j + 1)
-lib = cdll.LoadLibrary("test.so")
+        infile[i, j] = (i + 1) * (j + 1)
+ctypes_arrays = [np.ctypeslib.as_ctypes(array) for array in infile]
+pointer_ar = (ctypes.POINTER(ctypes.c_int) * rows)(*ctypes_arrays)
+
+lib = ctypes.cdll.LoadLibrary("test.so")
 func = lib.func
-func.restype = None
-func.argtypes = [np.ndpointer(c_int, flags="C_CONTIGUOUS"), c_int, c_int]
-func(c_void_p(input.ctypes.data), c_int(rows), c_int(cols))
+# func.restype = ctypes.POINTER(ctypes.POINTER(ctypes.c_int))
+func(pointer_ar)
