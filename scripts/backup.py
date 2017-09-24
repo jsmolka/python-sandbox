@@ -75,7 +75,7 @@ backup = [
         backup_path + "\\Documents\\Config\\Battlefield 4\\"
     ),
     (
-        "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\csgo\\cfg",
+        "D:\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\csgo\\cfg",
         backup_path + "\\Documents\\Config\\CSGO\\cfg\\"
     )
 ]
