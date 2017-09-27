@@ -91,7 +91,7 @@ class Picrypt:
         """Saves decrypted text"""
         if self.text is None:
             raise Exception("Text is not assigned")
-        with open(file_name, "w") as f:
+        with open(file_name, "w", encoding="utf-8") as f:
             f.write(self.text)
 
     @staticmethod
@@ -102,6 +102,6 @@ class Picrypt:
     @staticmethod
     def load_text(file_name):
         """Loads decrypted text"""
-        with open(file_name, "r") as f:
+        with open(file_name, "r", encoding="utf-8") as f:
             s = f.read()
         return s
