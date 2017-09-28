@@ -9,13 +9,13 @@ def pmaze(args):
 
 
 def cmaze(args):
-    m = CMaze()
+    m = Maze()
     m.maze = args
-    m.solve(0, 0)
+    m.solve(0, 0, Algorithm.Solve.C)
 
 
-t = CMaze()
-t.create(100, 100)
+t = Maze()
+t.create(100, 100, Algorithm.Create.C)
 t = t.maze
 compare(pmaze, cmaze, t, t, 10)
 input()

@@ -11,6 +11,7 @@ col_count = int(input())
 draw.line()
 
 algorithms = [
+    Algorithm.Create.C,
     Algorithm.Create.BACKTRACKING,
     Algorithm.Create.HUNT,
     Algorithm.Create.ELLER,

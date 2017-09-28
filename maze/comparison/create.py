@@ -8,8 +8,8 @@ def pmaze(args):
 
 
 def cmaze(args):
-    m = CMaze()
-    m.create(args[0], args[1])
+    m = Maze()
+    m.create(args[0], args[1], Algorithm.Create.C)
 
 
 size = (100, 100)

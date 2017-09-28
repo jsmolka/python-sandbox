@@ -8,6 +8,7 @@ m = Maze()
 sw = Stopwatch()
 
 algorithms = [
+    Algorithm.Solve.C,
     Algorithm.Solve.DEPTH,
     Algorithm.Solve.BREADTH
 ]
