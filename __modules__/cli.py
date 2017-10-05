@@ -1,26 +1,27 @@
-DEFAULT = "\033[m"
-RED     = "\033[01;31m"
-GREEN   = "\033[01;32m"
-YELLOW  = "\033[01;33m"
-BLUE    = "\033[01;34m"
-MAGENTA = "\033[01;35m"
-CYAN    = "\033[01;36m"
-WHITE   = "\033[01;37m"
+class Color:
+    red     = "\033[01;31m"
+    green   = "\033[01;32m"
+    yellow  = "\033[01;33m"
+    blue    = "\033[01;34m"
+    magenta = "\033[01;35m"
+    cyan    = "\033[01;36m"
+    white   = "\033[01;37m"
+    default = "\033[m"
 
 
-def cli_print(text):
+def c_print(text):
     """
-    This function prints text in different colors. Use <c:color>text</c> for a
-    different text color.
+    This function prints text in different colors.
+    Use <color>text<default> for a different text color.
     """
-    print(
-        text \
-        .replace("<c:red>", RED) \
-        .replace("<c:green>", GREEN) \
-        .replace("<c:yellow>", YELLOW) \
-        .replace("<c:blue>", BLUE) \
-        .replace("<c:magenta>", MAGENTA) \
-        .replace("<c:cyan>", CYAN) \
-        .replace("<c:white>", WHITE) \
-        .replace("</c>", DEFAULT)
-    )
+    text = text \
+        .replace("<red>", Color.red) \
+        .replace("<green>", Color.green) \
+        .replace("<yellow>", Color.yellow) \
+        .replace("<blue>", Color.blue) \
+        .replace("<magenta>", Color.magenta) \
+        .replace("<cyan>", Color.cyan) \
+        .replace("<white>", Color.white) \
+        .replace("<default>", Color.default)
+
+    print(text + Color.default)
