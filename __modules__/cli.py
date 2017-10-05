@@ -69,8 +69,8 @@ def get_text_attr():
 
 
 def set_text_attr(color):
-  """Sets the character attributes of the console screen buffer"""
-  SetConsoleTextAttribute(stdout_handle, color)
+    """Sets the character attributes of the console screen buffer"""
+    SetConsoleTextAttribute(stdout_handle, color)
 
 
 def c_print(text):
