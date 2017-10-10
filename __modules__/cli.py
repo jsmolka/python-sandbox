@@ -3,7 +3,7 @@ from math import ceil, floor
 from shutil import get_terminal_size
 
 __all__ = ["Color", "c_print", "LineStyle", "line", "heading", "big_heading",
-           "menu", "progress_bar", "yes_no"]
+           "menu", "progress_bar", "yes_no", "enter", "user_input"]
 
 SHORT = c_short
 WORD = c_ushort
@@ -73,17 +73,26 @@ class Color:
     DEFAULT    = get_color()
 
 
-def c_print(string, *colors, end=""):
+def c_print(string, *color, end="\n"):
     """Prints string in a different color"""
-    if not colors:
+    if not color:
         return print(string, end=end)
 
-    color = 0x0000
-    for c in colors:
-        color |= c
-    set_color(color)
+    clr = 0x0000
+    for c in color:
+        clr |= c
+    set_color(clr)
     print(string, end=end)
     set_color(Color.DEFAULT)
+
+
+def iterable(color):
+    """Creates iterable color"""
+    if color == Color.DEFAULT:
+        color = []
+    elif not isinstance(color, list):
+        color = [color]
+    return color
 
 
 class LineStyle:
@@ -97,13 +106,14 @@ def terminal_size():
     return get_terminal_size()[0] - 1
 
 
-def line(style=LineStyle.SCORE, color=()):
+def line(style=LineStyle.SCORE, color=Color.DEFAULT):
     """Draws line"""
     l = style * terminal_size()
+    color = iterable(color)
     c_print(l, *color)
 
 
-def heading(caption, style=LineStyle.HASH, color=()):
+def heading(caption, style=LineStyle.HASH, color=Color.DEFAULT):
     """Draws heading"""
     size = terminal_size() - len(caption) - 2
     caption = "{0} {1} {2}".format(
@@ -111,42 +121,42 @@ def heading(caption, style=LineStyle.HASH, color=()):
         caption,
         floor(size / 2) * style
     )
+    color = iterable(color)
     c_print(caption, *color)
 
 
-def big_heading(caption, style=LineStyle.HASH, color=()):
+def big_heading(caption, style=LineStyle.HASH, color=Color.DEFAULT):
     """Draws big heading"""
+    color = iterable(color)
     line(style=style, color=color)
     heading(caption, style=style, color=color)
     line(style=style, color=color)
 
 
-def menu(caption, *entries, caption_color=(), entry_color=()):
+def menu(caption, *entries, caption_color=Color.DEFAULT, entry_color=Color.DEFAULT):
     """Draws menu"""
-    if not isinstance(caption_color, tuple):
-        caption_color = [caption_color]
-    if not isinstance(entry_color, tuple):
-        entry_color = [entry_color]
-
+    caption_color = iterable(caption_color)
+    entry_color = iterable(entry_color)
     c_print(caption, *caption_color)
-    i = 0
-    for entry in entries:
-        i += 1
-        c_print("[{0}] ".format(i) + entry, *entry_color)
+    for i in range(0, len(entries)):
+        c_print("[{0}] ".format(i + 1) + entries[i], *entry_color)
 
 
-def progress_bar(iteration, total, prefix="Progress:", suffix="", decimals=1, length=25, fill="█", color=()):
+def progress_bar(iteration, total, prefix="Progress:", suffix="", decimals=1, length=25, fill="█", color=Color.DEFAULT):
     """Draws progress bar"""
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filled_length = length * iteration // total
     bar = fill * filled_length + "-" * (length - filled_length - 1)
+    color = iterable(color)
     c_print("\r%s |%s| %s%% %s" % (prefix, bar, percent, suffix), *color, end="\r")
     if iteration == total:
         print()
 
 
-def yes_no(message, message_color=(), error_color=()):
+def yes_no(message, message_color=Color.DEFAULT, error_color=Color.DEFAULT):
     """Prints yes/no dialog"""
+    message_color = iterable(message_color)
+    error_color = iterable(error_color)
     c_print(message + " (y/n)", *message_color)
     while True:
         answer = input()
@@ -158,37 +168,20 @@ def yes_no(message, message_color=(), error_color=()):
             c_print("Invalid answer!", *error_color)
 
 
-def enter(action):
+def enter(action, color=Color.DEFAULT):
     """Prints enter message"""
-    input("Press enter to {0}...".format(action))
+    color = iterable(color)
+    c_print(action, *color, end="")
+    input()
 
 
-def user_input(*answers, range_=False):
+def user_input(*answers, span=False):
     """Processes user input"""
-    if not answers:
-        raise Exception("Answers cannot be empty")
-
-    if len(answers) == 1 and type(answers[0]) == list:  # Extract list
-        answers = answers[0]
-
-    if range_ and len(answers) != 2:
-        raise Exception("Create range is only defines for two values in the answer list")
-
-    answers = list(answers)
-    if range_:
-        if type(answers[0]) == int and type(answers[1]) == int:
-            answers.sort()
-            start = answers[0]
-            end = answers[1] + 1
-            answers = []
-            for i in range(start, end):
-                answers.append(i)
-
+    if span:
+        answers = range(answers[0], answers[1])
     answer_type = type(answers[0])
-
     while True:
         answer = input()
-
         try:
             answer = answer_type(answer)
             if answer in answers:
