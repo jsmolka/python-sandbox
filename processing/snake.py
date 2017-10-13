@@ -2,11 +2,11 @@ from pyprocessing import *
 from random import randint
 from sys import maxsize
 
-SCALE = 20
-HEIGHT = 30
-WIDTH = 50
-FRAME_RATE = 15
-AI = False
+SCALE = 10
+HEIGHT = 60
+WIDTH = 100
+FRAME_RATE = 200
+AI = True
 
 
 class Point:
