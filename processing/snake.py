@@ -1,9 +1,11 @@
 from pyprocessing import *
 from random import randint
+from sys import maxsize
 
-SCALE = 20
-HEIGHT = 20
-WIDTH = 30
+SCALE = 10
+HEIGHT = 60
+WIDTH = 120
+RATE = 500
 
 
 class Point:
@@ -107,6 +109,37 @@ class Snake:
                 return True
         return False
 
+    ### Implement "AI" ###
+    def distance(self, p):
+        if p is None:
+            return maxsize
+        if not 0 <= p.x < WIDTH * SCALE or not 0 <= p.y < HEIGHT * SCALE:
+            return maxsize
+        d = (p.x - self.apple.x) ** 2 + (p.y - self.apple.y) ** 2
+        return abs(d)
+
+    def ai(self):
+        np = Point.make(self.nodes[0])
+        sp = Point.make(self.nodes[0])
+        ep = Point.make(self.nodes[0])
+        wp = Point.make(self.nodes[0])
+        np.y -= SCALE
+        sp.y += SCALE
+        ep.x += SCALE
+        wp.x -= SCALE
+        np = None if np in self.nodes else np
+        sp = None if sp in self.nodes else sp
+        ep = None if ep in self.nodes else ep
+        wp = None if wp in self.nodes else wp
+        adjacent = [
+            ["w", self.distance(np)],
+            ["s", self.distance(sp)],
+            ["d", self.distance(ep)],
+            ["a", self.distance(wp)]
+        ]
+        adjacent.sort(key=lambda x: x[1])
+        self.set_direction(adjacent[0][0])
+
 
 def keyPressed():
     global snake
@@ -116,13 +149,14 @@ def keyPressed():
 def setup():
     global snake
     size(WIDTH * SCALE, HEIGHT * SCALE)
-    frameRate(10)
+    frameRate(RATE)
     noStroke()
     snake = Snake()
 
 
 def draw():
     global snake
+    snake.ai()
     snake.move()
     snake.draw()
     if snake.out_of_bounds() or snake.inside_itself():
