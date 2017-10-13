@@ -115,6 +115,13 @@ class Snake:
             return maxsize
         return abs((p.x - self.apple.x) ** 2 + (p.y - self.apple.y) ** 2)
 
+    def look_ahead(self, p):
+        directions = [N(Point.make(p)), S(Point.make(p)), E(Point.make(p)), W(Point.make(p))]
+        for p in directions:
+            if not p in self.nodes:
+                return True
+        return False
+
     def ai(self):
         head = self.nodes[0]
         directions = [N(Point.make(head)), S(Point.make(head)), E(Point.make(head)), W(Point.make(head))]
@@ -127,7 +134,10 @@ class Snake:
             ["a", self.distance(directions[3])]
         ]
         adjacent.sort(key=lambda x: x[1])
-        self.set_direction(adjacent[0][0])
+        for i in range(0, len(adjacent)):
+            if self.look_ahead(self.directions[adjacent[i][0]](Point.make(head))):
+                self.set_direction(adjacent[i][0])
+                break
 
 
 def keyPressed():
