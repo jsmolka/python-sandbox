@@ -73,26 +73,18 @@ class Color:
     DEFAULT    = get_color()
 
 
-def c_print(string, *color, end="\n"):
+def c_print(*values, color=Color.DEFAULT, end="\n"):
     """Prints string in a different color"""
-    if not color:
-        return print(string, end=end)
-
+    if color == Color.DEFAULT:
+        return print(*values, end=end)
+    if not isinstance(color, list):
+        color = [color]
     clr = 0x0000
     for c in color:
         clr |= c
     set_color(clr)
-    print(string, end=end)
+    print(*values, end=end)
     set_color(Color.DEFAULT)
-
-
-def iterable(color):
-    """Creates iterable color"""
-    if color == Color.DEFAULT:
-        color = []
-    elif not isinstance(color, list):
-        color = [color]
-    return color
 
 
 class LineStyle:
@@ -109,8 +101,7 @@ def terminal_size():
 def line(style=LineStyle.SCORE, color=Color.DEFAULT):
     """Draws line"""
     l = style * terminal_size()
-    color = iterable(color)
-    c_print(l, *color)
+    c_print(l, color=color)
 
 
 def heading(caption, style=LineStyle.HASH, color=Color.DEFAULT):
@@ -121,13 +112,11 @@ def heading(caption, style=LineStyle.HASH, color=Color.DEFAULT):
         caption,
         floor(size / 2) * style
     )
-    color = iterable(color)
-    c_print(caption, *color)
+    c_print(caption, color=color)
 
 
 def big_heading(caption, style=LineStyle.HASH, color=Color.DEFAULT):
     """Draws big heading"""
-    color = iterable(color)
     line(style=style, color=color)
     heading(caption, style=style, color=color)
     line(style=style, color=color)
@@ -135,11 +124,9 @@ def big_heading(caption, style=LineStyle.HASH, color=Color.DEFAULT):
 
 def menu(caption, *entries, caption_color=Color.DEFAULT, entry_color=Color.DEFAULT):
     """Draws menu"""
-    caption_color = iterable(caption_color)
-    entry_color = iterable(entry_color)
-    c_print(caption, *caption_color)
+    c_print(caption, color=caption_color)
     for i in range(0, len(entries)):
-        c_print("[{0}] ".format(i + 1) + entries[i], *entry_color)
+        c_print("[{0}] ".format(i + 1) + entries[i], color=entry_color)
 
 
 def progress_bar(iteration, total, prefix="Progress:", suffix="", decimals=1, length=25, fill="█", color=Color.DEFAULT):
@@ -147,17 +134,14 @@ def progress_bar(iteration, total, prefix="Progress:", suffix="", decimals=1, le
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filled_length = length * iteration // total
     bar = fill * filled_length + "-" * (length - filled_length - 1)
-    color = iterable(color)
-    c_print("\r%s |%s| %s%% %s" % (prefix, bar, percent, suffix), *color, end="\r")
+    c_print("\r%s |%s| %s%% %s" % (prefix, bar, percent, suffix), color=color, end="\r")
     if iteration == total:
         print()
 
 
 def yes_no(message, message_color=Color.DEFAULT, error_color=Color.DEFAULT):
     """Prints yes/no dialog"""
-    message_color = iterable(message_color)
-    error_color = iterable(error_color)
-    c_print(message + " (y/n)", *message_color)
+    c_print(message + " (y/n)", color=message_color)
     while True:
         answer = input()
         if answer == "y":
@@ -165,17 +149,16 @@ def yes_no(message, message_color=Color.DEFAULT, error_color=Color.DEFAULT):
         elif answer == "n":
             return False
         else:
-            c_print("Invalid answer!", *error_color)
+            c_print("Invalid answer!", color=error_color)
 
 
 def enter(action, color=Color.DEFAULT):
     """Prints enter message"""
-    color = iterable(color)
-    c_print(action, *color, end="")
+    c_print(action, color=color, end="")
     input()
 
 
-def user_input(*answers, span=False):
+def user_input(*answers, span=False, error_color=Color.DEFAULT):
     """Processes user input"""
     if span:
         answers = range(answers[0], answers[1])
@@ -187,6 +170,6 @@ def user_input(*answers, span=False):
             if answer in answers:
                 return answer
             else:
-                print("Invalid answer! Try again!")
+                c_print("Invalid answer! Try again!", color=error_color)
         except:
-            print("Invalid answer! Try again!")
+            c_print("Invalid answer! Try again!", color=error_color)
