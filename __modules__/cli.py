@@ -73,12 +73,10 @@ class Color:
     DEFAULT    = get_color()
 
 
-def c_print(*values, color=Color.DEFAULT, end="\n"):
+def c_print(*values, color=None, end="\n"):
     """Prints string in a different color"""
-    if color == Color.DEFAULT:
+    if color is None:
         return print(*values, end=end)
-    if not isinstance(color, list):
-        color = [color]
     clr = 0x0000
     for c in color:
         clr |= c
@@ -98,13 +96,13 @@ def terminal_size():
     return get_terminal_size()[0] - 1
 
 
-def line(style=LineStyle.SCORE, color=Color.DEFAULT):
+def line(style=LineStyle.SCORE, color=None):
     """Draws line"""
     l = style * terminal_size()
     c_print(l, color=color)
 
 
-def heading(caption, style=LineStyle.HASH, color=Color.DEFAULT):
+def heading(caption, style=LineStyle.HASH, color=None):
     """Draws heading"""
     size = terminal_size() - len(caption) - 2
     caption = "{0} {1} {2}".format(
@@ -115,21 +113,21 @@ def heading(caption, style=LineStyle.HASH, color=Color.DEFAULT):
     c_print(caption, color=color)
 
 
-def big_heading(caption, style=LineStyle.HASH, color=Color.DEFAULT):
+def big_heading(caption, style=LineStyle.HASH, color=None):
     """Draws big heading"""
     line(style=style, color=color)
     heading(caption, style=style, color=color)
     line(style=style, color=color)
 
 
-def menu(caption, *entries, caption_color=Color.DEFAULT, entry_color=Color.DEFAULT):
+def menu(caption, *entries, caption_color=None, entry_color=None):
     """Draws menu"""
     c_print(caption, color=caption_color)
     for i in range(0, len(entries)):
         c_print("[{0}] ".format(i + 1) + entries[i], color=entry_color)
 
 
-def progress_bar(iteration, total, prefix="Progress:", suffix="", decimals=1, length=25, fill="█", color=Color.DEFAULT):
+def progress_bar(iteration, total, prefix="Progress:", suffix="", decimals=1, length=25, fill="█", color=None):
     """Draws progress bar"""
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filled_length = length * iteration // total
@@ -139,7 +137,7 @@ def progress_bar(iteration, total, prefix="Progress:", suffix="", decimals=1, le
         print()
 
 
-def yes_no(message, message_color=Color.DEFAULT, error_color=Color.DEFAULT):
+def yes_no(message, message_color=None, error_color=None):
     """Prints yes/no dialog"""
     c_print(message + " (y/n)", color=message_color)
     while True:
@@ -152,13 +150,13 @@ def yes_no(message, message_color=Color.DEFAULT, error_color=Color.DEFAULT):
             c_print("Invalid answer!", color=error_color)
 
 
-def enter(action, color=Color.DEFAULT):
+def enter(action, color=None):
     """Prints enter message"""
     c_print(action, color=color, end="")
     input()
 
 
-def user_input(*answers, span=False, error_color=Color.DEFAULT):
+def user_input(*answers, span=False, error_color=None):
     """Processes user input"""
     if span:
         answers = range(answers[0], answers[1])
