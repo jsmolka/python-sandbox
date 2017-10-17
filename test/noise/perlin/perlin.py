@@ -1,6 +1,6 @@
 import numpy as np
-import dialog
 import utils
+from cli import *
 from pyprocessing import mathfunctions
 from PIL import Image
 
@@ -16,4 +16,4 @@ for x in range(0, 100):
 img = Image.fromarray(arr, "RGB")
 img.save("noise.png", "PNG")
 
-dialog.enter("exit")
+enter("exit")

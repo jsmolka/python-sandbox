@@ -1,4 +1,4 @@
-import dialog
+from cli import *
 
 
 def defy(*args):
@@ -10,4 +10,4 @@ def defy(*args):
 
 defy(1, 2, 3, 4)
 
-dialog.enter("exit")
+enter("exit")

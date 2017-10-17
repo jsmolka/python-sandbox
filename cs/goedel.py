@@ -1,5 +1,4 @@
-import dialog
-
+from cli import *
 
 def goedel_to_word(number, sigma):
     """Converts Goedel number to word"""
@@ -35,4 +34,4 @@ if __name__ == "__main__":
     print("goedel_to_word(number, sigma):", goedel_to_word(n, sig))
     print("word_to_goedel(word, sigma):", word_to_goedel(w, sig))
 
-    dialog.enter("exit")
+    enter("exit")

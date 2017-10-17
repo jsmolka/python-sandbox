@@ -1,19 +1,18 @@
-import dialog
-import draw
+from cli import *
 from logic import *
 
 print("Input logic string!")
 l = Logic(input())
 
-draw.line()
+line()
 
 print("Decrypted string:")
 print(l.decrypted_string)
 
-draw.line()
+line()
 
 l.draw_table()
 
-draw.line()
+line()
 
-dialog.enter("exit")
+enter("exit")

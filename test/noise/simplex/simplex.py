@@ -1,5 +1,5 @@
 import numpy as np
-import dialog
+from cli import *
 from PIL import Image
 from opensimplex import *
 
@@ -19,4 +19,4 @@ for i in range(0, HEIGHT):
 img = Image.fromarray(arr, "RGB")
 img.save("noise.png")
 
-dialog.enter("exit")
+enter("exit")

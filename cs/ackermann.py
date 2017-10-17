@@ -1,4 +1,4 @@
-import dialog
+from cli import *
 
 
 def ackermann_recursive(m, n):
@@ -27,16 +27,16 @@ def ackermann_while(m, n):
 
 
 if __name__ == "__main__":
-    print("Ackermann recursive")
+    heading("Ackermann recursive")
     for i in range(1, 4):
         for j in range(1, 4):
             calls = 0
             print("ackermann({0}, {1}) =".format(i, j), ackermann_recursive(i, j), "|", "Calls:", calls)
-    print("")
-    print("Ackermann while")
+    heading("Ackermann while")
     for i in range(1, 4):
         for j in range(1, 4):
             calls = 0
             print("ackermann({0}, {1}) =".format(i, j), ackermann_while(i, j), "|", "Calls:", calls)
 
-    dialog.enter("exit")
+    line(style=LineStyle.HASH)
+    enter("exit")

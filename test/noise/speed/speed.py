@@ -1,6 +1,6 @@
 import numpy as np
-import dialog
 import utils
+from cli import *
 from stopwatch import *
 from pyprocessing import mathfunctions
 from opensimplex import OpenSimplex
@@ -39,4 +39,4 @@ img1.save("simplex.png", "PNG")
 img2 = Image.fromarray(arr2, "RGB")
 img2.save("perlin.png", "PNG")
 
-dialog.enter("exit")
+enter("exit")

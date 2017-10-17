@@ -1,5 +1,4 @@
-import dialog
-import draw
+from cli import *
 from maze import *
 from os.path import isfile
 from stopwatch import *
@@ -13,13 +12,12 @@ algorithms = [
     Algorithm.Solve.BREADTH
 ]
 
-draw.menu("Which algorithm do you want to use?",
-          [algorithm.value for algorithm in algorithms])
+menu("Which algorithm do you want to use?", *[algorithm.value for algorithm in algorithms])
 
-index = dialog.user_input(1, len(algorithms), range_=True)
+index = user_input(1, len(algorithms), span=True)
 
 algorithm = algorithms[index - 1]
-draw.line()
+line()
 
 if isfile("maze.png"):
     print("Loading maze...")
@@ -28,7 +26,7 @@ if isfile("maze.png"):
     sw.stop()
     print(sw.elapsed_str)
 
-    draw.line()
+    line()
 
     print("Solving maze...")
     sw.start()
@@ -36,15 +34,15 @@ if isfile("maze.png"):
     sw.stop()
     print(sw.elapsed_str)
 
-    draw.line()
+    line()
     print("Saving solution...")
     sw.start()
     m.save_solution_as_png()
     sw.stop()
     print(sw.elapsed_str)
 else:
-    draw.line()
+    line()
     print("No maze.png found!")
 
-draw.line()
-dialog.enter("exit")
+line()
+enter("exit")

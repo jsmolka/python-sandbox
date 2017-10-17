@@ -1,7 +1,7 @@
-import dialog
 import itertools
 import math
 import numpy as np
+from cli import *
 
 
 def __permutations(permutation_list):
@@ -45,4 +45,4 @@ if __name__ == "__main__":
     for l in p:
         print(l)
 
-    dialog.enter("exit")
+    enter("exit")

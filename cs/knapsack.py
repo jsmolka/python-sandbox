@@ -1,5 +1,5 @@
-import dialog
 import itertools
+from cli import *
 
 
 class Item:
@@ -127,4 +127,4 @@ if __name__ == "__main__":
     # print("Use:", pbp.use)
     # print("Weight:", pbp.weight)
 
-    dialog.enter("exit")
+    enter("exit")

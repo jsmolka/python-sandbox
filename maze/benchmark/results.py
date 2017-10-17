@@ -1,5 +1,4 @@
-import dialog
-import draw
+from cli import *
 from database import *
 from maze import *
 
@@ -18,11 +17,11 @@ algorithms = [
     Algorithm.Solve.BREADTH.value
 ]
 
-draw.menu("Which algorithm do you want to display?", algorithms)
-index = dialog.user_input(1, len(algorithms), range_=True) - 1
+menu("Which algorithm do you want to display?", *algorithms)
+index = user_input(1, len(algorithms), span=True) - 1
 algorithm = algorithms[index]
 
-draw.heading(algorithm)
+heading(algorithm)
 
 for result in db.filter(("name", algorithm)):
     result.iterations = str(result.iterations)
@@ -41,6 +40,6 @@ for result in db.filter(("name", algorithm)):
         result.time
     ))
 
-draw.line()
+line()
 
-dialog.enter("exit")
+enter("exit")
