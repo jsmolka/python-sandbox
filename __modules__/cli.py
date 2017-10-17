@@ -152,14 +152,14 @@ def yes_no(message, message_color=None, error_color=None):
 
 def enter(action, color=None):
     """Prints enter message"""
-    c_print(action, color=color, end="")
+    c_print("Press enter to {0}...".format(action), color=color, end="")
     input()
 
 
 def user_input(*answers, span=False, error_color=None):
     """Processes user input"""
     if span:
-        answers = range(answers[0], answers[1])
+        answers = range(answers[0], answers[1] + 1)
     answer_type = type(answers[0])
     while True:
         answer = input()
