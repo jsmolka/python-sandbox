@@ -74,7 +74,3 @@ def shuffled(l):
     result = l[:]
     shuffle(result)
     return result
-
-def get_files(path=os.getcwd()):
-    """Returns all files in current directory"""
-    return glob.iglob("{0}/**/*.*".format(path), recursive=True)
