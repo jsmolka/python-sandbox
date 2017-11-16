@@ -6,11 +6,16 @@ import shutil
 
 
 def cwd():
-    "Returns current working directory"
+    """Returns current working directory"""
     return os.getcwd()
 
 
-def script_dir():
+def chdir(path):
+    """Changes current working directory"""
+    os.chdir(path)
+
+
+def cdir():
     """Returns script directory"""
     return os.path.dirname((inspect.getfile(inspect.currentframe())))
 
@@ -20,8 +25,29 @@ def user():
     return getpass.getuser()
 
 
-USER_DIR = "C:/Users/{0}".format(user())
-ONEDRIVE_DIR = "{0}/OneDrive".format(USER_DIR)
+USER_DIR = "C:/Users/{0}/".format(user())
+DESKTOP_DIR = "{0}/Desktop/".format(USER_DIR)
+ONEDRIVE_DIR = "{0}/OneDrive/".format(USER_DIR)
+
+
+def isdir(src):
+    """Checks if src is a directory"""
+    return os.path.isdir(src)
+
+
+def isfile(src):
+    """Checks if src is a file"""
+    return os.path.isfile(src)
+
+
+def exists(src):
+    """Checks if src exists"""
+    return os.path.exists(src)
+
+
+def mkdirs(path):
+    """Creates directories recursively"""
+    os.makedirs(path)
 
 
 def files(path=cwd(), filter=None, recursive=True):
@@ -34,13 +60,13 @@ def files(path=cwd(), filter=None, recursive=True):
     return list(glob.iglob("{0}/**/*.*".format(path), recursive=recursive))
 
 
-def file_ext(file, dot=False):
+def ext(file, dot=False):
     """Returns file extension"""
     ext = os.path.splitext(file)[1]
     return ext if dot else ext[1:]
 
 
-def remove_file_ext(file):
+def remove_ext(file):
     """Returns file without extension"""
     return os.path.splitext(file)[0]
 
@@ -48,7 +74,12 @@ def remove_file_ext(file):
 def file_name(file, ext=True):
     """Returns file name"""
     file = os.path.basename(file)
-    return file if ext else remove_file_ext(file)
+    return file if ext else remove_ext(file)
+
+
+def dir_name(file):
+    """Returns the directory name of a file"""
+    return os.path.dirname(file)
 
 
 def abs_path(file):
@@ -59,3 +90,34 @@ def abs_path(file):
 def sort_by(files, key=lambda x: x, reverse=False):
     """Sorts a file list by criteria"""
     return sorted(files, key=lambda x: key(file_name(x)), reverse=reverse)
+
+
+def copy(src, dst):
+    """Copies files from one place to another"""
+    if not exists(src):
+        raise Exception("{0} does no exist".format(src))
+    if isfile(src):
+        if not exists(dst):
+            mkdirs(dst)
+        shutil.copy(src, dst)
+    else:
+        shutil.copytree(src, dst)
+
+
+def move(src, dst):
+    """Moves files form one place to another"""
+    if not exists(src):
+        raise Exception("{0} does not exist".format(src))
+    if not exists(dst):
+        mkdirs(dst)
+    shutil.move(src, dst)
+
+
+def remove(src):
+    """Removes file or files from a directory"""
+    if not exists(src):
+        raise Exception("{0} does not exist".format(src))
+    if isfile(src):
+        os.remove(src)
+    else:
+        shutil.rmtree(src)
