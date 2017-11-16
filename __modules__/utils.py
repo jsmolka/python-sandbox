@@ -1,4 +1,3 @@
-import glob
 import os
 from random import shuffle
 from subprocess import Popen, STDOUT, DEVNULL
