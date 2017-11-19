@@ -2,6 +2,7 @@ import getpass
 import glob
 import inspect
 import os
+import re
 import shutil
 
 
@@ -50,7 +51,7 @@ def mkdirs(path):
     os.makedirs(path)
 
 
-def files(path=cwd(), filter=None, recursive=True):
+def files(path, filter=None, recursive=True):
     """Returns all files"""
     if filter:
         files = []
@@ -121,3 +122,60 @@ def remove(src):
         os.remove(src)
     else:
         shutil.rmtree(src)
+
+
+def remove_empty_folders(path):
+    """Removes empty folders recursively"""
+    if not isdir(path):
+        return
+
+    folders = os.listdir(path)
+    if folders:
+        for folder in folders:
+            full_path = os.path.join(path, folder)
+            if isdir(full_path):
+                remove_empty_folders(full_path)
+
+    folders = os.listdir(path)
+    if len(folders) == 0:
+        os.rmdir(path)
+
+
+def filter(files, regex, ext=True):
+    """
+    Filters files with regular expressions
+    .       match any character
+    *       match any repetition of characters (.* any sequence)
+    \       escape following character
+    ^       start of string
+    $       end of string
+    ()      enclose expression
+    [A-Z]   sequence of characters
+    {m, n}  characters must appear m to n times
+    (?:1|2) must be one of the options
+    """
+    matching = []
+    other = []
+    for file in files:
+        if re.match(r"{0}".format(regex), file_name(file, ext=ext)):
+            matching.append(file)
+        else:
+            other.append(file)
+    return matching, other
+
+
+def remove_duplicates(files):
+    """Removes duplicate files"""
+    test = set([file_name(file) for file in files])
+    if len(test) == len(files):
+        return files
+
+    result = []
+    for i in range(0, len(files)):
+        duplicate = False
+        for j in range(i + 1, len(files)):
+            if file_name(files[i]) == file_name(files[j]):
+                duplicate = True
+        if not duplicate:
+            result.append(files[i])
+    return result
