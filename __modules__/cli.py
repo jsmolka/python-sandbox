@@ -73,7 +73,7 @@ class Color:
     DEFAULT    = get_color()
 
 
-def c_print(*values, color=None, end="\n"):
+def c_print(*values, end="\n", color=None):
     """Prints string in a different color"""
     if color is None:
         return print(*values, end=end)
@@ -120,11 +120,31 @@ def big_heading(caption, style=LineStyle.HASH, color=None):
     line(style=style, color=color)
 
 
-def menu(caption, *entries, caption_color=None, entry_color=None):
+def user_input(*answers, span=False, color=None):
+    """Processes user input"""
+    if span:
+        answers = range(answers[0], answers[1] + 1)
+    answer_type = type(answers[0])
+    while True:
+        answer = input()
+        try:
+            answer = answer_type(answer)
+            if answer in answers:
+                return answer
+            else:
+                c_print("Invalid answer! Try again!", color=color)
+        except:
+            c_print("Invalid answer! Try again!", color=color)
+
+
+def menu(caption, *entries, result=False, color=None):
     """Draws menu"""
-    c_print(caption, color=caption_color)
+    c_print(caption, color=color)
     for i in range(0, len(entries)):
-        c_print("[{0}] ".format(i + 1) + entries[i], color=entry_color)
+        c_print("[{0}] {1}".format(i + 1, entries[i]), color=color)
+    if result:
+        return user_input(1, len(entries), span=True, color=color) - 1
+
 
 
 def progress_bar(iteration, total, prefix="Progress:", suffix="", decimals=1, length=25, fill="█", color=None):
@@ -137,9 +157,9 @@ def progress_bar(iteration, total, prefix="Progress:", suffix="", decimals=1, le
         print()
 
 
-def yes_no(message, message_color=None, error_color=None):
+def yes_no(message, color=None):
     """Prints yes/no dialog"""
-    c_print(message + " (y/n)", color=message_color)
+    c_print(message + " (y/n)", color=color)
     while True:
         answer = input()
         if answer == "y":
@@ -147,7 +167,7 @@ def yes_no(message, message_color=None, error_color=None):
         elif answer == "n":
             return False
         else:
-            c_print("Invalid answer!", color=error_color)
+            c_print("Invalid answer!", color=color)
 
 
 def enter(action, color=None):
@@ -156,18 +176,4 @@ def enter(action, color=None):
     input()
 
 
-def user_input(*answers, span=False, error_color=None):
-    """Processes user input"""
-    if span:
-        answers = range(answers[0], answers[1] + 1)
-    answer_type = type(answers[0])
-    while True:
-        answer = input()
-        try:
-            answer = answer_type(answer)
-            if answer in answers:
-                return answer
-            else:
-                c_print("Invalid answer! Try again!", color=error_color)
-        except:
-            c_print("Invalid answer! Try again!", color=error_color)
+

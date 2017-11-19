@@ -17,8 +17,7 @@ algorithms = [
     Algorithm.Solve.BREADTH.value
 ]
 
-menu("Which algorithm do you want to display?", *algorithms)
-index = user_input(1, len(algorithms), span=True) - 1
+index = menu("Which algorithm do you want to display?", *algorithms, result=True)
 algorithm = algorithms[index]
 
 heading(algorithm)

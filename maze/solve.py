@@ -12,11 +12,9 @@ algorithms = [
     Algorithm.Solve.BREADTH
 ]
 
-menu("Which algorithm do you want to use?", *[algorithm.value for algorithm in algorithms])
+index = menu("Which algorithm do you want to use?", *[algorithm.value for algorithm in algorithms], result=True)
+algorithm = algorithms[index]
 
-index = user_input(1, len(algorithms), span=True)
-
-algorithm = algorithms[index - 1]
 line()
 
 if isfile("maze.png"):

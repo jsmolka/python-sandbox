@@ -30,13 +30,11 @@ algorithms_solve = [
     Algorithm.Solve.BREADTH
 ]
 
-algorithms_all = list()
+algorithms_all = []
 algorithms_all.extend(algorithms_create)
 algorithms_all.extend(algorithms_solve)
 
-menu("Which algorithm do you want to use?",*[algorithm.value for algorithm in algorithms_all])
-
-index = user_input(1, len(algorithms_all), span=True) - 1
+index = menu("Which algorithm do you want to use?", *[algorithm.value for algorithm in algorithms_all], result=True)
 algorithm = algorithms_all[index]
 
 data = Data()
