@@ -72,7 +72,7 @@ def remove_ext(file):
     return os.path.splitext(file)[0]
 
 
-def file_name(file, ext=True):
+def filename(file, ext=True):
     """Returns file name"""
     file = os.path.basename(file)
     return file if ext else remove_ext(file)
@@ -83,14 +83,14 @@ def dir_name(file):
     return os.path.dirname(file)
 
 
-def abs_path(file):
+def abspath(file):
     """Returns absolute path for a file"""
     return os.path.abspath(file)
 
 
 def sort_by(files, key=lambda x: x, reverse=False):
     """Sorts a file list by criteria"""
-    return sorted(files, key=lambda x: key(file_name(x)), reverse=reverse)
+    return sorted(files, key=lambda x: key(filename(x)), reverse=reverse)
 
 
 def copy(src, dst):
@@ -157,7 +157,7 @@ def filter(files, regex, ext=True):
     matching = []
     other = []
     for file in files:
-        if re.match(r"{0}".format(regex), file_name(file, ext=ext)):
+        if re.match(r"{0}".format(regex), filename(file, ext=ext)):
             matching.append(file)
         else:
             other.append(file)
@@ -166,7 +166,7 @@ def filter(files, regex, ext=True):
 
 def remove_duplicates(files):
     """Removes duplicate files"""
-    test = set([file_name(file) for file in files])
+    test = set([filename(file) for file in files])
     if len(test) == len(files):
         return files
 
@@ -174,7 +174,7 @@ def remove_duplicates(files):
     for i in range(0, len(files)):
         duplicate = False
         for j in range(i + 1, len(files)):
-            if file_name(files[i]) == file_name(files[j]):
+            if filename(files[i]) == filename(files[j]):
                 duplicate = True
         if not duplicate:
             result.append(files[i])
