@@ -112,6 +112,7 @@ def move(src, dst):
     if not exists(dst):
         mkdirs(dst)
     shutil.move(src, dst)
+    return 0
 
 
 def remove(src):
@@ -122,12 +123,13 @@ def remove(src):
         try:
             os.remove(src)
         except:
-            os.system("DEL {0} >nul".format(src))
+            return os.system("DEL {0} >nul".format(src))
     else:
         try:
             shutil.rmtree(src)
         except:
-            os.system("RD {0} /S /Q >nul".format(src))
+            return os.system("RD {0} /S /Q >nul".format(src))
+    return 0
 
 
 def remove_empty_folders(path):
@@ -202,7 +204,7 @@ def symlink(src, dst):
     parent = cd_back(dst)
     if not exists(parent):
         mkdirs(parent)
-    os.system("mklink /d \"{0}\" \"{1}\"".format(dst, src))
+    return os.system("mklink /d \"{0}\" \"{1}\"".format(dst, src))
 
 
 def zip(dst, *src, suppress=True):
@@ -213,4 +215,4 @@ def zip(dst, *src, suppress=True):
     files = ""
     for path in src:
         files += " \"{0}\"".format(path)
-    os.system(cmd.format(dst, files))
+    return os.system(cmd.format(dst, files))
