@@ -126,8 +126,10 @@ def big_heading(caption, style=Style.HASH, color=None):
     line(style=style, color=color)
 
 
-def cinput(*answers, span=False, color=None):
+def cinput(*answers, message=None, span=False, color=None):
     """Processes a controlled input"""
+    if message:
+        cprint(message, color=color)
     if span:
         answers = range(answers[0], answers[1] + 1)
     while True:
@@ -141,8 +143,10 @@ def cinput(*answers, span=False, color=None):
             cprint("Invalid answer! Try again!", color=color)
 
 
-def tinput(input_type, color=None):
+def tinput(input_type, message=None, color=None):
     """Processes a type input"""
+    if message:
+        cprint(message, color=color)
     while True:
         try:
             return input_type(input())
