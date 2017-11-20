@@ -16,7 +16,7 @@ def chdir(path):
     os.chdir(path)
 
 
-def cdir():
+def pydir():
     """Returns script directory"""
     return os.path.dirname((inspect.getfile(inspect.currentframe())))
 
@@ -26,9 +26,9 @@ def user():
     return getpass.getuser()
 
 
-USER_DIR = "C:/Users/{0}/".format(user())
-DESKTOP_DIR = "{0}/Desktop/".format(USER_DIR)
-ONEDRIVE_DIR = "{0}/OneDrive/".format(USER_DIR)
+USER = "C:/Users/{0}/".format(user())
+DESKTOP = "{0}/Desktop/".format(USER)
+ONEDRIVE = "{0}/OneDrive/".format(USER)
 
 
 def isdir(src):
@@ -56,8 +56,8 @@ def files(path, filter=None, recursive=True):
     if filter:
         files = []
         for rule in filter:
-            files.extend(glob.iglob("{0}/**/{1}".format(path, rule), recursive=recursive))
-        return files  # Returns files ordered by filter
+            files.extend(list(glob.iglob("{0}/**/{1}".format(path, rule), recursive=recursive)))
+        return files
     return list(glob.iglob("{0}/**/*.*".format(path), recursive=recursive))
 
 
@@ -78,7 +78,7 @@ def filename(file, ext=True):
     return file if ext else remove_ext(file)
 
 
-def dir_name(file):
+def dirname(file):
     """Returns the directory name of a file"""
     return os.path.dirname(file)
 
@@ -119,9 +119,15 @@ def remove(src):
     if not exists(src):
         raise Exception("{0} does not exist".format(src))
     if isfile(src):
-        os.remove(src)
+        try:
+            os.remove(src)
+        except:
+            os.system("DEL {0} >nul".format(src))
     else:
-        shutil.rmtree(src)
+        try:
+            shutil.rmtree(src)
+        except:
+            os.system("RD {0} /S /Q >nul".format(src))
 
 
 def remove_empty_folders(path):
@@ -138,7 +144,7 @@ def remove_empty_folders(path):
 
     folders = os.listdir(path)
     if len(folders) == 0:
-        os.rmdir(path)
+        remove(path)
 
 
 def filter(files, regex, ext=True):
@@ -179,3 +185,32 @@ def remove_duplicates(files):
         if not duplicate:
             result.append(files[i])
     return result
+
+
+def cd_back(path):
+    """Goes one folder back"""
+    path = path.replace("\\\\", "/").replace("\\", "/")
+    parts = path.split("/")
+    result = parts[0]
+    for i in range(1, len(parts) - 1):
+        result += "/{0}".format(parts[i])
+    return result
+
+
+def symlink(src, dst):
+    """Creates symbolic link"""
+    parent = cd_back(dst)
+    if not exists(parent):
+        mkdirs(parent)
+    os.system("mklink /d \"{0}\" \"{1}\"".format(dst, src))
+
+
+def zip(dst, *src, suppress=True):
+    """Creates a 7z archive"""
+    cmd = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\"{1}"
+    if suppress:
+        cmd += " >nul"
+    files = ""
+    for path in src:
+        files += " \"{0}\"".format(path)
+    os.system(cmd.format(dst, files))
