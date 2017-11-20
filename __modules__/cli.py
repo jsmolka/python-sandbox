@@ -2,8 +2,20 @@ from ctypes import windll, Structure, c_short, c_ushort, byref
 from math import ceil, floor
 from shutil import get_terminal_size
 
-__all__ = ["Color", "c_print", "LineStyle", "line", "heading", "big_heading",
-           "menu", "progress_bar", "yes_no", "enter", "user_input"]
+__all__ = [
+    "Color",
+    "Style",
+    "cprint",
+    "line",
+    "heading",
+    "big_heading",
+    "cinput",
+    "tinput",
+    "menu",
+    "progress_bar",
+    "question",
+    "enter"
+]
 
 SHORT = c_short
 WORD = c_ushort
@@ -73,7 +85,13 @@ class Color:
     DEFAULT    = get_color()
 
 
-def c_print(*values, end="\n", color=None):
+class Style:
+    SCORE      = "-"
+    UNDERSCORE = "_"
+    HASH       = "#"
+
+
+def cprint(*values, end="\n", color=None):
     """Prints string in a different color"""
     if color is None:
         return print(*values, end=end)
@@ -85,65 +103,60 @@ def c_print(*values, end="\n", color=None):
     set_color(Color.DEFAULT)
 
 
-class LineStyle:
-    SCORE      = "-"
-    UNDERSCORE = "_"
-    HASH       = "#"
-
-
 def terminal_size():
     """Returns terminal size"""
     return get_terminal_size()[0] - 1
 
 
-def line(style=LineStyle.SCORE, color=None):
+def line(style=Style.SCORE, color=None):
     """Draws line"""
-    l = style * terminal_size()
-    c_print(l, color=color)
+    cprint(style * terminal_size(), color=color)
 
 
-def heading(caption, style=LineStyle.HASH, color=None):
+def heading(caption, style=Style.HASH, color=None):
     """Draws heading"""
-    size = terminal_size() - len(caption) - 2
-    caption = "{0} {1} {2}".format(
-        ceil(size / 2) * style,
-        caption,
-        floor(size / 2) * style
-    )
-    c_print(caption, color=color)
+    half = (terminal_size() - len(caption) - 2) / 2
+    cprint(ceil(half) * style, caption, floor(half) * style, color=color)
 
 
-def big_heading(caption, style=LineStyle.HASH, color=None):
+def big_heading(caption, style=Style.HASH, color=None):
     """Draws big heading"""
     line(style=style, color=color)
     heading(caption, style=style, color=color)
     line(style=style, color=color)
 
 
-def user_input(*answers, span=False, color=None):
-    """Processes user input"""
+def cinput(*answers, span=False, color=None):
+    """Processes a controlled input"""
     if span:
         answers = range(answers[0], answers[1] + 1)
-    answer_type = type(answers[0])
     while True:
-        answer = input()
         try:
-            answer = answer_type(answer)
+            answer = type(answers[0])(input())
             if answer in answers:
                 return answer
             else:
-                c_print("Invalid answer! Try again!", color=color)
+                cprint("Invalid answer! Try again!", color=color)
         except:
-            c_print("Invalid answer! Try again!", color=color)
+            cprint("Invalid answer! Try again!", color=color)
+
+
+def tinput(input_type, color=None):
+    """Processes a type input"""
+    while True:
+        try:
+            return input_type(input())
+        except:
+            cprint("Invalid answer! Try again!", color=color)
 
 
 def menu(caption, *entries, result=False, color=None):
     """Draws menu"""
-    c_print(caption, color=color)
-    for i in range(0, len(entries)):
-        c_print("[{0}] {1}".format(i + 1, entries[i]), color=color)
+    cprint(caption, color=color)
+    for index in range(0, len(entries)):
+        cprint("[{0}] {1}".format(index + 1, entries[index]), color=color)
     if result:
-        return user_input(1, len(entries), span=True, color=color) - 1
+        return cinput(1, len(entries), span=True, color=color) - 1
 
 
 
@@ -152,14 +165,14 @@ def progress_bar(iteration, total, prefix="Progress:", suffix="", decimals=1, le
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filled_length = length * iteration // total
     bar = fill * filled_length + "-" * (length - filled_length - 1)
-    c_print("\r%s |%s| %s%% %s" % (prefix, bar, percent, suffix), color=color, end="\r")
+    cprint("\r%s |%s| %s%% %s" % (prefix, bar, percent, suffix), color=color, end="\r")
     if iteration == total:
         print()
 
 
-def yes_no(message, color=None):
+def question(message, color=None):
     """Prints yes/no dialog"""
-    c_print(message + " (y/n)", color=color)
+    cprint(message + " (y/n)", color=color)
     while True:
         answer = input()
         if answer == "y":
@@ -167,13 +180,10 @@ def yes_no(message, color=None):
         elif answer == "n":
             return False
         else:
-            c_print("Invalid answer!", color=color)
+            cprint("Invalid answer! Try again!", color=color)
 
 
 def enter(action, color=None):
     """Prints enter message"""
-    c_print("Press enter to {0}...".format(action), color=color, end="")
+    cprint("Press enter to {0}...".format(action), color=color, end="")
     input()
-
-
-
