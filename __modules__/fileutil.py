@@ -3,11 +3,10 @@ import glob
 import inspect
 import os
 import re
-import shutil
 
 
 def user():
-    """Returns current user name"""
+    """Returns current user"""
     return getpass.getuser()
 
 
@@ -23,7 +22,7 @@ def cwd():
 
 def chdir(path):
     """Changes current working directory"""
-    os.chdir(path)
+    return os.chdir(path)
 
 
 def pydir():
@@ -46,8 +45,24 @@ def exists(src):
     return os.path.exists(src)
 
 
+def filelike(path):
+    """Checks if path is filelike"""
+    if os.path.splitext(path)[1]:
+        return True
+    return False
+
+
+def pathlike(path):
+    """Checks if path is pathlike"""
+    return not filelike(path)
+
+
 def mkdirs(path):
     """Creates directories recursively"""
+    if filelike(path):
+        path = dirname(path)
+    if not path[-1] in ("/", "\\"):
+        path += "\\"
     os.makedirs(path)
 
 
@@ -68,7 +83,7 @@ def ext(file, dot=False):
 
 
 def remove_ext(file):
-    """Returns file without extension"""
+    """Removes file extension"""
     return os.path.splitext(file)[0]
 
 
@@ -95,9 +110,7 @@ def listdir(path):
 
 def isempty(path):
     """Checks if directory is empty"""
-    if not isdir(path):
-        raise Exception("{0} is not directory".format(path))
-    if len(listdir(path)) == 0:
+    if not listdir(path):
         return True
     return False
 
@@ -108,36 +121,18 @@ def fsort(files, key=lambda x: x, reverse=False):
 
 
 def pty(path):
-    """Creates a valid path"""
+    """Creates valid cmd path"""
     return path.replace("/", "\\")
 
 
+def execute(cmd, suppress=False):
+    """Executes a command"""
+    return os.system(cmd + " >nul" if suppress else cmd)
+
+
 def copy(src, dst, suppress=True):
-    """Copies files from one place to another"""
-    if not exists(src):
-        raise Exception("{0} does not exist")
-    if isfile(src):
-        return __file_copy(src, dst, suppress=suppress)
-    if isdir(src):
-        return __dir_copy(src, dst, suppress=suppress)
-
-
-def __file_copy(src, dst, suppress=True):
     """
-    Copies files from one place to another
-    /y  overwrite files
-    """
-    cmd = "copy {0} {1} /y".format(pty(src), pty(dst))
-    if suppress:
-        cmd += " >nul"
-    if not exists(dirname(dst)):
-        mkdirs(dirname(dst))
-    return os.system(cmd)
-
-
-def __dir_copy(src, dst, suppress=True):
-    """
-    Copies directories from one place to another
+    Copies files or directories
     /i  assume dst is a directory
     /s  copy folders and sub folders
     /h  copy hidden files and folders
@@ -147,40 +142,106 @@ def __dir_copy(src, dst, suppress=True):
     /c  continue copying if an error occurs
     /y  overwrite files
     """
-    cmd = "xcopy {0} {1} /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
-    if suppress:
-        cmd += " >nul"
-    return os.system(cmd)
+    if not exists(src):
+        raise Exception("{0} does not exist")
+    if isfile(src) and filelike(dst):
+        return __copy_file_to_file(src, dst, suppress)
+    if isfile(src) and pathlike(dst):
+        return __copy_file_to_dir(src, dst, suppress)
+    if isdir(src) and pathlike(dst):
+        return __copy_dir_to_dir(src, dst, suppress)
 
 
-def move(src, dst):
-    """Moves files form one place to another"""
+def __copy_file_to_file(src, dst, suppress):
+    """Copies file to file"""
+    cmd = "ECHO D | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
+    return execute(cmd, suppress=suppress)
+
+
+def __copy_file_to_dir(src, dst, suppress):
+    """Copies file to directory"""
+    if not dst[-1] in ("/", "\\"):
+        dst += "\\"
+    cmd = "ECHO V | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
+    return execute(cmd, suppress=suppress)
+
+
+def __copy_dir_to_dir(src, dst, suppress):
+    """Copies directory to directory"""
+    if not src[-1] in ("/", "\\"):
+        src = src[:-1]
+    if not dst[-1] in ("/", "\\"):
+        dst = dst[:-1]
+    cmd = "xcopy \"{0}\" \"{1}\" /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
+    return execute(cmd, suppress=suppress)
+
+
+def move(src, dst, suppress=True):
+    """
+    Moves files or directories
+    /y  overwrite files
+    """
     if not exists(src):
         raise Exception("{0} does not exist".format(src))
     if not exists(dst):
         mkdirs(dst)
-    shutil.move(src, dst)
-    return 0
+    if isfile(src) and filelike(dst):
+        return __move_file_to_file(src, dst, suppress)
+    if isfile(src) and pathlike(dst):
+        return __move_file_to_dir(src, dst, suppress)
+    if isdir(src) and pathlike(dst):
+        return __move_dir_to_dir(src, dst, suppress)
 
 
-def remove(src):
-    """Removes file or files from a directory"""
+def __move_file_to_file(src, dst, suppress):
+    """Moves file to file"""
+    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
+    return execute(cmd, suppress=suppress)
+
+
+def __move_file_to_dir(src, dst, suppress):
+    """Moves file to directory"""
+    if not dst.endswith("/") or dst.endswith("\\"):
+        dst += "\\"
+    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
+    return execute(cmd, suppress=suppress)
+
+
+def __move_dir_to_dir(src, dst, suppress):
+    """Moves directory to directory"""
+    if src[-1] in ("/", "\\"):
+        src = src[:-1]
+    if dst[-1] in ("/", "\\"):
+        dst = dst[:-1]
+    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
+    return execute(cmd, suppress=suppress)
+
+
+def remove(src, suppress=True):
+    """Removes files or directories"""
     if not exists(src):
         raise Exception("{0} does not exist".format(src))
     if isfile(src):
-        try:
-            os.remove(src)
-        except:
-            return os.system("DEL {0} >nul".format(src))
+        return __remove_file(src, suppress)
     else:
-        try:
-            shutil.rmtree(src)
-        except:
-            return os.system("RD {0} /S /Q >nul".format(src))
-    return 0
+        return __remove_dir(src, suppress)
 
 
-def remove_empty_folders(path):
+def __remove_file(src, suppress):
+    """Removes file"""
+    cmd = "del \"{0}\"".format(src)
+    return execute(cmd, suppress=suppress)
+
+
+def __remove_dir(src, suppress):
+    """Removes directory"""
+    if src[-1] in ("/", "\\"):
+        src = src[:-1]
+    cmd = "rd \"{0}\" /s/q".format(src)
+    return execute(cmd, suppress=suppress)
+
+
+def remove_empty_dirs(path):
     """Removes empty folders recursively"""
     if not isdir(path):
         return
@@ -190,10 +251,9 @@ def remove_empty_folders(path):
         for folder in folders:
             full_path = os.path.join(path, folder)
             if isdir(full_path):
-                remove_empty_folders(full_path)
+                remove_empty_dirs(full_path)
 
-    folders = os.listdir(path)
-    if len(folders) == 0:
+    if isempty(path):
         remove(path)
 
 
@@ -239,7 +299,7 @@ def remove_duplicates(files):
 
 def cd_back(path):
     """Goes one folder back"""
-    path = path.replace("\\\\", "/").replace("\\", "/")
+    path = path.replace("\\", "/")
     parts = path.split("/")
     result = parts[0]
     for i in range(1, len(parts) - 1):
@@ -247,20 +307,19 @@ def cd_back(path):
     return result
 
 
-def symlink(src, dst):
+def symlink(src, dst, suppress=True):
     """Creates symbolic link"""
     parent = cd_back(dst)
     if not exists(parent):
         mkdirs(parent)
-    return os.system("mklink /d \"{0}\" \"{1}\"".format(dst, src))
+    cmd = "mklink /d \"{0}\" \"{1}\"".format(dst, src)
+    return execute(cmd, suppress=suppress)
 
 
-def zip(dst, *src, suppress=True):
+def lzma(dst, *src, suppress=True):
     """Creates a 7z archive"""
     cmd = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\"{1}"
-    if suppress:
-        cmd += " >nul"
     files = ""
     for path in src:
         files += " \"{0}\"".format(path)
-    return os.system(cmd.format(dst, files))
+    return execute(cmd.format(dst, files), suppress=suppress)
