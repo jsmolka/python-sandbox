@@ -6,6 +6,16 @@ import re
 import shutil
 
 
+def user():
+    """Returns current user name"""
+    return getpass.getuser()
+
+
+USER = "C:/Users/{0}/".format(user())
+DESKTOP = "{0}Desktop/".format(USER)
+ONEDRIVE = "{0}OneDrive/".format(USER)
+
+
 def cwd():
     """Returns current working directory"""
     return os.getcwd()
@@ -19,16 +29,6 @@ def chdir(path):
 def pydir():
     """Returns script directory"""
     return os.path.dirname((inspect.getfile(inspect.currentframe())))
-
-
-def user():
-    """Returns current user name"""
-    return getpass.getuser()
-
-
-USER = "C:/Users/{0}/".format(user())
-DESKTOP = "{0}/Desktop/".format(USER)
-ONEDRIVE = "{0}/OneDrive/".format(USER)
 
 
 def isdir(src):
@@ -79,7 +79,7 @@ def filename(file, ext=True):
 
 
 def dirname(file):
-    """Returns the directory name of a file"""
+    """Returns directory name of a file"""
     return os.path.dirname(file)
 
 
@@ -88,21 +88,69 @@ def abspath(file):
     return os.path.abspath(file)
 
 
-def sort_by(files, key=lambda x: x, reverse=False):
-    """Sorts a file list by criteria"""
+def listdir(path):
+    """Returns list of files and directories"""
+    return os.listdir(path)
+
+
+def isempty(path):
+    """Checks if directory is empty"""
+    if not isdir(path):
+        raise Exception("{0} is not directory".format(path))
+    if len(listdir(path)) == 0:
+        return True
+    return False
+
+
+def fsort(files, key=lambda x: x, reverse=False):
+    """Sorts a file list based on file names"""
     return sorted(files, key=lambda x: key(filename(x)), reverse=reverse)
 
 
-def copy(src, dst):
+def pty(path):
+    """Creates a valid path"""
+    return path.replace("/", "\\")
+
+
+def copy(src, dst, suppress=True):
     """Copies files from one place to another"""
     if not exists(src):
-        raise Exception("{0} does no exist".format(src))
+        raise Exception("{0} does not exist")
     if isfile(src):
-        if not exists(dst):
-            mkdirs(dst)
-        shutil.copy(src, dst)
-    else:
-        shutil.copytree(src, dst)
+        return __file_copy(src, dst, suppress=suppress)
+    if isdir(src):
+        return __dir_copy(src, dst, suppress=suppress)
+
+
+def __file_copy(src, dst, suppress=True):
+    """
+    Copies files from one place to another
+    /y  overwrite files
+    """
+    cmd = "copy {0} {1} /y".format(pty(src), pty(dst))
+    if suppress:
+        cmd += " >nul"
+    if not exists(dirname(dst)):
+        mkdirs(dirname(dst))
+    return os.system(cmd)
+
+
+def __dir_copy(src, dst, suppress=True):
+    """
+    Copies directories from one place to another
+    /i  assume dst is a directory
+    /s  copy folders and sub folders
+    /h  copy hidden files and folders
+    /e  copy empty folders
+    /k  copy attributes
+    /f  display full src and dst names
+    /c  continue copying if an error occurs
+    /y  overwrite files
+    """
+    cmd = "xcopy {0} {1} /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
+    if suppress:
+        cmd += " >nul"
+    return os.system(cmd)
 
 
 def move(src, dst):
