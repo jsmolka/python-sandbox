@@ -143,7 +143,7 @@ def copy(src, dst, suppress=True):
     /y  overwrite files
     """
     if not exists(src):
-        raise Exception("{0} does not exist")
+        return 1
     if isfile(src) and filelike(dst):
         return __copy_file_to_file(src, dst, suppress)
     if isfile(src) and pathlike(dst):
@@ -182,7 +182,7 @@ def move(src, dst, suppress=True):
     /y  overwrite files
     """
     if not exists(src):
-        raise Exception("{0} does not exist".format(src))
+        return 1
     if not exists(dst):
         mkdirs(dst)
     if isfile(src) and filelike(dst):
@@ -220,7 +220,7 @@ def __move_dir_to_dir(src, dst, suppress):
 def remove(src, suppress=True):
     """Removes files or directories"""
     if not exists(src):
-        raise Exception("{0} does not exist".format(src))
+        return 1
     if isfile(src):
         return __remove_file(src, suppress)
     else:
@@ -245,14 +245,12 @@ def remove_empty_dirs(path):
     """Removes empty folders recursively"""
     if not isdir(path):
         return
-
     folders = os.listdir(path)
     if folders:
         for folder in folders:
             full_path = os.path.join(path, folder)
             if isdir(full_path):
                 remove_empty_dirs(full_path)
-
     if isempty(path):
         remove(path)
 
@@ -317,7 +315,7 @@ def symlink(src, dst, suppress=True):
 
 
 def lzma(dst, *src, suppress=True):
-    """Creates a 7z archive"""
+    """Creates a lzma archive"""
     cmd = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\"{1}"
     files = ""
     for path in src:
