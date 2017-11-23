@@ -1,3 +1,4 @@
+import datetime
 import getpass
 import glob
 import inspect
@@ -57,25 +58,6 @@ def pathlike(path):
     return not filelike(path)
 
 
-def mkdirs(path):
-    """Creates directories recursively"""
-    if filelike(path):
-        path = dirname(path)
-    if not path[-1] in ("/", "\\"):
-        path += "\\"
-    os.makedirs(path)
-
-
-def files(path, filter=None, recursive=True):
-    """Returns all files"""
-    if filter:
-        files = []
-        for rule in filter:
-            files.extend(list(glob.iglob("{0}/**/{1}".format(path, rule), recursive=recursive)))
-        return files
-    return list(glob.iglob("{0}/**/*.*".format(path), recursive=recursive))
-
-
 def ext(file, dot=False):
     """Returns file extension"""
     ext = os.path.splitext(file)[1]
@@ -115,19 +97,44 @@ def isempty(path):
     return False
 
 
-def fsort(files, key=lambda x: x, reverse=False):
-    """Sorts a file list based on file names"""
-    return sorted(files, key=lambda x: key(filename(x)), reverse=reverse)
-
-
 def pty(path):
     """Creates valid cmd path"""
     return path.replace("/", "\\")
 
 
+def date(form="%d-%m-%y"):
+    """Returns current date string"""
+    today = datetime.date.today()
+    return today if form is None else today.strftime(form)
+
+
 def execute(cmd, suppress=False):
     """Executes a command"""
     return os.system(cmd + " >nul" if suppress else cmd)
+
+
+def mkdirs(path):
+    """Creates directories recursively"""
+    if filelike(path):
+        path = dirname(path)
+    if not path[-1] in ("/", "\\"):
+        path += "\\"
+    os.makedirs(path)
+
+
+def files(path, filter=None, recursive=True):
+    """Returns all files"""
+    if filter:
+        files = []
+        for rule in filter:
+            files.extend(list(glob.iglob("{0}/**/{1}".format(path, rule), recursive=recursive)))
+        return files
+    return list(glob.iglob("{0}/**/*.*".format(path), recursive=recursive))
+
+
+def fsort(files, key=lambda x: x, reverse=False):
+    """Sorts a file list based on file names"""
+    return sorted(files, key=lambda x: key(filename(x)), reverse=reverse)
 
 
 def copy(src, dst, suppress=True):
@@ -168,9 +175,9 @@ def __copy_file_to_dir(src, dst, suppress):
 
 def __copy_dir_to_dir(src, dst, suppress):
     """Copies directory to directory"""
-    if not src[-1] in ("/", "\\"):
+    if src[-1] in ("/", "\\"):
         src = src[:-1]
-    if not dst[-1] in ("/", "\\"):
+    if dst[-1] in ("/", "\\"):
         dst = dst[:-1]
     cmd = "xcopy \"{0}\" \"{1}\" /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
     return execute(cmd, suppress=suppress)
@@ -201,7 +208,7 @@ def __move_file_to_file(src, dst, suppress):
 
 def __move_file_to_dir(src, dst, suppress):
     """Moves file to directory"""
-    if not dst.endswith("/") or dst.endswith("\\"):
+    if not dst[-1] in ("/", "\\"):
         dst += "\\"
     cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
     return execute(cmd, suppress=suppress)
@@ -229,7 +236,7 @@ def remove(src, suppress=True):
 
 def __remove_file(src, suppress):
     """Removes file"""
-    cmd = "del \"{0}\"".format(src)
+    cmd = "del \"{0}\"".format(pty(src))
     return execute(cmd, suppress=suppress)
 
 
@@ -237,7 +244,7 @@ def __remove_dir(src, suppress):
     """Removes directory"""
     if src[-1] in ("/", "\\"):
         src = src[:-1]
-    cmd = "rd \"{0}\" /s/q".format(src)
+    cmd = "rd \"{0}\" /s/q".format(pty(src))
     return execute(cmd, suppress=suppress)
 
 
@@ -297,8 +304,7 @@ def remove_duplicates(files):
 
 def cd_back(path):
     """Goes one folder back"""
-    path = path.replace("\\", "/")
-    parts = path.split("/")
+    parts = pty(path).split("\\")
     result = parts[0]
     for i in range(1, len(parts) - 1):
         result += "/{0}".format(parts[i])
@@ -310,7 +316,7 @@ def symlink(src, dst, suppress=True):
     parent = cd_back(dst)
     if not exists(parent):
         mkdirs(parent)
-    cmd = "mklink /d \"{0}\" \"{1}\"".format(dst, src)
+    cmd = "mklink /d \"{0}\" \"{1}\"".format(pty(dst), pty(src))
     return execute(cmd, suppress=suppress)
 
 
@@ -319,5 +325,5 @@ def lzma(dst, *src, suppress=True):
     cmd = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\"{1}"
     files = ""
     for path in src:
-        files += " \"{0}\"".format(path)
-    return execute(cmd.format(dst, files), suppress=suppress)
+        files += " \"{0}\"".format(pty(path))
+    return execute(cmd.format(pty(dst), files), suppress=suppress)
