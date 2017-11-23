@@ -97,20 +97,10 @@ def isempty(path):
     return False
 
 
-def pty(path):
-    """Creates valid cmd path"""
-    return path.replace("/", "\\")
-
-
 def date(form="%d-%m-%y"):
-    """Returns current date string"""
+    """Returns current date"""
     today = datetime.date.today()
     return today if form is None else today.strftime(form)
-
-
-def execute(cmd, suppress=False):
-    """Executes a command"""
-    return os.system(cmd + " >nul" if suppress else cmd)
 
 
 def mkdirs(path):
@@ -137,7 +127,19 @@ def fsort(files, key=lambda x: x, reverse=False):
     return sorted(files, key=lambda x: key(filename(x)), reverse=reverse)
 
 
-def copy(src, dst, suppress=True):
+def __pty(path):
+    """Creates valid cmd path"""
+    return path.replace("/", "\\")
+
+
+def __execute(cmd, stdout, stderr):
+    """Executes command"""
+    if not stdout: cmd += " >nul"
+    if not stderr: cmd += " 2>nul"
+    return os.system(cmd)
+
+
+def copy(src, dst, stdout=False, stderr=False):
     """
     Copies files or directories
     /i  assume dst is a directory
@@ -152,38 +154,38 @@ def copy(src, dst, suppress=True):
     if not exists(src):
         return 1
     if isfile(src) and filelike(dst):
-        return __copy_file_to_file(src, dst, suppress)
+        return __copy_file_to_file(src, dst, stdout, stderr)
     if isfile(src) and pathlike(dst):
-        return __copy_file_to_dir(src, dst, suppress)
+        return __copy_file_to_dir(src, dst, stdout, stderr)
     if isdir(src) and pathlike(dst):
-        return __copy_dir_to_dir(src, dst, suppress)
+        return __copy_dir_to_dir(src, dst, stdout, stderr)
 
 
-def __copy_file_to_file(src, dst, suppress):
+def __copy_file_to_file(src, dst, stdout, stderr):
     """Copies file to file"""
-    cmd = "ECHO D | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
-    return execute(cmd, suppress=suppress)
+    cmd = "ECHO D | xcopy \"{0}\" \"{1}\" /y".format(__pty(src), __pty(dst))
+    return __execute(cmd, stdout, stderr)
 
 
-def __copy_file_to_dir(src, dst, suppress):
+def __copy_file_to_dir(src, dst, stdout, stderr):
     """Copies file to directory"""
     if not dst[-1] in ("/", "\\"):
         dst += "\\"
-    cmd = "ECHO V | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
-    return execute(cmd, suppress=suppress)
+    cmd = "ECHO V | xcopy \"{0}\" \"{1}\" /y".format(__pty(src), __pty(dst))
+    return __execute(cmd, stdout, stderr)
 
 
-def __copy_dir_to_dir(src, dst, suppress):
+def __copy_dir_to_dir(src, dst, stdout, stderr):
     """Copies directory to directory"""
     if src[-1] in ("/", "\\"):
         src = src[:-1]
     if dst[-1] in ("/", "\\"):
         dst = dst[:-1]
-    cmd = "xcopy \"{0}\" \"{1}\" /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
-    return execute(cmd, suppress=suppress)
+    cmd = "xcopy \"{0}\" \"{1}\" /y/i/s/h/e/k/f/c".format(__pty(src), __pty(dst))
+    return __execute(cmd, stdout, stderr)
 
 
-def move(src, dst, suppress=True):
+def move(src, dst, stdout=False, stderr=False):
     """
     Moves files or directories
     /y  overwrite files
@@ -193,59 +195,59 @@ def move(src, dst, suppress=True):
     if not exists(dst):
         mkdirs(dst)
     if isfile(src) and filelike(dst):
-        return __move_file_to_file(src, dst, suppress)
+        return __move_file_to_file(src, dst, stdout, stderr)
     if isfile(src) and pathlike(dst):
-        return __move_file_to_dir(src, dst, suppress)
+        return __move_file_to_dir(src, dst, stdout, stderr)
     if isdir(src) and pathlike(dst):
-        return __move_dir_to_dir(src, dst, suppress)
+        return __move_dir_to_dir(src, dst, stdout, stderr)
 
 
-def __move_file_to_file(src, dst, suppress):
+def __move_file_to_file(src, dst, stdout, stderr):
     """Moves file to file"""
-    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
-    return execute(cmd, suppress=suppress)
+    cmd = "move /y \"{0}\" \"{1}\"".format(__pty(src), __pty(dst))
+    return __execute(cmd, stdout, stderr)
 
 
-def __move_file_to_dir(src, dst, suppress):
+def __move_file_to_dir(src, dst, stdout, stderr):
     """Moves file to directory"""
     if not dst[-1] in ("/", "\\"):
         dst += "\\"
-    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
-    return execute(cmd, suppress=suppress)
+    cmd = "move /y \"{0}\" \"{1}\"".format(__pty(src), __pty(dst))
+    return __execute(cmd, stdout, stderr)
 
 
-def __move_dir_to_dir(src, dst, suppress):
+def __move_dir_to_dir(src, dst, stdout, stderr):
     """Moves directory to directory"""
     if src[-1] in ("/", "\\"):
         src = src[:-1]
     if dst[-1] in ("/", "\\"):
         dst = dst[:-1]
-    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
-    return execute(cmd, suppress=suppress)
+    cmd = "move /y \"{0}\" \"{1}\"".format(__pty(src), __pty(dst))
+    return __execute(cmd, stdout, stderr)
 
 
-def remove(src, suppress=True):
+def remove(src, stdout=False, stderr=False):
     """Removes files or directories"""
     if not exists(src):
         return 1
     if isfile(src):
-        return __remove_file(src, suppress)
+        return __remove_file(src, stdout, stderr)
     else:
-        return __remove_dir(src, suppress)
+        return __remove_dir(src, stdout, stderr)
 
 
-def __remove_file(src, suppress):
+def __remove_file(src, stdout, stderr):
     """Removes file"""
-    cmd = "del \"{0}\"".format(pty(src))
-    return execute(cmd, suppress=suppress)
+    cmd = "del \"{0}\"".format(__pty(src))
+    return __execute(cmd, stdout, stderr)
 
 
-def __remove_dir(src, suppress):
+def __remove_dir(src, stdout, stderr):
     """Removes directory"""
     if src[-1] in ("/", "\\"):
         src = src[:-1]
-    cmd = "rd \"{0}\" /s/q".format(pty(src))
-    return execute(cmd, suppress=suppress)
+    cmd = "rd \"{0}\" /s/q".format(__pty(src))
+    return __execute(cmd, stdout, stderr)
 
 
 def remove_empty_dirs(path):
@@ -304,26 +306,26 @@ def remove_duplicates(files):
 
 def cd_back(path):
     """Goes one folder back"""
-    parts = pty(path).split("\\")
+    parts = __pty(path).split("\\")
     result = parts[0]
     for i in range(1, len(parts) - 1):
         result += "/{0}".format(parts[i])
     return result
 
 
-def symlink(src, dst, suppress=True):
+def symlink(src, dst, stdout=False, stderr=False):
     """Creates symbolic link"""
     parent = cd_back(dst)
     if not exists(parent):
         mkdirs(parent)
-    cmd = "mklink /d \"{0}\" \"{1}\"".format(pty(dst), pty(src))
-    return execute(cmd, suppress=suppress)
+    cmd = "mklink /d \"{0}\" \"{1}\"".format(__pty(dst), __pty(src))
+    return __execute(cmd, stdout, stderr)
 
 
-def lzma(dst, *src, suppress=True):
+def lzma(dst, *src, stdout=False, stderr=False):
     """Creates a lzma archive"""
     cmd = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\"{1}"
     files = ""
     for path in src:
-        files += " \"{0}\"".format(pty(path))
-    return execute(cmd.format(pty(dst), files), suppress=suppress)
+        files += " \"{0}\"".format(__pty(path))
+    return __execute(cmd.format(__pty(dst), files), stdout, stderr)
