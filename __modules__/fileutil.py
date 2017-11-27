@@ -127,7 +127,7 @@ def fsort(files, key=lambda x: x, reverse=False):
     return sorted(files, key=lambda x: key(filename(x)), reverse=reverse)
 
 
-def __pty(path):
+def pty(path):
     """Creates valid cmd path"""
     return path.replace("/", "\\")
 
@@ -163,7 +163,7 @@ def copy(src, dst, stdout=False, stderr=True):
 
 def __copy_file_to_file(src, dst, stdout, stderr):
     """Copies file to file"""
-    cmd = "ECHO D | xcopy \"{0}\" \"{1}\" /y".format(__pty(src), __pty(dst))
+    cmd = "ECHO D | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
     return __execute(cmd, stdout, stderr)
 
 
@@ -171,7 +171,7 @@ def __copy_file_to_dir(src, dst, stdout, stderr):
     """Copies file to directory"""
     if not dst[-1] in ("/", "\\"):
         dst += "\\"
-    cmd = "ECHO V | xcopy \"{0}\" \"{1}\" /y".format(__pty(src), __pty(dst))
+    cmd = "ECHO V | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
     return __execute(cmd, stdout, stderr)
 
 
@@ -181,7 +181,7 @@ def __copy_dir_to_dir(src, dst, stdout, stderr):
         src = src[:-1]
     if dst[-1] in ("/", "\\"):
         dst = dst[:-1]
-    cmd = "xcopy \"{0}\" \"{1}\" /y/i/s/h/e/k/f/c".format(__pty(src), __pty(dst))
+    cmd = "xcopy \"{0}\" \"{1}\" /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
     return __execute(cmd, stdout, stderr)
 
 
@@ -204,7 +204,7 @@ def move(src, dst, stdout=False, stderr=True):
 
 def __move_file_to_file(src, dst, stdout, stderr):
     """Moves file to file"""
-    cmd = "move /y \"{0}\" \"{1}\"".format(__pty(src), __pty(dst))
+    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
     return __execute(cmd, stdout, stderr)
 
 
@@ -212,7 +212,7 @@ def __move_file_to_dir(src, dst, stdout, stderr):
     """Moves file to directory"""
     if not dst[-1] in ("/", "\\"):
         dst += "\\"
-    cmd = "move /y \"{0}\" \"{1}\"".format(__pty(src), __pty(dst))
+    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
     return __execute(cmd, stdout, stderr)
 
 
@@ -222,7 +222,7 @@ def __move_dir_to_dir(src, dst, stdout, stderr):
         src = src[:-1]
     if dst[-1] in ("/", "\\"):
         dst = dst[:-1]
-    cmd = "move /y \"{0}\" \"{1}\"".format(__pty(src), __pty(dst))
+    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
     return __execute(cmd, stdout, stderr)
 
 
@@ -238,7 +238,7 @@ def remove(src, stdout=False, stderr=True):
 
 def __remove_file(src, stdout, stderr):
     """Removes file"""
-    cmd = "del \"{0}\"".format(__pty(src))
+    cmd = "del \"{0}\"".format(pty(src))
     return __execute(cmd, stdout, stderr)
 
 
@@ -246,7 +246,7 @@ def __remove_dir(src, stdout, stderr):
     """Removes directory"""
     if src[-1] in ("/", "\\"):
         src = src[:-1]
-    cmd = "rd \"{0}\" /s/q".format(__pty(src))
+    cmd = "rd \"{0}\" /s/q".format(pty(src))
     return __execute(cmd, stdout, stderr)
 
 
@@ -306,7 +306,7 @@ def remove_duplicates(files):
 
 def cd_back(path):
     """Goes one folder back"""
-    parts = __pty(path).split("\\")
+    parts = pty(path).split("\\")
     result = parts[0]
     for i in range(1, len(parts) - 1):
         result += "/{0}".format(parts[i])
@@ -318,7 +318,7 @@ def symlink(src, dst, stdout=False, stderr=True):
     parent = cd_back(dst)
     if not exists(parent):
         mkdirs(parent)
-    cmd = "mklink /d \"{0}\" \"{1}\"".format(__pty(dst), __pty(src))
+    cmd = "mklink /d \"{0}\" \"{1}\"".format(pty(dst), pty(src))
     return __execute(cmd, stdout, stderr)
 
 
@@ -327,5 +327,5 @@ def lzma(dst, *src, stdout=False, stderr=True):
     cmd = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\"{1}"
     files = ""
     for path in src:
-        files += " \"{0}\"".format(__pty(path))
-    return __execute(cmd.format(__pty(dst), files), stdout, stderr)
+        files += " \"{0}\"".format(pty(path))
+    return __execute(cmd.format(pty(dst), files), stdout, stderr)
