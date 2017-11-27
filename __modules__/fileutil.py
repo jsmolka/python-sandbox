@@ -1,9 +1,25 @@
 import datetime
 import getpass
 import glob
-import inspect
 import os
+import pathlib
 import re
+import sys
+
+
+def pty(path):
+    """Creates valid cmd path"""
+    return path.replace("/", "\\")
+
+
+def depty(path):
+    """Creates non valid cmd path"""
+    return path.replace("\\", "/")
+
+
+def deslash(path):
+    """Removes trailing slash"""
+    return depty(path[:-1] if path[-1] in ("\\", "/") else path)
 
 
 def user():
@@ -11,25 +27,25 @@ def user():
     return getpass.getuser()
 
 
+def pydir():
+    """Returns script directory"""
+    return depty(os.path.dirname(sys.modules["__main__"].__file__) + "\\")
+
+
 USER = "C:/Users/{0}/".format(user())
 DESKTOP = "{0}Desktop/".format(USER)
 ONEDRIVE = "{0}OneDrive/".format(USER)
+PYDIR = pydir()
 
 
-def cwd(slash=True):
+def cwd():
     """Returns current working directory"""
-    return os.getcwd() + "\\" if slash else os.getcwd()
+    return depty(os.getcwd() + "\\")
 
 
 def chdir(path):
     """Changes current working directory"""
     return os.chdir(path)
-
-
-def pydir(slash=True):
-    """Returns script directory"""
-    path = os.path.dirname((inspect.getfile(inspect.currentframe())))
-    return path + "\\" if slash else path
 
 
 def isdir(src):
@@ -78,12 +94,12 @@ def filename(file, ext=True):
 
 def dirname(file):
     """Returns directory name of a file"""
-    return os.path.dirname(file)
+    return depty(os.path.dirname(file) + "\\")
 
 
 def abspath(file):
     """Returns absolute path for a file"""
-    return os.path.abspath(file)
+    return depty(os.path.abspath(file))
 
 
 def listdir(path):
@@ -98,26 +114,24 @@ def isempty(path):
     return False
 
 
-def date(form="%d-%m-%y"):
+def date(pattern="%d-%m-%y"):
     """Returns current date"""
     today = datetime.date.today()
-    return today if form is None else today.strftime(form)
+    return today if pattern is None else today.strftime(pattern)
 
 
 def mkdirs(path):
     """Creates directories recursively"""
     if filelike(path):
         path = dirname(path)
-    if not path[-1] in ("/", "\\"):
-        path += "\\"
-    os.makedirs(path)
+    return os.makedirs(path)
 
 
-def files(path, filter=None, recursive=True):
+def files(path, pattern=None, recursive=True):
     """Returns all files"""
-    if filter:
+    if pattern:
         files = []
-        for rule in filter:
+        for rule in pattern:
             files.extend(list(glob.iglob("{0}/**/{1}".format(path, rule), recursive=recursive)))
         return files
     return list(glob.iglob("{0}/**/*.*".format(path), recursive=recursive))
@@ -128,15 +142,12 @@ def fsort(files, key=lambda x: x, reverse=False):
     return sorted(files, key=lambda x: key(filename(x)), reverse=reverse)
 
 
-def pty(path):
-    """Creates valid cmd path"""
-    return path.replace("/", "\\")
-
-
 def __execute(cmd, stdout, stderr):
     """Executes command"""
-    if not stdout: cmd += " >nul"
-    if not stderr: cmd += " 2>nul"
+    if not stdout:
+        cmd += " >nul"
+    if not stderr:
+        cmd += " 2>nul"
     return os.system(cmd)
 
 
@@ -255,7 +266,7 @@ def remove_empty_dirs(path):
     """Removes empty folders recursively"""
     if not isdir(path):
         return
-    folders = os.listdir(path)
+    folders = listdir(path)
     if folders:
         for folder in folders:
             full_path = os.path.join(path, folder)
@@ -265,7 +276,7 @@ def remove_empty_dirs(path):
         remove(path)
 
 
-def filter(files, regex, ext=True):
+def regex(files, pattern, ext=True):
     """
     Filters files with regular expressions
     .       match any character
@@ -281,7 +292,7 @@ def filter(files, regex, ext=True):
     matching = []
     other = []
     for file in files:
-        if re.match(r"{0}".format(regex), filename(file, ext=ext)):
+        if re.match(r"{0}".format(pattern), filename(file, ext=ext)):
             matching.append(file)
         else:
             other.append(file)
@@ -305,18 +316,14 @@ def remove_duplicates(files):
     return result
 
 
-def cd_back(path):
+def back(path):
     """Goes one folder back"""
-    parts = pty(path).split("\\")
-    result = parts[0]
-    for i in range(1, len(parts) - 1):
-        result += "/{0}".format(parts[i])
-    return result
+    return depty(str(pathlib.Path(path).parent) + "\\")
 
 
 def symlink(src, dst, stdout=False, stderr=True):
     """Creates symbolic link"""
-    parent = cd_back(dst)
+    parent = back(dst)
     if not exists(parent):
         mkdirs(parent)
     cmd = "mklink /d \"{0}\" \"{1}\"".format(pty(dst), pty(src))
