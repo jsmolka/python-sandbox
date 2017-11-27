@@ -139,7 +139,7 @@ def __execute(cmd, stdout, stderr):
     return os.system(cmd)
 
 
-def copy(src, dst, stdout=False, stderr=False):
+def copy(src, dst, stdout=False, stderr=True):
     """
     Copies files or directories
     /i  assume dst is a directory
@@ -185,7 +185,7 @@ def __copy_dir_to_dir(src, dst, stdout, stderr):
     return __execute(cmd, stdout, stderr)
 
 
-def move(src, dst, stdout=False, stderr=False):
+def move(src, dst, stdout=False, stderr=True):
     """
     Moves files or directories
     /y  overwrite files
@@ -226,7 +226,7 @@ def __move_dir_to_dir(src, dst, stdout, stderr):
     return __execute(cmd, stdout, stderr)
 
 
-def remove(src, stdout=False, stderr=False):
+def remove(src, stdout=False, stderr=True):
     """Removes files or directories"""
     if not exists(src):
         return 1
@@ -313,7 +313,7 @@ def cd_back(path):
     return result
 
 
-def symlink(src, dst, stdout=False, stderr=False):
+def symlink(src, dst, stdout=False, stderr=True):
     """Creates symbolic link"""
     parent = cd_back(dst)
     if not exists(parent):
@@ -322,7 +322,7 @@ def symlink(src, dst, stdout=False, stderr=False):
     return __execute(cmd, stdout, stderr)
 
 
-def lzma(dst, *src, stdout=False, stderr=False):
+def lzma(dst, *src, stdout=False, stderr=True):
     """Creates a lzma archive"""
     cmd = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\"{1}"
     files = ""
