@@ -16,9 +16,9 @@ DESKTOP = "{0}Desktop/".format(USER)
 ONEDRIVE = "{0}OneDrive/".format(USER)
 
 
-def cwd():
+def cwd(slash=True):
     """Returns current working directory"""
-    return os.getcwd()
+    return os.getcwd() + "\\" if slash else os.getcwd()
 
 
 def chdir(path):
@@ -26,9 +26,10 @@ def chdir(path):
     return os.chdir(path)
 
 
-def pydir():
+def pydir(slash=True):
     """Returns script directory"""
-    return os.path.dirname((inspect.getfile(inspect.currentframe())))
+    path = os.path.dirname((inspect.getfile(inspect.currentframe())))
+    return path + "\\" if slash else path
 
 
 def isdir(src):
