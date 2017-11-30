@@ -17,9 +17,14 @@ def depty(path):
     return path.replace("\\", "/")
 
 
+def __endsslash(path):
+    """Returns true if path ends with a slash"""
+    return True if path[-1] in ("/", "\\") else False
+
+
 def deslash(path):
     """Removes trailing slash"""
-    return depty(path[:-1] if path[-1] in ("\\", "/") else path)
+    return depty(path[:-1] if __endsslash(path) else path)
 
 
 def user():
@@ -181,7 +186,7 @@ def __copy_file_to_file(src, dst, stdout, stderr):
 
 def __copy_file_to_dir(src, dst, stdout, stderr):
     """Copies file to directory"""
-    if not dst[-1] in ("/", "\\"):
+    if not __endsslash(dst):
         dst += "\\"
     cmd = "ECHO V | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
     return __execute(cmd, stdout, stderr)
@@ -189,9 +194,9 @@ def __copy_file_to_dir(src, dst, stdout, stderr):
 
 def __copy_dir_to_dir(src, dst, stdout, stderr):
     """Copies directory to directory"""
-    if src[-1] in ("/", "\\"):
+    if __endsslash(src):
         src = src[:-1]
-    if dst[-1] in ("/", "\\"):
+    if __endsslash(dst):
         dst = dst[:-1]
     cmd = "xcopy \"{0}\" \"{1}\" /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
     return __execute(cmd, stdout, stderr)
@@ -222,7 +227,7 @@ def __move_file_to_file(src, dst, stdout, stderr):
 
 def __move_file_to_dir(src, dst, stdout, stderr):
     """Moves file to directory"""
-    if not dst[-1] in ("/", "\\"):
+    if not __endsslash(dst):
         dst += "\\"
     cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
     return __execute(cmd, stdout, stderr)
@@ -230,9 +235,9 @@ def __move_file_to_dir(src, dst, stdout, stderr):
 
 def __move_dir_to_dir(src, dst, stdout, stderr):
     """Moves directory to directory"""
-    if src[-1] in ("/", "\\"):
+    if __endsslash(src):
         src = src[:-1]
-    if dst[-1] in ("/", "\\"):
+    if __endsslash(dst):
         dst = dst[:-1]
     cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
     return __execute(cmd, stdout, stderr)
@@ -256,7 +261,7 @@ def __remove_file(src, stdout, stderr):
 
 def __remove_dir(src, stdout, stderr):
     """Removes directory"""
-    if src[-1] in ("/", "\\"):
+    if __endsslash(src):
         src = src[:-1]
     cmd = "rd \"{0}\" /s/q".format(pty(src))
     return __execute(cmd, stdout, stderr)
