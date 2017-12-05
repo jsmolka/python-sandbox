@@ -156,6 +156,11 @@ def __execute(cmd, stdout, stderr):
     return os.system(cmd)
 
 
+def cmd(command, stdout=True, stderr=True):
+    """Executes command"""
+    return __execute(command, stdout=stdout, stderr=stderr)
+
+
 def copy(src, dst, stdout=False, stderr=True):
     """
     Copies files or directories
