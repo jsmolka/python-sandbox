@@ -13,11 +13,13 @@ def purify(array, flip=False):
     shape = array.shape
     array.flatten()
     if not flip:
-        array[array < 128] = 0
-        array[array >= 128] = 255
+        array[array < 128] = 128
+        array[array > 128] = 255
+        array[array == 128] = 0
     else:
+        array[array > 128] = 128
         array[array < 128] = 255
-        array[array >= 128] = 0
+        array[array == 128] = 0
     array.shape = shape
     return array
 
@@ -33,6 +35,5 @@ def change_color(array, new_white, new_rest):
 
 
 arr = np.array(Image.open("src.png"), dtype=np.uint8)
-arr = maze_shape(arr)
-arr = purify(arr, flip=True)
+arr = maze_shape(purify(arr, flip=True))
 Image.fromarray(arr, "RGB").save("res.png", "png")
