@@ -7,44 +7,60 @@ class Matrix:
 
     def __getitem__(self, item):
         """Better indexing for getting"""
-        if type(item) != tuple or len(item) != 2:
-            raise IndexError("Index must be a tuple")
-        r, c = item
-        if 0 <= r < len(self.__matrix) and 0 <= c < len(self.__matrix[0]):
-            return self.__matrix[r][c]
+        if isinstance(item, int):
+            if 0 <= item < self.row_count:
+                return self.__matrix[item]
+            else:
+                raise IndexError("Index out of range")
+        elif isinstance(item, tuple):
+            if len(item) != 2:
+                raise IndexError("Invalid tuple length")
+            r, c = item
+            if 0 <= r < self.row_count and 0 <= c < self.col_count:
+                return self.__matrix[r][c]
+            else:
+                raise IndexError("Index out of range")
         else:
-            raise IndexError("Index out of range")
+            raise IndexError("Index must be tuple or int")
 
     def __setitem__(self, key, value):
         """Better indexing for setting"""
-        if type(key) != tuple or len(key) != 2:
-            raise IndexError("Index must be a tuple")
-        r, c = key
-        if 0 <= r < len(self.__matrix) and 0 <= c < len(self.__matrix[0]):
-            self.__matrix[r][c] = value
+        if isinstance(key, int):
+            if 0 <= key < self.row_count:
+                self.__matrix[key] = value
+            else:
+                raise IndexError("Index out of range")
+        elif isinstance(key, tuple):
+            if len(key) != 2:
+                raise IndexError("Invalid tuple length")
+            r, c = key
+            if 0 <= r < self.row_count and 0 <= c < self.col_count:
+                self.__matrix[r][c] = value
+            else:
+                raise IndexError("Index out of range")
         else:
-            raise IndexError("Index out of range")
+            raise IndexError("Index must be tuple or int")
 
     def __add__(self, other):
         """Adds matrices"""
-        if not type(other) != Matrix:
+        if not isinstance(other, Matrix):
             raise ArithmeticError("Invalid type")
         return self.__add(other)
 
     def __sub__(self, other):
         """Subtracts matrices"""
-        if type(other) != Matrix:
+        if not isinstance(other, Matrix):
             raise ArithmeticError("Invalid type")
         return self.__subtract(other)
 
     def __mul__(self, other):
         """Multiplies matrices"""
-        if type(other) != Matrix and type(other) != int and type(other) != float:
-            raise ArithmeticError("Invalid type")
-        if type(other) == Matrix:
+        if isinstance(other, Matrix):
             return self.__multiply(other)
-        if type(other) == (int or float):
+        if isinstance(other, int) or isinstance(other, float):
             return self.__multiply_scalar(other)
+        else:
+            raise ArithmeticError("Invalid type")
 
     def __rmul__(self, other):
         """Multiplies matrices reversely"""
@@ -58,7 +74,7 @@ class Matrix:
     @property
     def col_count(self):
         """Returns col count"""
-        return len(self.__matrix[0])
+        return len(self[0])
 
     @property
     def regular(self):
@@ -81,37 +97,34 @@ class Matrix:
         return self.__rank()
 
     @property
-    def __is_row(self):
+    def is_row(self):
         """Checks if matrix is a row"""
-        return True if len(self.__matrix) == 1 else False
+        return True if self.row_count == 1 else False
 
     @property
-    def __is_col(self):
+    def is_col(self):
         """Checks if matrix is a column"""
-        return True if len(self.__matrix[0]) == 1 else False
+        return True if self.col_count == 1 else False
 
     @property
-    def __is_square(self):
+    def square(self):
         """Checks if matrix is square matrix"""
-        return True if len(self.__matrix) == len(self.__matrix[0]) else False
+        return True if self.row_count == self.col_count else False
 
     def __validate(self):
         """Validates matrix"""
-        if not (type(self.__matrix) and type(self.__matrix[0])) == list:
+        if not (isinstance(self.__matrix, list) and isinstance(self[0], list)):
             return False
-
-        length = self.col_count
         for row in self.__matrix:
-            if len(row) != length:
+            if len(row) != self.col_count:
                 return False
         return True
 
     @staticmethod
     def create(rows, cols, default=0, unit=False):
         """Creates (r x c) matrix with default values or unit matrix"""
-        if (rows or cols) <= 0:
+        if rows <= 0 or cols <= 0:
             raise Exception("Invalid row or column count")
-
         if not unit:  # Empty matrix
             result = list()
             for r in range(0, rows):
@@ -133,11 +146,7 @@ class Matrix:
 
     def duplicate(self):
         """Duplicates matrix"""
-        result = Matrix.create(self.row_count, self.col_count)
-        for r in range(0, result.row_count):
-            for c in range(0, result.col_count):
-                result[r, c] = self[r, c]
-        return result
+        return Matrix(self.__matrix[:])
 
     def transpose(self):
         """Transposes matrix"""
@@ -149,11 +158,8 @@ class Matrix:
 
     def __add(self, matrix):
         """Adds matrices"""
-        if not self.row_count == matrix.row_count:
-            raise Exception("Different row count")
-        if not self.col_count == matrix.col_count:
-            raise Exception("Different column count")
-
+        if self.row_count != matrix.row_count or self.col_count != matrix.col_count:
+            raise Exception("Different row or column count")
         result = self.duplicate()
         for r in range(0, result.row_count):
             for c in range(0, result.col_count):
@@ -162,11 +168,8 @@ class Matrix:
 
     def __subtract(self, matrix):
         """Subtracts matrices"""
-        if not self.row_count == matrix.row_count:
-            raise Exception("Different row count")
-        if not self.col_count == matrix.col_count:
-            raise Exception("Different column count")
-
+        if self.row_count != matrix.row_count or self.col_count != matrix.col_count:
+            raise Exception("Different row or column count")
         result = self.duplicate()
         for r in range(0, result.row_count):
             for c in range(0, result.col_count):
@@ -175,11 +178,8 @@ class Matrix:
 
     def __multiply(self, matrix):
         """Multiplies matrices"""
-        if not self.row_count == matrix.col_count:
-            raise Exception("Different row / column count")
-        if not self.col_count == matrix.row_count:
-            raise Exception("Different row / column count")
-
+        if self.row_count != matrix.col_count or self.col_count != matrix.row_count:
+            raise Exception("Different row or column count")
         result = self.duplicate()
         for r in range(0, result.row_count):
             for c in range(0, matrix.col_count):
@@ -199,9 +199,8 @@ class Matrix:
 
     def __determinant(self, result=0):
         """Calculates determinant recursively"""
-        if not self.__is_square:
+        if not self.square:
             raise Exception("No square matrix")
-
         if self.row_count == 1:
             result += self[0, 0]
         else:
@@ -217,7 +216,7 @@ class Matrix:
     def __regular(self):
         """Checks if matrix is regular"""
         # Regular matrix = invertible square matrix (determinant != 0)
-        if self.__is_square:
+        if self.square:
             return True if self.determinant() != 0 else False
         else:
             return False
@@ -225,7 +224,7 @@ class Matrix:
     def __singular(self):
         """Checks if matrix is singular"""
         # Singular matrix = not invertible square matrix (determinant == 0)
-        if self.__is_square:
+        if self.square:
             return True if self.determinant() == 0 else False
         else:
             return False
@@ -237,15 +236,14 @@ class Matrix:
 
     def __add_external_row(self, row, ex_row):
         """Adds external row"""
-        if not self.col_count == ex_row.col_count:
+        if self.col_count != ex_row.col_count:
             raise Exception("Different column count")
-
         for c in range(0, self.col_count):
             self[row, c] += ex_row[0, c]
 
     def __change_rows(self, row1, row2):
         """Changes rows"""
-        self.__matrix[row1], self.__matrix[row2] = self.__matrix[row2], self.__matrix[row1]
+        self[row1], self[row2] = self[row2], self[row1]
 
     def __duplicate_row(self, row):
         """Duplicates row"""
@@ -259,9 +257,9 @@ class Matrix:
         for c in range(0, self.col_count):
             self[row, c] *= scalar
 
-    def gauss(self, round_=True, digits=8):
+    def gauss(self, rnd=True, digits=8):
         """Creates lower triangular matrix using Gaussian elimination"""
-        if self.__is_row or self.__is_col:
+        if self.is_row or self.is_col:
             raise Exception("Gaussian elimination is not defined for row or column matrices")
 
         result = self.duplicate()
@@ -281,25 +279,25 @@ class Matrix:
                 if result[r2, r] != 0:  # Checks if row is zero already
                     result.__multiply_row_scalar(r2, (-1) / result[r2, r])  # [r2, r] in target row to -1
                     result.__add_rows(r, r2)
-        if round_:
+        if rnd:
             for r in range(0, result.row_count):
                 for c in range(0, result.col_count):
                     result[r, c] = round(result[r, c], digits)
         return result
 
-    def gauss_jordan(self, round_=True, digits=8):
+    def gauss_jordan(self, rnd=True, digits=8):
         """Creates lower and upper triangular matrix using Gauss-Jordan elimination"""
-        if self.__is_row or self.__is_col:
+        if self.is_row or self.is_col:
             raise Exception("Gauss-Jordan elimination is not defined for row or column matrices")
 
-        result = self.gauss(round_=False)
+        result = self.gauss(rnd=False)
 
         for r in range(result.row_count - 1, -1, -1):  # Reverse gauss
             for c in range(r - 1, -1, -1):
                 row = result.__duplicate_row(r)  # Duplicate base row
                 row.multiply_scalar((-1) * result[c, r])  # Multiply with negative value above
                 result.__add_external_row(c, row)  # Add to get zero
-        if round_:
+        if rnd:
             for r in range(0, result.row_count):
                 for c in range(0, result.col_count):
                     result[r, c] = round(result[r, c], digits)
@@ -307,9 +305,8 @@ class Matrix:
 
     def __combine(self, matrix):
         """Combines two matrices"""
-        if not self.row_count == matrix.row_count:
+        if self.row_count != matrix.row_count:
             raise Exception("Different row count")
-
         result = Matrix.create(self.row_count, self.col_count + matrix.col_count)
         for r in range(0, result.row_count):
             for c in range(0, result.col_count):
@@ -317,27 +314,22 @@ class Matrix:
                 result[r, c + matrix.col_count] = matrix[r, c]
         return result
 
-    def invert(self, round_=True, digits=8):
+    def invert(self, rnd=True, digits=8):
         """Inverts matrix"""
-        if not self.__is_square:
-            raise Exception("No square matrix")
-        if not self.regular:
-            raise Exception("Is not regular")
-
+        if not (self.square and self.regular):
+            raise Exception("No regular square matrix")
         result = self.duplicate()
-        unit = Matrix.create(result.row_count, result.row_count, unit=True)
-        combined = result.__combine(unit)
-        combined = combined.gauss_jordan(round_=round_, digits=digits)
-        for r in range(0, result.row_count):  # Cut out old matrix
+        combined = result.__combine(Matrix.create(result.row_count, result.row_count, unit=True))
+        combined = combined.gauss_jordan(rnd=rnd, digits=digits)
+        for r in range(0, result.row_count):  # Cut off old matrix
             for c in range(0, result.col_count):
                 result[r, c] = combined[r, c + result.col_count]
         return result
 
     def __rank(self):
         """Calculates rank"""
-        if self.__is_row:
+        if self.is_row:
             return 1
-
         rank = self.row_count
         matrix = self.gauss()
         for r in range(0, matrix.row_count):
