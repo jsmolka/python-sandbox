@@ -108,7 +108,10 @@ def filename(file, ext=True):
 
 def dirname(file):
     """Returns directory name of a file"""
-    return depty(os.path.dirname(file) + "\\")
+    directory = os.path.dirname(file)
+    if not directory:
+        return ""
+    return depty(directory + "\\")
 
 
 def abspath(file):
@@ -309,7 +312,7 @@ def rename(src, dst, stdout=False, stderr=True):
     """Renames files or directories"""
     if not exists(src):
         raise FileException(src)
-    cmd = "ren \"{0}\" \"{1}\"".format(pty(src), pty(dst))
+    cmd = "ren \"{0}\" \"{1}\"".format(pty(src), pty(filename(dst)))
     return __execute(cmd, stdout, stderr)
 
 
@@ -407,11 +410,11 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     if not exists(src):
         raise FileException(src)
     if setting not in ("screen", "ebook", "printer", "prepress", "default"):
-        raise Exception("Invalid setting")
+        raise Exception("Invalid setting {0}".format(setting))
     src_ = src + "_"
     rename(src, src_)
-    cmd = "gswin32c -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 " \
-          "-dPDFSETTINGS=/{0} -dNOPAUSE -dQUIET -dBATCH -sOutputFile={1} {2}".format(setting, pty(src), pty(src_))
+    cmd = "gswin32c -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/{0} " \
+          "-dNOPAUSE -dQUIET -dBATCH -sOutputFile=\"{1}\" \"{2}\"".format(setting, pty(src), pty(src_))
     code = __execute(cmd, stdout, stderr)
     remove(src_)
     return code
