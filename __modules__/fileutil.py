@@ -7,19 +7,25 @@ import pathlib
 import re
 import sys
 
+
 class FileException(Exception):
     def __init__(self, file):
         super(FileException, self).__init__("{0} not found".format(file))
 
 
-class CommandException(Exception):
+class CmdException(Exception):
     def __init__(self, command):
-        super(CommandException, self).__init__("{0} is unavailable".format(command))
+        super(CmdException, self).__init__("{0} is unavailable".format(command))
 
 
 class ArgException(Exception):
     def __init__(self, arg):
         super(ArgException, self).__init__("Invalid argument {0}".format(arg))
+
+
+class ExtException(Exception):
+    def __init__(self, ext):
+        super(ExtException, self).__init__("Invalid extension {0}".format(ext))
 
 
 def pty(path):
@@ -47,9 +53,14 @@ def user():
     return getpass.getuser()
 
 
+def mainfile():
+    """Returns main file"""
+    return sys.modules["__main__"].__file__
+
+
 def pydir():
     """Returns script directory"""
-    return depty(os.path.dirname(sys.modules["__main__"].__file__) + "\\")
+    return depty(os.path.dirname(mainfile()) + "\\")
 
 
 USER = "C:/Users/{0}/".format(user())
@@ -150,6 +161,11 @@ def mkdirs(path):
     return os.makedirs(path)
 
 
+def back(path):
+    """Goes one folder back"""
+    return depty(str(pathlib.Path(path).parent) + "\\")
+
+
 def size(path, unit="kb"):
     """
     Returns file size of path
@@ -187,6 +203,13 @@ def psort(files, key=lambda x: x, reverse=False):
 def fsort(files, key=lambda x: x, reverse=False):
     """Sorts a file list based on file names"""
     return sorted(files, key=lambda x: key(filename(x)), reverse=reverse)
+
+
+def admin(file_name):
+    """Restart file as admin"""
+    if not ctypes.windll.shell32.IsUserAnAdmin():
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, file_name, None, 1)
+        sys.exit()
 
 
 def __execute(cmd, stdout, stderr):
@@ -336,29 +359,6 @@ def remove_empty_dirs(path):
         remove(path)
 
 
-def regex(files, pattern, ext=True):
-    """
-    Filters files with regular expressions
-    .       match any character
-    *       match any repetition of characters (.* any sequence)
-    \       escape following character
-    ^       start of string
-    $       end of string
-    ()      enclose expression
-    [A-Z]   sequence of characters
-    {m, n}  characters must appear m to n times
-    (?:1|2) must be one of the options
-    """
-    matching = []
-    other = []
-    for file in files:
-        if re.match(r"{0}".format(pattern), filename(file, ext=ext)):
-            matching.append(file)
-        else:
-            other.append(file)
-    return matching, other
-
-
 def remove_duplicates(files):
     """Removes duplicate files"""
     test = set([filename(file) for file in files])
@@ -376,9 +376,27 @@ def remove_duplicates(files):
     return result
 
 
-def back(path):
-    """Goes one folder back"""
-    return depty(str(pathlib.Path(path).parent) + "\\")
+def regex(files, pattern, name=True, ext=True):
+    """
+    Filters files with regular expressions
+    .       match any character
+    *       match any repetition of characters (.* any sequence)
+    \       escape following character
+    ^       start of string
+    $       end of string
+    ()      enclose expression
+    [A-Z]   sequence of characters
+    {m, n}  characters must appear m to n times
+    (?:1|2) must be one of the options
+    """
+    matching = []
+    other = []
+    for file in files:
+        if re.match(r"{0}".format(pattern), filename(file, ext=ext) if name == True else file):
+            matching.append(file)
+        else:
+            other.append(file)
+    return matching, other
 
 
 def symlink(src, dst, stdout=False, stderr=True):
@@ -392,10 +410,14 @@ def symlink(src, dst, stdout=False, stderr=True):
     return __execute(cmd, stdout, stderr)
 
 
+HAS_7Z = True if __execute("7z", False, False) == 0 else False
+HAS_GS = True if __execute("echo quit | gswin32c", False, False) == 0 else False
+
+
 def lzma(dst, *src, stdout=False, stderr=True):
     """Creates a lzma archive"""
-    if __execute("7z", False, False) != 0:
-        raise CommandException("7z")
+    if not HAS_7Z:
+        raise CmdException("7z")
     for file in src:
         if not exists(file):
             raise FileException(file)
@@ -411,10 +433,12 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     Compresses a pdf file
     Settings: screen, ebook, printer, prepress, default
     """
-    if __execute("echo quit | gswin32c", False, False) != 0:
-        raise CommandException("Ghostscript")
+    if not HAS_GS:
+        raise CmdException("Ghostscript")
     if not exists(src):
         raise FileException(src)
+    if not ext(src) == "pdf":
+        raise ExtException("pdf")
     if setting not in ("screen", "ebook", "printer", "prepress", "default"):
         raise ArgException(setting)
     src_ = src + "_"
@@ -424,10 +448,3 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     code = __execute(cmd, stdout, stderr)
     remove(src_)
     return code
-
-
-def admin(file_name):
-    """Restart file as admin"""
-    if not ctypes.windll.shell32.IsUserAnAdmin():
-        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, file_name, None, 1)
-        sys.exit()
