@@ -195,14 +195,9 @@ def files(path, pattern=None, recursive=True):
     return list(glob.iglob("{0}/**/*.*".format(path), recursive=recursive))
 
 
-def psort(files, key=lambda x: x, reverse=False):
-    """Sorts a list of paths"""
-    return sorted(files, key=key, reverse=reverse)
-
-
-def fsort(files, key=lambda x: x, reverse=False):
+def fsort(files, key=lambda x: x, reverse=False, name=True):
     """Sorts a file list based on file names"""
-    return sorted(files, key=lambda x: key(filename(x)), reverse=reverse)
+    return sorted(files, key=lambda x: key(filename(x)) if name else key, reverse=reverse)
 
 
 def admin(file_name):
