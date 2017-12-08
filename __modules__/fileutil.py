@@ -6,6 +6,15 @@ import pathlib
 import re
 import sys
 
+class FileException(Exception):
+    def __init__(self, file):
+        super(FileException, self).__init__(file + " not found")
+
+
+class CommandException(Exception):
+    def __init__(self, command):
+        super(CommandException, self).__init__(command + " is unavailable")
+
 
 def pty(path):
     """Creates valid cmd path"""
@@ -132,6 +141,25 @@ def mkdirs(path):
     return os.makedirs(path)
 
 
+def size(path, unit="kb"):
+    """
+    Returns file size of path
+    Possible units: b, kb, mb, gb
+    """
+    if not exists(path):
+        raise FileException(path)
+    if not unit in ("b", "kb", "mb", "gb"):
+        raise Exception("Invalid unit {0}".format(unit))
+    div = 1
+    if unit == "kb":
+        div = 1024
+    elif unit == "mb":
+        div = pow(1024, 2)
+    elif unit == "gb":
+        div = pow(1024, 3)
+    return os.path.getsize(path) / div
+
+
 def files(path, pattern=None, recursive=True):
     """Returns all files"""
     if pattern:
@@ -140,6 +168,11 @@ def files(path, pattern=None, recursive=True):
             files.extend(list(glob.iglob("{0}/**/{1}".format(path, rule), recursive=recursive)))
         return files
     return list(glob.iglob("{0}/**/*.*".format(path), recursive=recursive))
+
+
+def psort(files, key=lambda x: x, reverse=False):
+    """Sorts a list of paths"""
+    return sorted(files, key=key, reverse=reverse)
 
 
 def fsort(files, key=lambda x: x, reverse=False):
@@ -174,7 +207,7 @@ def copy(src, dst, stdout=False, stderr=True):
     /y  overwrite files
     """
     if not exists(src):
-        return 1
+        raise FileException(src)
     if isfile(src) and filelike(dst):
         return __copy_file_to_file(src, dst, stdout, stderr)
     if isfile(src) and pathlike(dst):
@@ -185,7 +218,7 @@ def copy(src, dst, stdout=False, stderr=True):
 
 def __copy_file_to_file(src, dst, stdout, stderr):
     """Copies file to file"""
-    cmd = "ECHO D | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
+    cmd = "echo D | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
     return __execute(cmd, stdout, stderr)
 
 
@@ -193,7 +226,7 @@ def __copy_file_to_dir(src, dst, stdout, stderr):
     """Copies file to directory"""
     if not __endsslash(dst):
         dst += "\\"
-    cmd = "ECHO V | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
+    cmd = "echo V | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
     return __execute(cmd, stdout, stderr)
 
 
@@ -213,7 +246,7 @@ def move(src, dst, stdout=False, stderr=True):
     /y  overwrite files
     """
     if not exists(src):
-        return 1
+        raise FileException(src)
     if not exists(dst):
         mkdirs(dst)
     if isfile(src) and filelike(dst):
@@ -251,7 +284,7 @@ def __move_dir_to_dir(src, dst, stdout, stderr):
 def remove(src, stdout=False, stderr=True):
     """Removes files or directories"""
     if not exists(src):
-        return 1
+        raise FileException(src)
     if isfile(src):
         return __remove_file(src, stdout, stderr)
     else:
@@ -269,6 +302,14 @@ def __remove_dir(src, stdout, stderr):
     if __endsslash(src):
         src = src[:-1]
     cmd = "rd \"{0}\" /s/q".format(pty(src))
+    return __execute(cmd, stdout, stderr)
+
+
+def rename(src, dst, stdout=False, stderr=True):
+    """Renames files or directories"""
+    if not exists(src):
+        raise FileException(src)
+    cmd = "ren \"{0}\" \"{1}\"".format(pty(src), pty(dst))
     return __execute(cmd, stdout, stderr)
 
 
@@ -333,6 +374,8 @@ def back(path):
 
 def symlink(src, dst, stdout=False, stderr=True):
     """Creates symbolic link"""
+    if not exists(src):
+        raise FileException(src)
     parent = back(dst)
     if not exists(parent):
         mkdirs(parent)
@@ -342,8 +385,33 @@ def symlink(src, dst, stdout=False, stderr=True):
 
 def lzma(dst, *src, stdout=False, stderr=True):
     """Creates a lzma archive"""
+    if __execute("7z", False, False) != 0:
+        raise CommandException("7z")
+    for file in src:
+        if not exists(file):
+            raise FileException(file)
     cmd = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\"{1}"
     files = ""
     for path in src:
         files += " \"{0}\"".format(pty(path))
     return __execute(cmd.format(pty(dst), files), stdout, stderr)
+
+
+def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
+    """
+    Compresses a pdf file
+    Settings: screen, ebook, printer, prepress, default
+    """
+    if __execute("echo quit | gswin32c", False, False) != 0:
+        raise CommandException("Ghostscript")
+    if not exists(src):
+        raise FileException(src)
+    if setting not in ("screen", "ebook", "printer", "prepress", "default"):
+        raise Exception("Invalid setting")
+    src_ = src + "_"
+    rename(src, src_)
+    cmd = "gswin32c -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 " \
+          "-dPDFSETTINGS=/{0} -dNOPAUSE -dQUIET -dBATCH -sOutputFile={1} {2}".format(setting, pty(src), pty(src_))
+    code = __execute(cmd, stdout, stderr)
+    remove(src_)
+    return code
