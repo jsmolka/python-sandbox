@@ -8,12 +8,17 @@ import sys
 
 class FileException(Exception):
     def __init__(self, file):
-        super(FileException, self).__init__(file + " not found")
+        super(FileException, self).__init__("{0} not found".format(file))
 
 
 class CommandException(Exception):
     def __init__(self, command):
-        super(CommandException, self).__init__(command + " is unavailable")
+        super(CommandException, self).__init__("{0} is unavailable".format(command))
+
+
+class ArgException(Exception):
+    def __init__(self, arg):
+        super(ArgException, self).__init__("Invalid argument {0}".format(arg))
 
 
 def pty(path):
@@ -152,7 +157,7 @@ def size(path, unit="kb"):
     if not exists(path):
         raise FileException(path)
     if not unit in ("b", "kb", "mb", "gb"):
-        raise Exception("Invalid unit {0}".format(unit))
+        raise ArgException(unit)
     div = 1
     if unit == "kb":
         div = 1024
@@ -410,7 +415,7 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     if not exists(src):
         raise FileException(src)
     if setting not in ("screen", "ebook", "printer", "prepress", "default"):
-        raise Exception("Invalid setting {0}".format(setting))
+        raise ArgException(setting)
     src_ = src + "_"
     rename(src, src_)
     cmd = "gswin32c -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/{0} " \
