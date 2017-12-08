@@ -1,3 +1,4 @@
+import ctypes
 import datetime
 import getpass
 import glob
@@ -423,3 +424,10 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     code = __execute(cmd, stdout, stderr)
     remove(src_)
     return code
+
+
+def admin(file_name):
+    """Restart file as admin"""
+    if not ctypes.windll.shell32.IsUserAnAdmin():
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, file_name, None, 1)
+        sys.exit()
