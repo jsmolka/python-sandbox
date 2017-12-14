@@ -195,7 +195,7 @@ def files(path, pattern=None, recursive=True):
     return list(glob.iglob("{0}/**/*.*".format(path), recursive=recursive))
 
 
-def fsort(files, key=lambda x: x, reverse=False, name=True):
+def fsort(files, key=lambda x: x, reverse=False, name=False):
     """Sorts a file list based on file names"""
     return sorted(files, key=lambda x: key(filename(x)) if name else key, reverse=reverse)
 
