@@ -7,9 +7,9 @@ m = Maze()
 sw = Stopwatch()
 
 algorithms = [
-    Algorithm.Solve.C,
-    Algorithm.Solve.DEPTH,
-    Algorithm.Solve.BREADTH
+    Maze.Solve.C,
+    Maze.Solve.DEPTH,
+    Maze.Solve.BREADTH
 ]
 
 index = menu("Which algorithm do you want to use?", *[algorithm.value for algorithm in algorithms], result=True)

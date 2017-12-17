@@ -10,13 +10,13 @@ col_count = int(input())
 line()
 
 algorithms = [
-    Algorithm.Create.C,
-    Algorithm.Create.BACKTRACKING,
-    Algorithm.Create.HUNT,
-    Algorithm.Create.ELLER,
-    Algorithm.Create.SIDEWINDER,
-    Algorithm.Create.PRIM,
-    Algorithm.Create.KRUSKAL
+    Maze.Create.C,
+    Maze.Create.BACKTRACKING,
+    Maze.Create.HUNT,
+    Maze.Create.ELLER,
+    Maze.Create.SIDEWINDER,
+    Maze.Create.PRIM,
+    Maze.Create.KRUSKAL
 ]
 
 index = menu("Which algorithm do you want to use?", *[algorithm.value for algorithm in algorithms], result=True)

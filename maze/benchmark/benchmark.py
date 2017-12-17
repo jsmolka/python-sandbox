@@ -17,17 +17,17 @@ class Data:
 db = Database("data.json")
 
 algorithms_create = [
-    Algorithm.Create.BACKTRACKING,
-    Algorithm.Create.HUNT,
-    Algorithm.Create.ELLER,
-    Algorithm.Create.SIDEWINDER,
-    Algorithm.Create.PRIM,
-    Algorithm.Create.KRUSKAL
+    Maze.Create.BACKTRACKING,
+    Maze.Create.HUNT,
+    Maze.Create.ELLER,
+    Maze.Create.SIDEWINDER,
+    Maze.Create.PRIM,
+    Maze.Create.KRUSKAL
 ]
 
 algorithms_solve = [
-    Algorithm.Solve.DEPTH,
-    Algorithm.Solve.BREADTH
+    Maze.Solve.DEPTH,
+    Maze.Solve.BREADTH
 ]
 
 algorithms_all = []
@@ -80,7 +80,7 @@ if algorithm in algorithms_create:
 else:
     total_time = timedelta(0, 0)
     for i in range(0, data.iterations):
-        m.create(row_count, col_count, Algorithm.Create.BACKTRACKING)
+        m.create(row_count, col_count, Maze.Create.BACKTRACKING)
         sw.start()
         m.solve(0, 0, algorithm)
         sw.stop()

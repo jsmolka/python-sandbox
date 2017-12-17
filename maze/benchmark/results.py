@@ -6,15 +6,15 @@ from maze import *
 db = Database("data.json")
 
 algorithms = [
-    Algorithm.Create.BACKTRACKING.value,
-    Algorithm.Create.HUNT.value,
-    Algorithm.Create.ELLER.value,
-    Algorithm.Create.SIDEWINDER.value,
-    Algorithm.Create.PRIM.value,
-    Algorithm.Create.KRUSKAL.value,
+    Maze.Create.BACKTRACKING.value,
+    Maze.Create.HUNT.value,
+    Maze.Create.ELLER.value,
+    Maze.Create.SIDEWINDER.value,
+    Maze.Create.PRIM.value,
+    Maze.Create.KRUSKAL.value,
 
-    Algorithm.Solve.DEPTH.value,
-    Algorithm.Solve.BREADTH.value
+    Maze.Solve.DEPTH.value,
+    Maze.Solve.BREADTH.value
 ]
 
 index = menu("Which algorithm do you want to display?", *algorithms, result=True)

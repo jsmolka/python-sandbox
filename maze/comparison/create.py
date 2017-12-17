@@ -4,12 +4,12 @@ from maze import *
 
 def pmaze(args):
     m = Maze()
-    m.create(args[0], args[1], Algorithm.Create.BACKTRACKING)
+    m.create(args[0], args[1], Maze.Create.BACKTRACKING)
 
 
 def cmaze(args):
     m = Maze()
-    m.create(args[0], args[1], Algorithm.Create.C)
+    m.create(args[0], args[1], Maze.Create.C)
 
 
 size = (100, 100)
