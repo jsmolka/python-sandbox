@@ -188,16 +188,16 @@ def size(path, unit="kb"):
 def files(path, pattern=None, recursive=True):
     """Returns all files"""
     if pattern:
-        f = []
+        fls = []
         for rule in pattern:
-            f.extend(list(glob.iglob("{0}/**/{1}".format(path, rule), recursive=recursive)))
-        return f
+            fls.extend(list(glob.iglob("{0}/**/{1}".format(path, rule), recursive=recursive)))
+        return fls
     return list(glob.iglob("{0}/**/*.*".format(path), recursive=recursive))
 
 
-def fsort(f, key=lambda x: x, reverse=False, name=False):
+def fsort(fls, key=lambda x: x, reverse=False, name=False):
     """Sorts a file list based on file names"""
-    return sorted(f, key=lambda x: key(filename(x)) if name else key, reverse=reverse)
+    return sorted(fls, key=lambda x: key(filename(x)) if name else key, reverse=reverse)
 
 
 def admin(file_name):
@@ -371,7 +371,7 @@ def remove_duplicates(f):
     return result
 
 
-def regex(f, pattern, name=True, ext=True):
+def regex(fls, pattern, name=True, ext=True, other=True):
     """
     Filters files with regular expressions
     .       match any character
@@ -385,13 +385,16 @@ def regex(f, pattern, name=True, ext=True):
     (?:1|2) must be one of the options
     """
     matching = []
-    other = []
-    for file in f:
-        if re.match(r"{0}".format(pattern), filename(file, ext=ext) if name is True else f):
-            matching.append(file)
+    not_matching = []
+    for f in fls:
+        if re.match(r"{0}".format(pattern), filename(f, ext=ext) if name is True else fls):
+            matching.append(f)
         else:
-            other.append(file)
-    return matching, other
+            not_matching.append(f)
+    if other:
+        return matching, not_matching
+    else:
+        return matching
 
 
 def symlink(src, dst, stdout=False, stderr=True):
@@ -417,10 +420,10 @@ def lzma(dst, *src, stdout=False, stderr=True):
         if not exists(file):
             raise FileException(file)
     command = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\"{1}"
-    f = ""
+    fls = ""
     for path in src:
-        f += " \"{0}\"".format(pty(path))
-    return __execute(command.format(pty(dst), f), stdout, stderr)
+        fls += " \"{0}\"".format(pty(path))
+    return __execute(command.format(pty(dst), fls), stdout, stderr)
 
 
 def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
