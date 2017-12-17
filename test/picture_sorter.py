@@ -87,10 +87,14 @@ try:
 
         # Remove dirs
         print("Ordner aufräumen...")
+        test = fu.files(CAMERA)
+        if test:
+            for f in test:
+                fu.move(f, TRASH)
         dirs = fu.listdir(CAMERA)
         if dirs:
             for d in dirs:
-                fu.remove(d)
+                fu.remove(CAMERA + d)
     else:
         print("Es gibt nichts zu verschieben...")
 
