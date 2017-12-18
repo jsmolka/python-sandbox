@@ -354,20 +354,21 @@ def remove_empty_dirs(path):
         remove(path)
 
 
-def remove_duplicates(f):
+def remove_duplicates(fls):
     """Removes duplicate files"""
-    test = set([filename(file) for file in f])
-    if len(test) == len(f):
-        return f
+    test = set([filename(file) for file in fls])
+    if len(test) == len(fls):
+        return fls
 
     result = []
-    for i in range(0, len(f)):
+    for i in range(0, len(fls)):
         duplicate = False
-        for j in range(i + 1, len(f)):
-            if filename(f[i]) == filename(f[j]):
+        for j in range(i + 1, len(fls)):
+            if filename(fls[i]) == filename(fls[j]):
                 duplicate = True
+                break
         if not duplicate:
-            result.append(f[i])
+            result.append(fls[i])
     return result
 
 
@@ -387,7 +388,7 @@ def regex(fls, pattern, name=True, ext=True, other=True):
     matching = []
     not_matching = []
     for f in fls:
-        if re.match(r"{0}".format(pattern), filename(f, ext=ext) if name is True else fls):
+        if re.match(r"{0}".format(pattern), filename(f, ext=ext) if name is True else f):
             matching.append(f)
         else:
             not_matching.append(f)
