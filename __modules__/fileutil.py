@@ -7,45 +7,51 @@ import pathlib
 import re
 import sys
 
+# pth : path
+# fl  : file
+# fls : files
+# src : source
+# dst : destination
+
 
 class FileException(Exception):
-    def __init__(self, file):
-        super(FileException, self).__init__("{0} not found".format(file))
+    def __init__(self, e):
+        super(FileException, self).__init__("{0} not found".format(e))
 
 
 class CmdException(Exception):
-    def __init__(self, command):
-        super(CmdException, self).__init__("{0} is unavailable".format(command))
+    def __init__(self, e):
+        super(CmdException, self).__init__("{0} is unavailable".format(e))
 
 
 class ArgException(Exception):
-    def __init__(self, arg):
-        super(ArgException, self).__init__("Invalid argument {0}".format(arg))
+    def __init__(self, e):
+        super(ArgException, self).__init__("Invalid argument {0}".format(e))
 
 
 class ExtException(Exception):
-    def __init__(self, ext):
-        super(ExtException, self).__init__("Invalid extension {0}".format(ext))
+    def __init__(self, e):
+        super(ExtException, self).__init__("Invalid extension {0}".format(e))
 
 
-def pty(path):
+def pty(pth):
     """Creates valid cmd path"""
-    return path.replace("/", "\\")
+    return pth.replace("/", "\\")
 
 
-def depty(path):
+def depty(pth):
     """Creates non valid cmd path"""
-    return path.replace("\\", "/")
+    return pth.replace("\\", "/")
 
 
-def __endsslash(path):
+def __endsslash(pth):
     """Returns true if path ends with a slash"""
-    return True if path[-1] in ("/", "\\") else False
+    return True if pth[-1] in ("/", "\\") else False
 
 
-def deslash(path):
+def deslash(pth):
     """Removes trailing slash"""
-    return depty(path[:-1] if __endsslash(path) else path)
+    return depty(pth[:-1] if __endsslash(pth) else pth)
 
 
 def user():
@@ -74,9 +80,9 @@ def cwd():
     return depty(os.getcwd() + "\\")
 
 
-def chdir(path):
+def chdir(pth):
     """Changes current working directory"""
-    return os.chdir(path)
+    return os.chdir(pth)
 
 
 def isdir(src):
@@ -94,56 +100,56 @@ def exists(src):
     return os.path.exists(src)
 
 
-def filelike(path):
-    """Checks if path is filelike"""
-    if os.path.splitext(path)[1]:
+def filelike(src):
+    """Checks if src is filelike"""
+    if os.path.splitext(src)[1]:
         return True
     return False
 
 
-def pathlike(path):
-    """Checks if path is pathlike"""
-    return not filelike(path)
+def pathlike(src):
+    """Checks if src is pathlike"""
+    return not filelike(src)
 
 
-def extension(file, dot=False):
+def extension(fl, dot=False):
     """Returns file extension"""
-    ext = os.path.splitext(file)[1]
+    ext = os.path.splitext(fl)[1]
     return ext if dot else ext[1:]
 
 
-def remove_ext(file):
+def rem_extension(fl):
     """Removes file extension"""
-    return os.path.splitext(file)[0]
+    return os.path.splitext(fl)[0]
 
 
-def filename(file, ext=True):
+def filename(fl, ext=True):
     """Returns file name"""
-    file = os.path.basename(file)
-    return file if ext else remove_ext(file)
+    file = os.path.basename(fl)
+    return file if ext else rem_extension(fl)
 
 
-def dirname(file):
+def dirname(fl):
     """Returns directory name of a file"""
-    directory = os.path.dirname(file)
+    directory = os.path.dirname(fl)
     if not directory:
         return ""
     return depty(directory + "\\")
 
 
-def abspath(file):
+def abspath(fl):
     """Returns absolute path for a file"""
-    return depty(os.path.abspath(file))
+    return depty(os.path.abspath(fl))
 
 
-def listdir(path):
+def listdir(pth):
     """Returns list of files and directories"""
-    return os.listdir(path)
+    return os.listdir(pth)
 
 
-def isempty(path):
+def isempty(pth):
     """Checks if directory is empty"""
-    if not listdir(path):
+    if not listdir(pth):
         return True
     return False
 
@@ -154,45 +160,47 @@ def date(pattern="%d-%m-%y"):
     return today if pattern is None else today.strftime(pattern)
 
 
-def mkdirs(path):
+def mkdirs(pth):
     """Creates directories recursively"""
-    if filelike(path):
-        path = dirname(path)
-    return os.makedirs(path)
+    if filelike(pth):
+        pth = dirname(pth)
+    return os.makedirs(pth)
 
 
-def back(path):
-    """Goes one folder back"""
-    return depty(str(pathlib.Path(path).parent) + "\\")
+def back(pth):
+    """Goes one folder up"""
+    if filelike(pth):
+        pth = dirname(pth)
+    return depty(str(pathlib.Path(pth).parent) + "\\")
 
 
-def size(path, unit="kb"):
+def size(src, unit="kb"):
     """
     Returns file size of path
     Possible units: b, kb, mb, gb
     """
-    if not exists(path):
-        raise FileException(path)
+    if not exists(src):
+        raise FileException(src)
     if unit not in ("b", "kb", "mb", "gb"):
         raise ArgException(unit)
     div = 1
     if unit == "kb":
         div = 1024
     elif unit == "mb":
-        div = pow(1024, 2)
+        div = 1024 ** 2
     elif unit == "gb":
-        div = pow(1024, 3)
-    return os.path.getsize(path) / div
+        div = 1024 ** 3
+    return os.path.getsize(src) / div
 
 
-def files(path, pattern=None, recursive=True):
+def files(pth, pattern=None, recursive=True):
     """Returns all files"""
     if pattern:
         fls = []
         for rule in pattern:
-            fls.extend(list(glob.iglob("{0}/**/{1}".format(path, rule), recursive=recursive)))
+            fls.extend(list(glob.iglob("{0}/**/{1}".format(pth, rule), recursive=recursive)))
         return fls
-    return list(glob.iglob("{0}/**/*.*".format(path), recursive=recursive))
+    return list(glob.iglob("{0}/**/*.*".format(pth), recursive=recursive))
 
 
 def fsort(fls, key=lambda x: x, reverse=False, name=False):
@@ -200,10 +208,10 @@ def fsort(fls, key=lambda x: x, reverse=False, name=False):
     return sorted(fls, key=lambda x: key(filename(x)) if name else key, reverse=reverse)
 
 
-def admin(file_name):
-    """Restart file as admin"""
+def admin():
+    """Restarts as admin"""
     if not ctypes.windll.shell32.IsUserAnAdmin():
-        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, file_name, None, 1)
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, mainfile(), None, 1)
         sys.exit()
 
 
@@ -340,18 +348,17 @@ def rename(src, dst, stdout=False, stderr=True):
     return __execute(command, stdout, stderr)
 
 
-def remove_empty_dirs(path):
+def remove_empty_dirs(pth):
     """Removes empty folders recursively"""
-    if not isdir(path):
+    if not isdir(pth):
         return
-    folders = listdir(path)
-    if folders:
-        for folder in folders:
-            full_path = os.path.join(path, folder)
-            if isdir(full_path):
-                remove_empty_dirs(full_path)
-    if isempty(path):
-        remove(path)
+    dirs = listdir(pth)
+    for d in dirs:
+        full = os.path.join(pth, d)
+        if isdir(full):
+            remove_empty_dirs(full)
+    if isempty(pth):
+        remove(pth)
 
 
 def remove_duplicates(fls):
@@ -392,10 +399,7 @@ def regex(fls, pattern, name=True, ext=True, other=True):
             matching.append(f)
         else:
             not_matching.append(f)
-    if other:
-        return matching, not_matching
-    else:
-        return matching
+    return matching, not_matching if other else matching
 
 
 def symlink(src, dst, stdout=False, stderr=True):
@@ -417,13 +421,12 @@ def lzma(dst, *src, stdout=False, stderr=True):
     """Creates a lzma archive"""
     if not HAS_7Z:
         raise CmdException("7z")
-    for file in src:
-        if not exists(file):
-            raise FileException(file)
-    command = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\"{1}"
     fls = ""
-    for path in src:
-        fls += " \"{0}\"".format(pty(path))
+    for f in src:
+        if not exists(f):
+            raise FileException(f)
+        fls += " \"{0}\"".format(pty(f))
+    command = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\"{1}"
     return __execute(command.format(pty(dst), fls), stdout, stderr)
 
 
