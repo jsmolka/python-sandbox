@@ -101,5 +101,7 @@ try:
 except Exception as e:
     print("Es ist ein Fehler aufgetreten!")
     print("Bitte schicke ein Bild mit dem folgenden Fehler an den Verfasser!")
+    print("-----------------------------------------------------------------")
     print(str(e))
+    print("-----------------------------------------------------------------")
     input("Enter drücken zum beenden oder Fenster schließen!")
