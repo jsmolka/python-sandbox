@@ -29,8 +29,10 @@ try:
     RE_CAMERA2 = r"^IMG-([0-9]{8})-WA([0-9]{4}).*\.jpg$"  # IMG-20160109-WA0002.jpg
     # WhatsApp pictures (filter AFTER camera!)
     RE_WHATSAPP = r"^.*([0-9]{8})_([0-9]{6}).*\.jpg$"
+    # Scans
+    RE_SCAN = r"^.*Scan.*\.png$"
     # Videos
-    RE_VIDEO = r"^.*\.(?:mp4|MP4)$"  # Videos
+    RE_VIDEO = r"^.*\.(?:mp4|MP4)$"
 
     # Define used directories
     ROOT = fu.PYDIR
@@ -39,21 +41,22 @@ try:
     VIDEO = ROOT + "Videos/"
     OTHER = ROOT + "Sonstiges/"
     WHATSAPP = ROOT + "WhatsApp/"
+    SCAN = ROOT + "Scanner/"
 
     files = fu.files(CAMERA)  # Get all data from camera folder
 
     if files:
         # Filter trash
-        print("Müll löschen...")
         files, trash = fu.regex(files, RE_MEDIA)
         if trash:
+            print("Müll löschen")
             for f in trash:  # Remove trash
                 fu.move(f, TRASH, stdout=STDOUT, stderr=STDERR)
 
         # Filter main camera
-        print("Kamera Bilder einordnen...")
         camera_main, files = fu.regex(files, RE_CAMERA_MAIN)
         if camera_main:
+            print("Kamera Bilder verschieben")
             for f in camera_main:
                 name = fu.filename(f)
                 fu.move(f, ROOT + "{0}/{1}".format(name[:4], year[name[4:6]]), stdout=STDOUT, stderr=STDERR)
@@ -61,47 +64,55 @@ try:
         # Filter camera 2
         camera2, files = fu.regex(files, RE_CAMERA2)
         if camera2:
+            print("Kamera 2 Bilder verschieben")
             for f in camera2:
                 name = fu.filename(f)
                 fu.move(f, ROOT + "{0}/{1}".format(name[4:8], year[name[8:10]]), stdout=STDOUT, stderr=STDERR)
 
         # Filter videos
-        print("Videos verschieben...")
         video, files = fu.regex(files, RE_VIDEO)
         if video:
+            print("Videos verschieben")
             for f in video:
                 fu.move(f, VIDEO, stdout=STDOUT, stderr=STDERR)
 
         # Filter WhatsApp
-        print("WhatsApp Bilder verschieben...")
         whatsapp, files = fu.regex(files, RE_WHATSAPP)
         if whatsapp:
+            print("WhatsApp Bilder verschieben")
             for f in whatsapp:
-                fu.move(f, WHATSAPP, stdout=STDOUT, stderr=STDERR)
+                name = fu.filename(f)[:-20]  # Extract WhatsApp name
+                fu.move(f, WHATSAPP + name, stdout=STDOUT, stderr=STDERR)
+
+        # Filter scans
+        scans, files = fu.regex(files, RE_SCAN)
+        if scans:
+            print("Scans verschieben")
+            for f in scans:
+                fu.move(f, SCAN, stdout=STDOUT, stderr=STDERR)
 
         # Move other
-        print("Restliche Bilder verschieben...")
         if files:
+            print("Restliche Bilder verschieben")
             for f in files:
                 fu.move(f, OTHER, stdout=STDOUT, stderr=STDERR)
 
         # Remove dirs
-        print("Ordner aufräumen...")
         test = fu.files(CAMERA)
         if test:
             for f in test:
                 fu.move(f, TRASH)
         dirs = fu.listdir(CAMERA)
         if dirs:
+            print("Ordner aufräumen")
             for d in dirs:
                 fu.remove(CAMERA + d)
     else:
-        print("Es gibt nichts zu verschieben...")
+        print("Es gibt nichts zu verschieben")
 
 except Exception as e:
-    print("Es ist ein Fehler aufgetreten!")
-    print("Bitte schicke ein Bild mit dem folgenden Fehler an den Verfasser!")
+    print("Es ist ein Fehler aufgetreten")
     print("-----------------------------------------------------------------")
     print(str(e))
     print("-----------------------------------------------------------------")
-    input("Enter drücken zum beenden oder Fenster schließen!")
+    input("Enter drücken zum beenden oder Fenster schließen")
