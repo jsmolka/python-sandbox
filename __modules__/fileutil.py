@@ -54,6 +54,11 @@ def deslash(pth):
     return depty(pth[:-1] if __endsslash(pth) else pth)
 
 
+def enslash(pth):
+    """Adds trailing slash"""
+    return depty(pth if __endsslash(pth) else pth + "\\")
+
+
 def user():
     """Returns current user"""
     return getpass.getuser()
@@ -66,7 +71,7 @@ def mainfile():
 
 def pydir():
     """Returns script directory"""
-    return depty(os.path.dirname(mainfile()) + "\\")
+    return enslash(os.path.dirname(mainfile()))
 
 
 USER = "C:/Users/{0}/".format(user())
@@ -77,7 +82,7 @@ PYDIR = pydir()
 
 def cwd():
     """Returns current working directory"""
-    return depty(os.getcwd() + "\\")
+    return enslash(os.getcwd())
 
 
 def chdir(pth):
@@ -134,7 +139,13 @@ def dirname(fl):
     directory = os.path.dirname(fl)
     if not directory:
         return ""
-    return depty(directory + "\\")
+    return enslash(directory)
+
+
+def join(pth1, pth2):
+    """Combines two paths"""
+    pth = os.path.join(pth1, pth2)
+    return pth if filelike(pth) else enslash(pth)
 
 
 def abspath(fl):
@@ -142,9 +153,12 @@ def abspath(fl):
     return depty(os.path.abspath(fl))
 
 
-def listdir(pth):
+def listdir(pth, parent=None):
     """Returns list of files and directories"""
-    return os.listdir(pth)
+    dirs = [enslash(d) for d in os.listdir(pth)]
+    if parent:
+        dirs = [join(parent, d) for d in dirs]
+    return dirs
 
 
 def isempty(pth):
