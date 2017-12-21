@@ -81,8 +81,10 @@ try:
         if whatsapp:
             print("WhatsApp Bilder verschieben")
             for f in whatsapp:
-                name = fu.filename(f)[:-20]  # Extract WhatsApp name
-                fu.move(f, WHATSAPP + name, stdout=STDOUT, stderr=STDERR)
+                wa_name = WHATSAPP + fu.filename(f)[:-20]  # Extract WhatsApp name
+                while wa_name[-1] == " ":
+                    wa_name = wa_name[:-1]
+                fu.move(f, wa_name, stdout=STDOUT, stderr=STDERR)
 
         # Filter scans
         scans, files = fu.regex(files, RE_SCAN)
