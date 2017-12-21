@@ -7,6 +7,7 @@ import pathlib
 import re
 import sys
 
+
 # pth : path
 # fl  : file
 # fls : files
@@ -45,7 +46,7 @@ def depty(pth):
 
 
 def __endsslash(pth):
-    """Returns true if path ends with a slash"""
+    """Checks if path ends with slash"""
     return True if pth[-1] in ("/", "\\") else False
 
 
@@ -118,7 +119,12 @@ def pathlike(src):
 
 
 def extension(fl, dot=False):
-    """Returns file extension"""
+    """
+    Returns file extension
+
+    Keyword arguments:
+    dot -- return extension with or without dot
+    """
     ext = os.path.splitext(fl)[1]
     return ext if dot else ext[1:]
 
@@ -129,23 +135,25 @@ def rem_extension(fl):
 
 
 def filename(fl, ext=True):
-    """Returns file name"""
+    """
+    Returns file name
+
+    Keyword arguments:
+    ext -- return filename with or without extension
+    """
     file = os.path.basename(fl)
     return file if ext else rem_extension(fl)
 
 
 def dirname(fl):
     """Returns directory name of a file"""
-    directory = os.path.dirname(fl)
-    if not directory:
-        return ""
-    return enslash(directory)
+    return enslash(os.path.dirname(fl))
 
 
 def join(pth1, pth2):
     """Combines two paths"""
     pth = os.path.join(pth1, pth2)
-    return pth if filelike(pth) else enslash(pth)
+    return depty(pth) if filelike(pth) else enslash(pth)
 
 
 def abspath(fl):
@@ -153,12 +161,17 @@ def abspath(fl):
     return depty(os.path.abspath(fl))
 
 
-def listdir(pth, parent=None):
-    """Returns list of files and directories"""
-    dirs = [enslash(d) for d in os.listdir(pth)]
-    if parent:
-        dirs = [join(parent, d) for d in dirs]
-    return dirs
+def listdir(pth, absolute=False):
+    """
+    Returns list of files and directories
+
+    Keyword arguments:
+    absolute -- return absolute instead of dir names
+    """
+    fls = os.listdir(pth)
+    if absolute:
+        fls = [join(pth, d) for d in fls]
+    return fls
 
 
 def isempty(pth):
@@ -169,7 +182,12 @@ def isempty(pth):
 
 
 def date(pattern="%d-%m-%y"):
-    """Returns current date"""
+    """
+    Returns current date
+
+    Keyword arguments:
+    pattern -- format pattern of datetime
+    """
     today = datetime.date.today()
     return today if pattern is None else today.strftime(pattern)
 
@@ -181,34 +199,37 @@ def mkdirs(pth):
     return os.makedirs(pth)
 
 
-def back(pth):
+def up(pth):
     """Goes one folder up"""
     if filelike(pth):
         pth = dirname(pth)
-    return depty(str(pathlib.Path(pth).parent) + "\\")
+    return enslash(str(pathlib.Path(pth).parent))
 
 
 def size(src, unit="kb"):
     """
     Returns file size of path
-    Possible units: b, kb, mb, gb
+
+    Keyword arguments:
+    unit -- return size in b, kb, mb, gb
     """
     if not exists(src):
         raise FileException(src)
-    if unit not in ("b", "kb", "mb", "gb"):
+    try:
+        div = 1024 ** ("b", "kb", "mb", "gb").index(unit)
+    except ValueError:
         raise ArgException(unit)
-    div = 1
-    if unit == "kb":
-        div = 1024
-    elif unit == "mb":
-        div = 1024 ** 2
-    elif unit == "gb":
-        div = 1024 ** 3
     return os.path.getsize(src) / div
 
 
 def files(pth, pattern=None, recursive=True):
-    """Returns all files"""
+    """
+    Returns all files
+
+    Keyword arguments:
+    pattern -- file pattern in list form ["*.exe", "*.jpg"]
+    recursive -- go through sub directories recursively
+    """
     if pattern:
         fls = []
         for rule in pattern:
@@ -218,7 +239,14 @@ def files(pth, pattern=None, recursive=True):
 
 
 def fsort(fls, key=lambda x: x, reverse=False, name=False):
-    """Sorts a file list based on file names"""
+    """
+    Sorts a file list based on file names
+
+    Keyword arguments:
+    key -- key for sorted
+    reverse -- reverse for sorted
+    name -- use name for sorting
+    """
     return sorted(fls, key=lambda x: key(filename(x)) if name else key, reverse=reverse)
 
 
@@ -239,7 +267,13 @@ def __execute(command, stdout, stderr):
 
 
 def cmd(command, stdout=True, stderr=True):
-    """Executes command"""
+    """
+    Executes command
+
+    Keyword arguments:
+    stdout -- show standard output
+    stderr -- show standard error
+    """
     return __execute(command, stdout=stdout, stderr=stderr)
 
 
@@ -254,6 +288,10 @@ def copy(src, dst, stdout=False, stderr=True):
     /f  display full src and dst names
     /c  continue copying if an error occurs
     /y  overwrite files
+
+    Keyword arguments:
+    stdout -- show standard output
+    stderr -- show standard error
     """
     if not exists(src):
         raise FileException(src)
@@ -273,18 +311,15 @@ def __copy_file_to_file(src, dst, stdout, stderr):
 
 def __copy_file_to_dir(src, dst, stdout, stderr):
     """Copies file to directory"""
-    if not __endsslash(dst):
-        dst += "\\"
+    dst = enslash(dst)
     command = "echo V | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
     return __execute(command, stdout, stderr)
 
 
 def __copy_dir_to_dir(src, dst, stdout, stderr):
     """Copies directory to directory"""
-    if __endsslash(src):
-        src = src[:-1]
-    if __endsslash(dst):
-        dst = dst[:-1]
+    src = deslash(src)
+    dst = deslash(dst)
     command = "xcopy \"{0}\" \"{1}\" /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
     return __execute(command, stdout, stderr)
 
@@ -293,6 +328,10 @@ def move(src, dst, stdout=False, stderr=True):
     """
     Moves files or directories
     /y  overwrite files
+
+    Keyword arguments:
+    stdout -- show standard output
+    stderr -- show standard error
     """
     if not exists(src):
         raise FileException(src)
@@ -314,24 +353,27 @@ def __move_file_to_file(src, dst, stdout, stderr):
 
 def __move_file_to_dir(src, dst, stdout, stderr):
     """Moves file to directory"""
-    if not __endsslash(dst):
-        dst += "\\"
+    dst = enslash(dst)
     command = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
     return __execute(command, stdout, stderr)
 
 
 def __move_dir_to_dir(src, dst, stdout, stderr):
     """Moves directory to directory"""
-    if __endsslash(src):
-        src = src[:-1]
-    if __endsslash(dst):
-        dst = dst[:-1]
+    src = deslash(src)
+    dst = deslash(dst)
     command = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
     return __execute(command, stdout, stderr)
 
 
 def remove(src, stdout=False, stderr=True):
-    """Removes files or directories"""
+    """
+    Removes files or directories
+
+    Keyword arguments:
+    stdout -- show standard output
+    stderr -- show standard error
+    """
     if not exists(src):
         raise FileException(src)
     if isfile(src):
@@ -348,14 +390,19 @@ def __remove_file(src, stdout, stderr):
 
 def __remove_dir(src, stdout, stderr):
     """Removes directory"""
-    if __endsslash(src):
-        src = src[:-1]
+    src = deslash(src)
     command = "rd \"{0}\" /s/q".format(pty(src))
     return __execute(command, stdout, stderr)
 
 
 def rename(src, dst, stdout=False, stderr=True):
-    """Renames files or directories"""
+    """
+    Renames files or directories
+
+    Keyword arguments:
+    stdout -- show standard output
+    stderr -- show standard error
+    """
     if not exists(src):
         raise FileException(src)
     command = "ren \"{0}\" \"{1}\"".format(pty(src), pty(filename(dst)))
@@ -377,10 +424,6 @@ def remove_empty_dirs(pth):
 
 def remove_duplicates(fls):
     """Removes duplicate files"""
-    test = set([filename(file) for file in fls])
-    if len(test) == len(fls):
-        return fls
-
     result = []
     for i in range(0, len(fls)):
         duplicate = False
@@ -405,6 +448,11 @@ def regex(fls, pattern, name=True, ext=True, other=True):
     [A-Z]   sequence of characters
     {m, n}  characters must appear m to n times
     (?:1|2) must be one of the options
+
+    Keyword arguments:
+    name -- apply regular expression to filename
+    ext -- choose whether to ignore extension or not
+    other -- return list of not matching files
     """
     matching = []
     not_matching = []
@@ -417,10 +465,16 @@ def regex(fls, pattern, name=True, ext=True, other=True):
 
 
 def symlink(src, dst, stdout=False, stderr=True):
-    """Creates symbolic link"""
+    """
+    Creates symbolic link
+
+    Keyword arguments:
+    stdout -- show standard output
+    stderr -- show standard error
+    """
     if not exists(src):
         raise FileException(src)
-    parent = back(dst)
+    parent = up(dst)
     if not exists(parent):
         mkdirs(parent)
     command = "mklink /d \"{0}\" \"{1}\"".format(pty(dst), pty(src))
@@ -432,7 +486,13 @@ HAS_GS = True if __execute("echo quit | gswin32c", False, False) == 0 else False
 
 
 def lzma(dst, *src, stdout=False, stderr=True):
-    """Creates a lzma archive"""
+    """
+    Creates a lzma archive with 7zip
+
+    Keyword arguments:
+    stdout -- show standard output
+    stderr -- show standard error
+    """
     if not HAS_7Z:
         raise CmdException("7z")
     fls = ""
@@ -448,6 +508,11 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     """
     Compresses a pdf file
     Settings: screen, ebook, printer, prepress, default
+
+    Keyword arguments:
+    setting -- choose which setting to use ("screen", "ebook", "printer", "prepress", "default")
+    stdout -- show standard output
+    stderr -- show standard error
     """
     if not HAS_GS:
         raise CmdException("Ghostscript")
