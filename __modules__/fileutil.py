@@ -227,7 +227,7 @@ def files(pth, pattern=None, recursive=True):
     Returns all files
 
     Keyword arguments:
-    pattern -- file pattern in list form ["*.exe", "*.jpg"]
+    pattern   -- file pattern in list form ["*.exe", "*.jpg"]
     recursive -- go through sub directories recursively
     """
     if pattern:
@@ -243,9 +243,9 @@ def fsort(fls, key=lambda x: x, reverse=False, name=False):
     Sorts a file list based on file names
 
     Keyword arguments:
-    key -- key for sorted
+    key     -- key for sorted
     reverse -- reverse for sorted
-    name -- use name for sorting
+    name    -- use file name for sorting
     """
     return sorted(fls, key=lambda x: key(filename(x)) if name else key, reverse=reverse)
 
@@ -450,8 +450,8 @@ def regex(fls, pattern, name=True, ext=True, other=True):
     (?:1|2) must be one of the options
 
     Keyword arguments:
-    name -- apply regular expression to filename
-    ext -- choose whether to ignore extension or not
+    name  -- apply regular expression to filename
+    ext   -- choose whether to ignore extension or not
     other -- return list of not matching files
     """
     matching = []
@@ -511,8 +511,8 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
 
     Keyword arguments:
     setting -- choose which setting to use ("screen", "ebook", "printer", "prepress", "default")
-    stdout -- show standard output
-    stderr -- show standard error
+    stdout  -- show standard output
+    stderr  -- show standard error
     """
     if not HAS_GS:
         raise CmdException("Ghostscript")
