@@ -20,7 +20,7 @@ line()
 if isfile("maze.png"):
     print("Loading maze...")
     sw.start()
-    m.load_maze_from_png()
+    m.load_maze()
     sw.stop()
     print(sw.elapsed_str)
 
@@ -35,7 +35,7 @@ if isfile("maze.png"):
     line()
     print("Saving solution...")
     sw.start()
-    m.save_solution_as_png()
+    m.save_solution()
     sw.stop()
     print(sw.elapsed_str)
 else:

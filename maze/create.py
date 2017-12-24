@@ -35,7 +35,7 @@ print(sw.elapsed_str)
 line()
 print("Saving maze...")
 sw.start()
-m.save_maze_as_png()
+m.save_maze()
 sw.stop()
 print(sw.elapsed_str)
 
