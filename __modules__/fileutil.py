@@ -129,7 +129,7 @@ def extension(fl, dot=False):
     return ext if dot else ext[1:]
 
 
-def rem_extension(fl):
+def remove_extension(fl):
     """Removes file extension"""
     return os.path.splitext(fl)[0]
 
@@ -141,8 +141,8 @@ def filename(fl, ext=True):
     Keyword arguments:
     ext -- return filename with or without extension
     """
-    file = os.path.basename(fl)
-    return file if ext else rem_extension(fl)
+    fl = os.path.basename(fl)
+    return fl if ext else remove_extension(fl)
 
 
 def dirname(fl):
@@ -154,6 +154,11 @@ def join(pth1, pth2):
     """Combines two paths"""
     pth = os.path.join(pth1, pth2)
     return depty(pth) if filelike(pth) else enslash(pth)
+
+
+def split(fl):
+    """Splits file path"""
+    return dirname(fl), filename(fl)
 
 
 def abspath(fl):
