@@ -8,11 +8,12 @@ import re
 import sys
 
 
-# pth : path
-# fl  : file
-# fls : files
-# src : source
-# dst : destination
+# pth  : path
+# pths : paths
+# fl   : file
+# fls  : files
+# src  : source
+# dst  : destination
 
 
 class FileException(Exception):
@@ -22,7 +23,7 @@ class FileException(Exception):
 
 class CmdException(Exception):
     def __init__(self, e):
-        super(CmdException, self).__init__("{0} is unavailable".format(e))
+        super(CmdException, self).__init__("{0} command is not available".format(e))
 
 
 class ArgException(Exception):
@@ -57,7 +58,7 @@ def deslash(pth):
 
 def enslash(pth):
     """Adds trailing slash"""
-    return depty(pth if __endsslash(pth) else pth + "\\")
+    return depty(pth if __endsslash(pth) else pth + "/")
 
 
 def user():
@@ -73,12 +74,6 @@ def mainfile():
 def pydir():
     """Returns script directory"""
     return enslash(os.path.dirname(mainfile()))
-
-
-USER = "C:/Users/{0}/".format(user())
-DESKTOP = USER + "Desktop/"
-ONEDRIVE = USER + "OneDrive/"
-PYDIR = pydir()
 
 
 def cwd():
@@ -150,9 +145,9 @@ def dirname(fl):
     return enslash(os.path.dirname(fl))
 
 
-def join(pth1, pth2):
-    """Combines two paths"""
-    pth = os.path.join(pth1, pth2)
+def join(*pths):
+    """Combines multiple paths"""
+    pth = os.path.join("", *pths)
     return depty(pth) if filelike(pth) else enslash(pth)
 
 
@@ -486,8 +481,12 @@ def symlink(src, dst, stdout=False, stderr=True):
     return __execute(command, stdout, stderr)
 
 
-HAS_7Z = True if __execute("7z", False, False) == 0 else False
-HAS_GS = True if __execute("echo quit | gswin32c", False, False) == 0 else False
+def __has_lzma():
+    """Checks if 7z is available"""
+    return True if __execute("7z", False, False) == 0 else False
+
+
+__HAS_LZMA = __has_lzma()
 
 
 def lzma(dst, *src, stdout=False, stderr=True):
@@ -498,7 +497,7 @@ def lzma(dst, *src, stdout=False, stderr=True):
     stdout -- show standard output
     stderr -- show standard error
     """
-    if not HAS_7Z:
+    if not __HAS_LZMA:
         raise CmdException("7z")
     fls = ""
     for f in src:
@@ -507,6 +506,14 @@ def lzma(dst, *src, stdout=False, stderr=True):
         fls += " \"{0}\"".format(pty(f))
     command = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\"{1}"
     return __execute(command.format(pty(dst), fls), stdout, stderr)
+
+
+def __has_gs():
+    """Checks if gswin32c is available"""
+    return True if __execute("echo quit | gswin32c", False, False) == 0 else False
+
+
+__HAS_GS = __has_gs()
 
 
 def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
@@ -519,12 +526,12 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     stdout  -- show standard output
     stderr  -- show standard error
     """
-    if not HAS_GS:
-        raise CmdException("Ghostscript")
+    if not __HAS_GS:
+        raise CmdException("gswin32c")
     if not exists(src):
         raise FileException(src)
     if not extension(src) == "pdf":
-        raise ExtException("pdf")
+        raise ExtException(extension(src))
     if setting not in ("screen", "ebook", "printer", "prepress", "default"):
         raise ArgException(setting)
     src_ = src + "_"
@@ -534,3 +541,11 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     code = __execute(command, stdout, stderr)
     remove(src_)
     return code
+
+
+C = "C:/"
+D = "D:/"
+USER = join(C, "Users", user())
+DESKTOP = join(USER, "Desktop")
+ONEDRIVE = join(USER, "OneDrive")
+PYDIR = pydir()
