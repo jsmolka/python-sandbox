@@ -543,9 +543,7 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     return code
 
 
-C = "C:/"
-D = "D:/"
-USER = join(C, "Users", user())
+USER = join("C:/Users", user())
 DESKTOP = join(USER, "Desktop")
 ONEDRIVE = join(USER, "OneDrive")
 PYDIR = pydir()
