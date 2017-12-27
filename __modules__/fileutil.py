@@ -76,8 +76,8 @@ def pydir():
 
 
 USER = "C:/Users/{0}/".format(user())
-DESKTOP = "{0}Desktop/".format(USER)
-ONEDRIVE = "{0}OneDrive/".format(USER)
+DESKTOP = USER + "Desktop/"
+ONEDRIVE = USER + "OneDrive/"
 PYDIR = pydir()
 
 
@@ -252,7 +252,7 @@ def fsort(fls, key=lambda x: x, reverse=False, name=False):
     reverse -- reverse for sorted
     name    -- use file name for sorting
     """
-    return sorted(fls, key=lambda x: key(filename(x)) if name else key, reverse=reverse)
+    return sorted(fls, key=lambda x: key(filename(x)) if name else key(x), reverse=reverse)
 
 
 def admin():
