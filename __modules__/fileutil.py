@@ -222,20 +222,24 @@ def size(src, unit="kb"):
     return os.path.getsize(src) / div
 
 
-def files(pth, pattern=None, recursive=True):
+def files(pth, pattern=None, recursive=True, fast=False):
     """
     Returns all files
 
     Keyword arguments:
     pattern   -- file pattern in list form ["*.exe", "*.jpg"]
     recursive -- go through sub directories recursively
+    fast      -- apply depty to all result paths if false
     """
+    fls = []
     if pattern:
-        fls = []
         for rule in pattern:
-            fls.extend(list(glob.iglob("{0}/**/{1}".format(pth, rule), recursive=recursive)))
-        return fls
-    return list(glob.iglob("{0}/**/*.*".format(pth), recursive=recursive))
+            fls.extend(glob.iglob("{0}/**/{1}".format(pth, rule), recursive=recursive))
+    else:
+        fls.extend(glob.iglob("{0}/**/*.*".format(pth), recursive=recursive))
+    if not fast:
+        fls = [depty(pth) for pth in fls]
+    return fls
 
 
 def fsort(fls, key=lambda x: x, reverse=False, name=False):
