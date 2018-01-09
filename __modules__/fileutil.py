@@ -48,7 +48,7 @@ def depty(pth):
 
 def __endsslash(pth):
     """Checks if path ends with slash"""
-    return True if pth[-1] in ("/", "\\") else False
+    return pth[-1] in ("/", "\\")
 
 
 def deslash(pth):
@@ -68,12 +68,33 @@ def user():
 
 def mainfile():
     """Returns main file"""
-    return sys.modules["__main__"].__file__
+    return depty(sys.modules["__main__"].__file__)
 
+    
+def remove_extension(fl):
+    """Removes file extension"""
+    return os.path.splitext(fl)[0]
+    
 
+def filename(fl, ext=True):
+    """
+    Returns file name
+
+    Keyword arguments:
+    ext -- return filename with or without extension
+    """
+    fl = os.path.basename(fl)
+    return fl if ext else remove_extension(fl)
+    
+    
+def dirname(fl):
+    """Returns directory name of a file"""
+    return enslash(os.path.dirname(fl))
+    
+    
 def pydir():
     """Returns script directory"""
-    return enslash(os.path.dirname(mainfile()))
+    return dirname(mainfile())
 
 
 def cwd():
@@ -124,27 +145,6 @@ def extension(fl, dot=False):
     return ext if dot else ext[1:]
 
 
-def remove_extension(fl):
-    """Removes file extension"""
-    return os.path.splitext(fl)[0]
-
-
-def filename(fl, ext=True):
-    """
-    Returns file name
-
-    Keyword arguments:
-    ext -- return filename with or without extension
-    """
-    fl = os.path.basename(fl)
-    return fl if ext else remove_extension(fl)
-
-
-def dirname(fl):
-    """Returns directory name of a file"""
-    return enslash(os.path.dirname(fl))
-
-
 def join(*pths):
     """Combines multiple paths"""
     pth = os.path.join("", *pths)
@@ -168,10 +168,10 @@ def listdir(pth, absolute=False):
     Keyword arguments:
     absolute -- return absolute instead of dir names
     """
-    fls = os.listdir(pth)
+    pths = os.listdir(pth)
     if absolute:
-        fls = [join(pth, d) for d in fls]
-    return fls
+        pths = [join(pth, p) for p in pths]
+    return pths
 
 
 def isempty(pth):
@@ -206,12 +206,13 @@ def up(pth):
     return enslash(str(pathlib.Path(pth).parent))
 
 
-def size(src, unit="kb"):
+def size(src, unit="kb", digits=2):
     """
     Returns file size of path
 
     Keyword arguments:
-    unit -- return size in b, kb, mb, gb
+    unit   -- return size in b, kb, mb, gb
+    digits -- number of digits
     """
     if not exists(src):
         raise FileException(src)
@@ -219,27 +220,26 @@ def size(src, unit="kb"):
         div = 1024 ** ("b", "kb", "mb", "gb").index(unit)
     except ValueError:
         raise ArgException(unit)
-    return os.path.getsize(src) / div
+    return round(os.path.getsize(src) / div, digits)
 
 
-def files(pth, pattern=None, recursive=True, fast=False):
+def files(pth, pattern=None, recursive=True):
     """
     Returns all files
 
     Keyword arguments:
-    pattern   -- file pattern in list form ["*.exe", "*.jpg"]
-    recursive -- go through sub directories recursively
-    fast      -- apply depty to all result paths if false
+    pattern   -- file pattern in list ["*.exe", "*.jpg"] or string "*.exe" form
+    recursive -- search through sub directories recursively
     """
-    fls = []
-    if pattern:
-        for rule in pattern:
-            fls.extend(glob.iglob("{0}/**/{1}".format(pth, rule), recursive=recursive))
-    else:
-        fls.extend(glob.iglob("{0}/**/*.*".format(pth), recursive=recursive))
-    if not fast:
-        fls = [depty(pth) for pth in fls]
-    return fls
+    if isinstance(pattern, list):
+        fls = []
+        for p in pattern:
+            fls.extend(files(pth, pattern=p, recursive=recursive))
+        return fls
+
+    pth = join(pth, "**") if recursive else pth
+    pattern = pattern if pattern else "*.*"
+    return [depty(p) for p in glob.iglob(join(pth, pattern), recursive=recursive)]
 
 
 def fsort(fls, key=lambda x: x, reverse=False, name=False):
@@ -254,9 +254,14 @@ def fsort(fls, key=lambda x: x, reverse=False, name=False):
     return sorted(fls, key=lambda x: key(filename(x)) if name else key(x), reverse=reverse)
 
 
+def isadmin():
+    """Checks for admin privileges"""
+    return bool(ctypes.windll.shell32.IsUserAnAdmin())
+    
+    
 def admin():
     """Restarts as admin"""
-    if not ctypes.windll.shell32.IsUserAnAdmin():
+    if not isadmin():
         ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, mainfile(), None, 1)
         sys.exit()
 
@@ -417,11 +422,10 @@ def remove_empty_dirs(pth):
     """Removes empty folders recursively"""
     if not isdir(pth):
         return
-    dirs = listdir(pth)
+    dirs = listdir(pth, absolute=True)
     for d in dirs:
-        full = os.path.join(pth, d)
-        if isdir(full):
-            remove_empty_dirs(full)
+        if isdir(d):
+            remove_empty_dirs(d)
     if isempty(pth):
         remove(pth)
 
@@ -487,7 +491,7 @@ def symlink(src, dst, stdout=False, stderr=True):
 
 def __has_lzma():
     """Checks if 7z is available"""
-    return True if __execute("7z", False, False) == 0 else False
+    return not bool(__execute("7z", False, False))
 
 
 __HAS_LZMA = __has_lzma()
@@ -504,17 +508,17 @@ def lzma(dst, *src, stdout=False, stderr=True):
     if not __HAS_LZMA:
         raise CmdException("7z")
     fls = ""
-    for f in src:
-        if not exists(f):
-            raise FileException(f)
-        fls += " \"{0}\"".format(pty(f))
+    for fl in src:
+        if not exists(fl):
+            raise FileException(fl)
+        fls += " \"{0}\"".format(pty(fl))
     command = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\"{1}"
     return __execute(command.format(pty(dst), fls), stdout, stderr)
 
 
 def __has_gs():
     """Checks if gswin32c is available"""
-    return True if __execute("echo quit | gswin32c", False, False) == 0 else False
+    return not bool(__execute("echo quit | gswin32c", False, False))
 
 
 __HAS_GS = __has_gs()
@@ -545,6 +549,29 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     code = __execute(command, stdout, stderr)
     remove(src_)
     return code
+
+    
+def grep(string, pth, pattern=None, recursive=True):
+    """
+    Searches for a string in a path
+    
+    Keyword arguments:
+    pattern   -- file pattern in list ["*.exe", "*.jpg"] or string "*.exe" form
+    recursive -- search through sub directories recursively
+    """
+    fls = [pth] if filelike(pth) else files(pth, pattern=pattern, recursive=recursive)
+    result = []
+    for fl in fls:
+        try:
+            lines = open(fl, "r").readlines()
+            i = 1
+            for line in lines:
+                if string in line:
+                    result.append((i, fl))
+                i += 1
+        except:
+            continue
+    return result
 
 
 USER = join("C:/Users", user())
