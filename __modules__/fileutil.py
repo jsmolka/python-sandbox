@@ -283,7 +283,7 @@ def cmd(command, stdout=True, stderr=True):
     stdout -- show standard output
     stderr -- show standard error
     """
-    return __execute(command, stdout=stdout, stderr=stderr)
+    return __execute(command, stdout, stderr)
 
 
 def copy(src, dst, stdout=False, stderr=True):
