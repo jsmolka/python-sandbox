@@ -1,4 +1,3 @@
-import os
 from ctypes import *
 
 STD_OUTPUT_HANDLE = -11
