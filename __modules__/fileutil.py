@@ -551,22 +551,22 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     return code
 
     
-def grep(string, pth, pattern=None, recursive=True):
+def grep(key, src, pattern=None, recursive=True):
     """
-    Searches for a string in a path
-    
+    Searches for a key in a path or file
+
     Keyword arguments:
     pattern   -- file pattern in list ["*.exe", "*.jpg"] or string "*.exe" form
     recursive -- search through sub directories recursively
     """
-    fls = [pth] if filelike(pth) else files(pth, pattern=pattern, recursive=recursive)
+    key = key.lower()
+    fls = [src] if filelike(src) else files(src, pattern=pattern, recursive=recursive)
     result = []
     for fl in fls:
         try:
-            lines = open(fl, "r").readlines()
             i = 1
-            for line in lines:
-                if string in line:
+            for line in open(fl, "r", encoding="utf-8").readlines():
+                if key in line.lower():
                     result.append((i, fl))
                 i += 1
         except:
