@@ -203,8 +203,10 @@ def main():
     snake = Snake(25, 50)
 
     process_key = Process(target=get_key, args=(snake.direction,))
+    process_key.daemon = True
     process_key.start()
     process_render = Process(target=render, args=(snake.grid,))
+    process_render.daemon = True
     process_render.start()
     
     timer = Timer(10)
