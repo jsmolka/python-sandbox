@@ -58,7 +58,6 @@ packages = [
     "Pillow",
     "NumPy",
     "Pyglet",
-	"PyOpenGL",
     "OpenSimplex"
 ]
 for pkg in packages:
