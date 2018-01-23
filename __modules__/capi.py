@@ -1,88 +1,91 @@
-import ctypes
+import ctypes as ct
 import getpass
 import inspect
 import os
+import sys
 
 
 def join(*pths):
-    """Combines multiple paths"""
     return os.path.join("", *pths)
 
 
-def pydir(name=None):
-    """Returns path of the current file"""
-    pth = os.path.dirname(os.path.abspath(inspect.stack()[0][1]))
-    return join(pth, name) if name else pth
+def pydir(fl=None):
+    pth = os.path.dirname(sys.modules["__main__"].__file__)
+    return join(pth, fl) if fl else pth
     
 
 def user():
-    """Returns current user"""
     return getpass.getuser()
-
-   
-def convert_int(types, arg):
-    """Converts int"""
-    types.append(ctypes.c_int)
-    return arg
     
     
-def convert_str(types, arg):
-    """Converts str"""
-    types.append(ctypes.c_char_p)
-    return ctypes.c_char_p(bytes(arg, encoding="utf-8"))
+def get_defaults(func):
+    defaults = inspect.getargspec(func).defaults
+    if len(defaults) == 2:
+        return defaults
+    else:
+        return None, defaults[0]
     
     
-def convert_float(types, arg):
-    """Converts float"""
-    types.append(ctypes.c_float)
-    return ctypes.c_float(arg)
-    
-    
-def convert_list(types, arg):
-    """Converts list"""
-    convert(arg, arg[0])
-    array = (arg.pop() * len(arg))
-    types.append(array)
-    return array(*arg)    
-   
-   
-def convert(types, *args):   
-    """Converts args"""
-    for arg in args:
-        if isinstance(arg, int): 
-            arg = convert_int(types, arg)       
-        elif isinstance(arg, str):
-            arg = convert_str(types, arg)
-        elif isinstance(arg, float):
-            arg = convert_float(types, arg)
-        elif isinstance(arg, list):
-            arg = convert_list(types, arg)
-        else:
-            raise TypeError(arg)
-    return args
-
-
-def dll(func):
-    """Decorator for dll functions"""  
-    
-    def dll_func(*args):
-        """Creates valid dll function call"""
-        pth = inspect.getargspec(func).defaults[0]
+def ctype(ptype):
+    if ptype is None:
+        return None
+    if not isinstance(ptype, type):
+        ptype = type(ptype)
+    if ptype is int:
+        return ct.c_int
+    if ptype is float:
+        return ct.c_double
+    if ptype is str:
+        return ct.c_char_p
+    else:
+        raise TypeError(ptype)
+                
         
-        types = []
-        args = convert(types, *args)
-        print(types)
+def convert(arg):
+    if isinstance(arg, int):
+        return ct.c_int(arg)
+    if isinstance(arg, float):
+        return ct.c_double(arg)
+    if isinstance(arg, str):
+        return ct.c_char_p(arg.encode())
+    if isinstance(arg, list):
+        if isinstance(arg[0], list):
+            data = [convert(arg[row]) for row in range(len(arg))]
+            return (ct.POINTER(ctype(arg[0][0])) * len(arg))(*data)
+        return (ctype(arg[0]) * len(arg))(*arg)
+    else:
+        raise TypeError(arg)
+    
+    
+dlls = []
+    
+    
+def load_dll(pth):
+    global dlls
+    for pth_, dll_ in dlls:
+        if pth == pth_:
+           return dll_
+    dll = ct.cdll.LoadLibrary(pth)
+    dlls.append((pth, dll))
+    return dll
+    
+
+def cfunc(func):
+    """
+    Decorator for easy C function calls
+    
+    @cfunc
+    def func(*args, [res=type], dll="name.dll"): pass
+    """
+    def wrapper(*args, func=func):
+        res, pth = get_defaults(func)
+        dll = load_dll(pth)
+        func = getattr(dll, func.__name__)
         
-        # cdll = ctypes.cdll.LoadLibrary(path)
-        # print("calling", func.__name__, "in", cdll, "with", args)
-        # return result
+        args = [convert(arg) for arg in args]
+        func.argtypes = [type(arg) for arg in args]
+        func.restype = ctype(res)
+
+        return func(*args)
         
-    return dll_func
-    
-    
-@dll
-def func(a, b, c, d, dll=pydir("test.dll")):
-    pass  # Placeholder for dll function
-    
-    
-func(1.4, "lul", 5, [1, 2, 3, 4])
+    return wrapper
