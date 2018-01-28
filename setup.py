@@ -2,7 +2,6 @@ import ctypes
 import os
 import pip
 import sys
-from subprocess import Popen, DEVNULL, STDOUT
 
 
 def admin_check(file_name):
@@ -35,13 +34,13 @@ def dialog_enter(action, message="Press enter to {0}..."):
     input(message)
 
 
-def add_path(path, variable):
-    """Adds path to system variable"""
-    if variable in os.environ:
-        if path not in os.environ[variable].split(";"):
-            Popen(["setx", variable, os.environ.get(variable) + ";" + path], stdout=DEVNULL, stderr=STDOUT)
+def add_to_env(env, pth):
+    """Adds path to system environment"""
+    if env in os.environ:
+        if pth not in os.environ[env].split(";"):
+            os.system("setx {0} \"%{0}%;{1}\" >nul 2>nul".format(env, pth))
     else:
-        Popen(["setx", variable, path], stdout=DEVNULL, stderr=STDOUT)
+        os.system("setx {0} \"{1}\" >nul 2>nul".format(env, pth))
 
 
 def install_package(package):
@@ -52,7 +51,7 @@ def install_package(package):
 admin_check(__file__)
 
 module_path = os.path.dirname(__file__) + "\\__modules__"
-add_path(module_path, "PYTHONPATH")
+add_to_env("PYTHONPATH", module_path)
 
 packages = [
     "Pillow",

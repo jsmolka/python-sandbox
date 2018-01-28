@@ -1,23 +1,12 @@
-import os
 from random import shuffle
-from subprocess import Popen, STDOUT, DEVNULL
-
-
-def add_path(path, variable):
-    """Adds path to system variable"""
-    if variable in os.environ:
-        if path not in os.environ[variable].split(";"):
-            Popen(["setx", variable, os.environ.get(variable) + ";" + path], stdout=DEVNULL, stderr=STDOUT)
-    else:
-        Popen(["setx", variable, path], stdout=DEVNULL, stderr=STDOUT)
 
 
 def create_class(name, fields):
     """Creates object dynamically"""
-    class_ = type(name, (object,), {})
+    cls = type(name, (object,), {})
     for field in fields:
-        setattr(class_, field, None)
-    return class_
+        setattr(cls, field, None)
+    return cls
 
 
 def my_dict(obj):
@@ -52,15 +41,6 @@ def pi(n):
             a, a1 = 10 * (a % b), 10 * (a1 % b1)
             d, d1 = a / b, a1 / b1
     return l
-
-
-def pi_float(n):
-    """Returns float value of spigot algorithm"""
-    l = pi(n)
-    f = "3."
-    for i in range(1, n):
-        f += str(l[i])
-    return float(f)
 
 
 def remap(v, l1, h1, l2, h2):
