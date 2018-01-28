@@ -103,13 +103,13 @@ class CONSOLE_SCREEN_BUFFER_INFO(Structure):
 def get_color():
     """Returns the current text color"""
     csbi = CONSOLE_SCREEN_BUFFER_INFO()
-    windll.GetConsoleScreenBufferInfo(HANDLE, byref(csbi))
+    windll.kernel32.GetConsoleScreenBufferInfo(HANDLE, byref(csbi))
     return csbi.wAttributes
 
 
 def set_color(color):
     """Sets the text color"""
-    windll.SetConsoleTextAttribute(HANDLE, color)
+    windll.kernel32.SetConsoleTextAttribute(HANDLE, color)
 
 
 class Color:
