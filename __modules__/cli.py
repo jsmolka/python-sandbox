@@ -157,8 +157,8 @@ def tinput(input_type, message=None, color=None):
 def menu(caption, *entries, result=False, color=None):
     """Draws menu"""
     cprint(caption, color=color)
-    for index in range(0, len(entries)):
-        cprint("[{0}] {1}".format(index + 1, entries[index]), color=color)
+    for idx, entry in enumerate(entries, start=1):
+        cprint("[{0}] {1}".format(idx, entry), color=color)
     if result:
         return cinput(1, len(entries), span=True, color=color) - 1
 
