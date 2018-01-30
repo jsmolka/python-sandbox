@@ -475,6 +475,7 @@ def lzma(dst, *src, stdout=False, stderr=True):
     stdout -- show standard output
     stderr -- show standard error
     """
+    src = list(src)
     for idx, fl in enumerate(src):
         check(fl)
         src[idx] = pty(fl)
