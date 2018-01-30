@@ -16,24 +16,9 @@ import sys
 # dst  : destination
 
 
-class FileException(Exception):
-    def __init__(self, e):
-        super(FileException, self).__init__("{0} not found".format(e))
-
-
-class CmdException(Exception):
-    def __init__(self, e):
-        super(CmdException, self).__init__("{0} command is not available".format(e))
-
-
-class ArgException(Exception):
-    def __init__(self, e):
-        super(ArgException, self).__init__("Invalid argument {0}".format(e))
-
-
-class ExtException(Exception):
-    def __init__(self, e):
-        super(ExtException, self).__init__("Invalid extension {0}".format(e))
+class FileError(Exception):
+    def __init__(self, fl):
+        super(FileError, self).__init__("{0} not found".format(fl))
 
 
 def pty(pth):
@@ -70,11 +55,11 @@ def mainfile():
     """Returns main file"""
     return depty(sys.modules["__main__"].__file__)
 
-    
+
 def remove_extension(fl):
     """Removes file extension"""
     return os.path.splitext(fl)[0]
-    
+
 
 def filename(fl, ext=True):
     """
@@ -85,13 +70,13 @@ def filename(fl, ext=True):
     """
     fl = os.path.basename(fl)
     return fl if ext else remove_extension(fl)
-    
-    
+
+
 def dirname(fl):
     """Returns directory name of a file"""
     return enslash(os.path.dirname(fl))
-    
-    
+
+
 def pydir():
     """Returns script directory"""
     return dirname(mainfile())
@@ -120,6 +105,12 @@ def isfile(src):
 def exists(src):
     """Checks if src exists"""
     return os.path.exists(src)
+
+
+def check(src):
+    """Checks if src exists and raises error"""
+    if not exists(src):
+        raise FileError(src)
 
 
 def filelike(src):
@@ -170,7 +161,7 @@ def listdir(pth, absolute=False):
     """
     pths = os.listdir(pth)
     if absolute:
-        pths = [join(pth, p) for p in pths]
+        return [join(pth, p) for p in pths]
     return pths
 
 
@@ -189,7 +180,7 @@ def date(pattern="%d-%m-%y"):
     pattern -- format pattern of datetime
     """
     today = datetime.date.today()
-    return today if pattern is None else today.strftime(pattern)
+    return today if not pattern else today.strftime(pattern)
 
 
 def mkdirs(pth):
@@ -211,15 +202,11 @@ def size(src, unit="kb", digits=2):
     Returns file size of path
 
     Keyword arguments:
-    unit   -- return size in b, kb, mb, gb
+    unit   -- return size (b, kb, mb, gb)
     digits -- number of digits
     """
-    if not exists(src):
-        raise FileException(src)
-    try:
-        div = 1024 ** ("b", "kb", "mb", "gb").index(unit)
-    except ValueError:
-        raise ArgException(unit)
+    check(src)
+    div = 1024 ** ("b", "kb", "mb", "gb").index(unit)
     return round(os.path.getsize(src) / div, digits)
 
 
@@ -257,8 +244,8 @@ def fsort(fls, key=lambda x: x, reverse=False, name=False):
 def isadmin():
     """Checks for admin privileges"""
     return bool(ctypes.windll.shell32.IsUserAnAdmin())
-    
-    
+
+
 def admin():
     """Restarts as admin"""
     if not isadmin():
@@ -266,16 +253,14 @@ def admin():
         sys.exit()
 
 
-def __execute(command, stdout, stderr):
+def __execute(cmd, stdout, stderr):
     """Executes command"""
-    if not stdout:
-        command += " >nul"
-    if not stderr:
-        command += " 2>nul"
-    return os.system(command)
+    stdout = "" if stdout else " >nul"
+    stderr = "" if stderr else " 2>nul"
+    return os.system(cmd + stdout + stderr)
 
 
-def cmd(command, stdout=True, stderr=True):
+def system(cmd, stdout=True, stderr=True):
     """
     Executes command
 
@@ -283,7 +268,7 @@ def cmd(command, stdout=True, stderr=True):
     stdout -- show standard output
     stderr -- show standard error
     """
-    return __execute(command, stdout, stderr)
+    return __execute(cmd, stdout, stderr)
 
 
 def copy(src, dst, stdout=False, stderr=True):
@@ -302,8 +287,7 @@ def copy(src, dst, stdout=False, stderr=True):
     stdout -- show standard output
     stderr -- show standard error
     """
-    if not exists(src):
-        raise FileException(src)
+    check(src)
     if isfile(src) and filelike(dst):
         return __copy_file_to_file(src, dst, stdout, stderr)
     if isfile(src) and pathlike(dst):
@@ -314,23 +298,23 @@ def copy(src, dst, stdout=False, stderr=True):
 
 def __copy_file_to_file(src, dst, stdout, stderr):
     """Copies file to file"""
-    command = "echo D | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
-    return __execute(command, stdout, stderr)
+    cmd = "echo D | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
+    return __execute(cmd, stdout, stderr)
 
 
 def __copy_file_to_dir(src, dst, stdout, stderr):
     """Copies file to directory"""
     dst = enslash(dst)
-    command = "echo V | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
-    return __execute(command, stdout, stderr)
+    cmd = "echo V | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
+    return __execute(cmd, stdout, stderr)
 
 
 def __copy_dir_to_dir(src, dst, stdout, stderr):
     """Copies directory to directory"""
     src = deslash(src)
     dst = deslash(dst)
-    command = "xcopy \"{0}\" \"{1}\" /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
-    return __execute(command, stdout, stderr)
+    cmd = "xcopy \"{0}\" \"{1}\" /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
+    return __execute(cmd, stdout, stderr)
 
 
 def move(src, dst, stdout=False, stderr=True):
@@ -342,8 +326,7 @@ def move(src, dst, stdout=False, stderr=True):
     stdout -- show standard output
     stderr -- show standard error
     """
-    if not exists(src):
-        raise FileException(src)
+    check(src)
     if not exists(dst):
         mkdirs(dst)
     if isfile(src) and filelike(dst):
@@ -356,23 +339,23 @@ def move(src, dst, stdout=False, stderr=True):
 
 def __move_file_to_file(src, dst, stdout, stderr):
     """Moves file to file"""
-    command = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
-    return __execute(command, stdout, stderr)
+    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
+    return __execute(cmd, stdout, stderr)
 
 
 def __move_file_to_dir(src, dst, stdout, stderr):
     """Moves file to directory"""
     dst = enslash(dst)
-    command = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
-    return __execute(command, stdout, stderr)
+    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
+    return __execute(cmd, stdout, stderr)
 
 
 def __move_dir_to_dir(src, dst, stdout, stderr):
     """Moves directory to directory"""
     src = deslash(src)
     dst = deslash(dst)
-    command = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
-    return __execute(command, stdout, stderr)
+    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
+    return __execute(cmd, stdout, stderr)
 
 
 def remove(src, stdout=False, stderr=True):
@@ -383,25 +366,24 @@ def remove(src, stdout=False, stderr=True):
     stdout -- show standard output
     stderr -- show standard error
     """
-    if not exists(src):
-        raise FileException(src)
+    check(src)
     if isfile(src):
         return __remove_file(src, stdout, stderr)
-    else:
+    if isdir(src):
         return __remove_dir(src, stdout, stderr)
 
 
 def __remove_file(src, stdout, stderr):
     """Removes file"""
-    command = "del \"{0}\"".format(pty(src))
-    return __execute(command, stdout, stderr)
+    cmd = "del \"{0}\"".format(pty(src))
+    return __execute(cmd, stdout, stderr)
 
 
 def __remove_dir(src, stdout, stderr):
     """Removes directory"""
     src = deslash(src)
-    command = "rd \"{0}\" /s/q".format(pty(src))
-    return __execute(command, stdout, stderr)
+    cmd = "rd \"{0}\" /s/q".format(pty(src))
+    return __execute(cmd, stdout, stderr)
 
 
 def rename(src, dst, stdout=False, stderr=True):
@@ -412,18 +394,16 @@ def rename(src, dst, stdout=False, stderr=True):
     stdout -- show standard output
     stderr -- show standard error
     """
-    if not exists(src):
-        raise FileException(src)
-    command = "ren \"{0}\" \"{1}\"".format(pty(src), pty(filename(dst)))
-    return __execute(command, stdout, stderr)
+    check(src)
+    cmd = "ren \"{0}\" \"{1}\"".format(pty(src), pty(filename(dst)))
+    return __execute(cmd, stdout, stderr)
 
 
 def remove_empty_dirs(pth):
     """Removes empty folders recursively"""
     if not isdir(pth):
         return
-    dirs = listdir(pth, absolute=True)
-    for d in dirs:
+    for d in listdir(pth, absolute=True):
         if isdir(d):
             remove_empty_dirs(d)
     if isempty(pth):
@@ -444,7 +424,7 @@ def remove_duplicates(fls):
     return result
 
 
-def regex(fls, pattern, name=True, ext=True, other=True):
+def regex(fls, pattern, name=True, ext=True, other=False):
     """
     Filters files with regular expressions
     .       match any character
@@ -464,12 +444,12 @@ def regex(fls, pattern, name=True, ext=True, other=True):
     """
     matching = []
     not_matching = []
-    for f in fls:
-        if re.match(r"{0}".format(pattern), filename(f, ext=ext) if name is True else f):
-            matching.append(f)
-        else:
-            not_matching.append(f)
-    return matching, not_matching if other else matching
+    for fl in fls:
+        if re.match(r"".join(pattern), filename(fl, ext=ext) if name else fl):
+            matching.append(fl)
+        elif other:
+            not_matching.append(fl)
+    return matching if not other else matching, not_matching
 
 
 def symlink(src, dst, stdout=False, stderr=True):
@@ -480,21 +460,11 @@ def symlink(src, dst, stdout=False, stderr=True):
     stdout -- show standard output
     stderr -- show standard error
     """
-    if not exists(src):
-        raise FileException(src)
-    parent = up(dst)
-    if not exists(parent):
-        mkdirs(parent)
-    command = "mklink /d \"{0}\" \"{1}\"".format(pty(dst), pty(src))
-    return __execute(command, stdout, stderr)
-
-
-def __has_lzma():
-    """Checks if 7z is available"""
-    return not bool(__execute("7z", False, False))
-
-
-__HAS_LZMA = __has_lzma()
+    check(src)
+    if not exists(up(dst)):
+        mkdirs(up(dst))
+    cmd = "mklink /d \"{0}\" \"{1}\"".format(pty(dst), pty(src))
+    return __execute(cmd, stdout, stderr)
 
 
 def lzma(dst, *src, stdout=False, stderr=True):
@@ -505,52 +475,32 @@ def lzma(dst, *src, stdout=False, stderr=True):
     stdout -- show standard output
     stderr -- show standard error
     """
-    if not __HAS_LZMA:
-        raise CmdException("7z")
-    fls = ""
-    for fl in src:
-        if not exists(fl):
-            raise FileException(fl)
-        fls += " \"{0}\"".format(pty(fl))
-    command = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\"{1}"
-    return __execute(command.format(pty(dst), fls), stdout, stderr)
-
-
-def __has_gs():
-    """Checks if gswin32c is available"""
-    return not bool(__execute("echo quit | gswin32c", False, False))
-
-
-__HAS_GS = __has_gs()
+    for idx, fl in enumerate(src):
+        check(fl)
+        src[idx] = pty(fl)
+    cmd = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\" \"{1}\"".format(pty(dst), "\" \"".join(src))
+    return __execute(cmd, stdout, stderr)
 
 
 def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     """
     Compresses a pdf file
-    Settings: screen, ebook, printer, prepress, default
 
     Keyword arguments:
-    setting -- choose which setting to use ("screen", "ebook", "printer", "prepress", "default")
+    setting -- choose which setting to use (screen, ebook, printer, prepress, default)
     stdout  -- show standard output
     stderr  -- show standard error
     """
-    if not __HAS_GS:
-        raise CmdException("gswin32c")
-    if not exists(src):
-        raise FileException(src)
-    if not extension(src) == "pdf":
-        raise ExtException(extension(src))
-    if setting not in ("screen", "ebook", "printer", "prepress", "default"):
-        raise ArgException(setting)
+    check(src)
     src_ = src + "_"
     rename(src, src_)
-    command = "gswin32c -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/{0} " \
-              "-dNOPAUSE -dQUIET -dBATCH -sOutputFile=\"{1}\" \"{2}\"".format(setting, pty(src), pty(src_))
-    code = __execute(command, stdout, stderr)
+    cmd = "gswin32c -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/{0} -dNOPAUSE " \
+          "-dQUIET -dBATCH -sOutputFile=\"{1}\" \"{2}\"".format(setting, pty(src), pty(src_))
+    exit_code = __execute(cmd, stdout, stderr)
     remove(src_)
-    return code
+    return exit_code
 
-    
+
 def grep(key, src, pattern=None, recursive=True):
     """
     Searches for a key in a path or file
@@ -564,11 +514,10 @@ def grep(key, src, pattern=None, recursive=True):
     result = []
     for fl in fls:
         try:
-            i = 1
-            for line in open(fl, "r", encoding="utf-8").readlines():
-                if key in line.lower():
-                    result.append((i, fl))
-                i += 1
+            with open(fl, "r", encoding="utf-8") as opened_fl:
+                for idx, line in enumerate(opened_fl, start=1):
+                    if key in line.lower():
+                        result.append((idx, fl))
         except:
             continue
     return result
