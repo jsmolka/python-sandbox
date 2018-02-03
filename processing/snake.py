@@ -15,9 +15,7 @@ class Point:
         self.y = y
 
     def __eq__(self, other):
-        if self.x == other.x and self.y == other.y:
-            return True
-        return False
+        return self.x == other.x and self.y == other.y
 
     @staticmethod
     def make(p):
@@ -97,9 +95,7 @@ class Snake:
         self.nodes.append(Point.make(self.nodes[-1]))
 
     def out_of_bounds(self):
-        if not 0 <= self.nodes[0].x < WIDTH * SCALE or not 0 <= self.nodes[0].y < HEIGHT * SCALE:
-            return True
-        return False
+        return not 0 <= self.nodes[0].x < WIDTH * SCALE or not 0 <= self.nodes[0].y < HEIGHT * SCALE
 
     def get_score(self):
         return len(self.nodes) - 2
