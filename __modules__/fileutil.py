@@ -2,6 +2,8 @@ import ctypes
 import datetime
 import getpass
 import glob
+import itertools
+import multiprocessing
 import os
 import pathlib
 import re
@@ -50,10 +52,18 @@ def user():
     """Returns current user"""
     return getpass.getuser()
 
+    
+def abspath(fl):
+    """Returns absolute path for a file"""
+    return depty(os.path.abspath(fl))
+    
 
 def mainfile():
     """Returns main file"""
-    return depty(sys.modules["__main__"].__file__)
+    if hasattr(sys.modules["__main__"], "__file__"):
+        return depty(sys.modules["__main__"].__file__)
+    else:
+        return abspath(sys.argv[0])  # TODO: Correct output for console
 
 
 def remove_extension(fl):
@@ -145,11 +155,6 @@ def join(*pths):
 def split(fl):
     """Splits file path"""
     return dirname(fl), filename(fl)
-
-
-def abspath(fl):
-    """Returns absolute path for a file"""
-    return depty(os.path.abspath(fl))
 
 
 def listdir(pth, absolute=False):
@@ -500,28 +505,59 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     exit_code = __execute(cmd, stdout, stderr)
     remove(src_)
     return exit_code
+    
+    
+def grep_file(key, fl):
+    """Searches for a key in a file"""
+    result = []
+    try:
+        with open(fl, "r", encoding="utf-8") as opened_fl:
+            for idx, line in enumerate(opened_fl, start=1):
+                if key in line.lower():
+                    result.append((idx, fl))
+    except Exception:
+        pass
+    return result
+    
+    
+def grep_files(key, fls):
+    """Searches for a key in multiple files"""
+    result = []
+    for fl in fls:
+        result.extend(grep_file(key, fl))
+    return result
+    
+    
+def grep_multi(key, fls, count):
+    """Searches for a key in multiple files with multiple processes"""
+    pool = multiprocessing.Pool(processes=count)
+    starmap = pool.starmap(grep_file, zip(itertools.repeat(key), fls))
+    pool.close()
+    pool.join()
+    
+    result = []
+    for item in starmap:
+        if item:
+            result.extend(item)
+    return result
+    
 
-
-def grep(key, src, pattern=None, recursive=True):
+def grep(key, src, pattern=None, recursive=True, count=1):
     """
     Searches for a key in a path or file
 
     Keyword arguments:
     pattern   -- file pattern in list ["*.exe", "*.jpg"] or string "*.exe" form
     recursive -- search through sub directories recursively
+    count     -- process count (__name__ == "__main__" is necessary if the process count is greater than one)
     """
     key = key.lower()
     fls = [src] if filelike(src) else files(src, pattern=pattern, recursive=recursive)
-    result = []
-    for fl in fls:
-        try:
-            with open(fl, "r", encoding="utf-8") as opened_fl:
-                for idx, line in enumerate(opened_fl, start=1):
-                    if key in line.lower():
-                        result.append((idx, fl))
-        except:
-            continue
-    return result
+    
+    if count == 1:
+        return grep_files(key, fls)
+    else:
+        return grep_multi(key, fls, count)
 
 
 USER = join("C:/Users", user())
