@@ -1,11 +1,12 @@
 from random import shuffle
 
 
-def create_class(name, fields):
+def create_class(name, keys, values=None):
     """Creates object dynamically"""
     cls = type(name, (object,), {})
-    for field in fields:
-        setattr(cls, field, None)
+    for idx, key in enumerate(keys):
+		value = values[idx] if values else None
+        setattr(cls, key, value)
     return cls
 
 
@@ -27,29 +28,18 @@ def my_dict(obj):
     return result
 
 
-def pi(n):
-    """Calculates n digits of pi using the spigot algorithm"""
-    l = list()
-    k, a, b, a1, b1 = 2, 4, 1, 12, 4
-    while n > 0:
-        p, q, k = k * k, 2 * k + 1, k + 1
-        a, b, a1, b1 = a1, b1, p * a + q * a1, p * b + q * b1
-        d, d1 = a / b, a1 / b1
-        while d == d1 and n > 0:
-            l.append(int(d))
-            n -= 1
-            a, a1 = 10 * (a % b), 10 * (a1 % b1)
-            d, d1 = a / b, a1 / b1
-    return l
-
-
 def remap(v, l1, h1, l2, h2):
     """Re-maps a number from one range to another"""
     return float(v - l1) / (h1 - l1) * (h2 - l2) + l2
 
 
-def shuffled(l):
+def shuffled(lst):
     """Returns shuffled list"""
-    result = l[:]
+    result = lst[:]
     shuffle(result)
     return result
+
+	
+def chunk_list(lst, count):
+	"""Split list in equally sizes chunks"""
+	return [lst[i:i + count] for i in range(0, len(lst), count)]
