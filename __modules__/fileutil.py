@@ -528,7 +528,7 @@ def grep_files(key, fls):
     return result
     
     
-def grep_multi(key, fls, count):
+def grep_process(key, fls, count):
     """Searches for a key in multiple files with multiple processes"""
     pool = multiprocessing.Pool(processes=count)
     starmap = pool.starmap(grep_file, zip(itertools.repeat(key), fls))
@@ -557,7 +557,7 @@ def grep(key, src, pattern=None, recursive=True, count=1):
     if count == 1:
         return grep_files(key, fls)
     else:
-        return grep_multi(key, fls, count)
+        return grep_process(key, fls, count)
 
 
 USER = join("C:/Users", user())
