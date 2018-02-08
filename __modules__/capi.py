@@ -19,15 +19,6 @@ def user():
     return getpass.getuser()
 
 
-def get_defaults(func):
-    defaults = inspect.getargspec(func).defaults
-    if len(defaults) == 1:
-        return None, defaults[0]
-    if len(defaults) == 2:
-        return defaults
-    raise ValueError("Invalid defaults {0}".format(defaults))
-
-
 def ctype(tp):
     if tp is None:
         return None
@@ -95,22 +86,26 @@ def load_dll(pth):
     return dll
 
 
-def cfunc(func):
+def func(pth, res=None):
     """
-    Decorator for easy C function calls
+    Decorator for easy dll function calls
 
-    @cfunc
-    def func(*args, [res=type], dll="name.dll"): pass
+    @func(dll, res=type)
+    def function(*args): pass
     """
-    def wrapper(*args, func=func):
-        res, pth = get_defaults(func)
-        dll = load_dll(pth)
-        func = getattr(dll, func.__name__)
+    def decorator(pyfunc):
+        
+        def wrapper(*args, **kwargs):
+        
+            dll = load_dll(pth)
+            cfunc = getattr(dll, pyfunc.__name__)
 
-        args = [convert(arg) for arg in args]
-        func.argtypes = [argtype(arg) for arg in args]
-        func.restype = ctype(res)
+            args = [convert(arg) for arg in args]
+            cfunc.argtypes = [argtype(arg) for arg in args]
+            cfunc.restype = ctype(res)
 
-        return func(*args)
-
-    return wrapper
+            return cfunc(*args)
+            
+        return wrapper
+        
+    return decorator
