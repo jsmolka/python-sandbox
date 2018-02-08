@@ -1,26 +1,26 @@
 import capi
 from random import randint
 
-pth = "dll/argtypes.dll"
+dll = "dll/argtypes.dll"
 
 
-@capi.cfunc
-def at_lst_1d_int(l, i, dll=pth):
+@capi.func(dll)
+def at_lst_1d_int(l, i):
     pass
 
 
-@capi.cfunc
-def at_lst_1d_dbl(l, i, dll=pth):
+@capi.func(dll)
+def at_lst_1d_dbl(l, i):
     pass
 
 
-@capi.cfunc
-def at_lst_2d_int(l, r, c, dll=pth):
+@capi.func(dll)
+def at_lst_2d_int(l, r, c):
     pass
 
 
-@capi.cfunc
-def at_lst_2d_dbl(l, r, c, dll=pth):
+@capi.func(dll)
+def at_lst_2d_dbl(l, r, c):
     pass
 
 

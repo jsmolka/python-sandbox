@@ -2,46 +2,46 @@ import capi
 import numpy as np
 from random import randint
 
-pth = "dll/argtypes.dll"
+dll = "dll/argtypes.dll"
 
 
-@capi.cfunc
-def at_npy_1d_int(l, i, dll=pth):
+@capi.func(dll)
+def at_npy_1d_int(l, i):
     pass
 
 
-@capi.cfunc
-def at_npy_1d_dbl(l, i, dll=pth):
+@capi.func(dll)
+def at_npy_1d_dbl(l, i):
     pass
 
 
-@capi.cfunc
-def at_npy_2d_int(l, r, c, dll=pth):
+@capi.func(dll)
+def at_npy_2d_int(l, r, c):
     pass
 
 
-@capi.cfunc
-def at_npy_2d_dbl(l, r, c, dll=pth):
+@capi.func(dll)
+def at_npy_2d_dbl(l, r, c):
     pass
 
 
-@capi.cfunc
-def at_npy_1d_uint32(l, i, dll=pth):
+@capi.func(dll)
+def at_npy_1d_uint32(l, i):
     pass
 
 
-@capi.cfunc
-def at_npy_2d_uint16(l, r, c, dll=pth):
+@capi.func(dll)
+def at_npy_2d_uint16(l, r, c):
     pass
 
 
-@capi.cfunc
-def at_npy_1d_out_int(in_, i, out, dll=pth):
+@capi.func(dll)
+def at_npy_1d_out_int(in_, i, out):
     pass
 
 
-@capi.cfunc
-def at_npy_2d_out_dbl(in_, r, c, out, dll=pth):
+@capi.func(dll)
+def at_npy_2d_out_dbl(in_, r, c, out):
     pass
 
 

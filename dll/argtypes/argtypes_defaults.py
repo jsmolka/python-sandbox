@@ -1,20 +1,20 @@
 import capi
 
-pth = "dll/argtypes.dll"
+dll = "dll/argtypes.dll"
 
 
-@capi.cfunc
-def at_int(i, dll=pth):
+@capi.func(dll)
+def at_int(i):
     pass
 
 
-@capi.cfunc
-def at_dbl(d, dll=pth):
+@capi.func(dll)
+def at_dbl(d):
     pass
 
 
-@capi.cfunc
-def at_str(s, dll=pth):
+@capi.func(dll)
+def at_str(s):
     pass
 
 

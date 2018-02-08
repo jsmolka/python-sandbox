@@ -1,20 +1,20 @@
 import capi
 
-pth = "dll/restypes.dll"
+dll = "dll/restypes.dll"
 
 
-@capi.cfunc
-def rt_none(l, i, res=None, dll=pth):
+@capi.func(dll, res=None)
+def rt_none(l, i):
     pass
 
 
-@capi.cfunc
-def rt_int(l, i, res=int, dll=pth):
+@capi.func(dll, res=int)
+def rt_int(l, i):
     pass
 
 
-@capi.cfunc
-def rt_dbl(l, i, res=float, dll=pth):
+@capi.func(dll, res=float)
+def rt_dbl(l, i):
     pass
 
 
