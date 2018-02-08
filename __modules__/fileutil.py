@@ -33,19 +33,19 @@ def depty(pth):
     return pth.replace("\\", "/")
 
 
-def __endsslash(pth):
+def endsslash(pth):
     """Checks if path ends with slash"""
     return pth[-1] in ("/", "\\")
 
 
 def deslash(pth):
     """Removes trailing slash"""
-    return depty(pth[:-1] if __endsslash(pth) else pth)
+    return depty(pth[:-1] if endsslash(pth) else pth)
 
 
 def enslash(pth):
     """Adds trailing slash"""
-    return depty(pth if __endsslash(pth) else pth + "/")
+    return depty(pth if endsslash(pth) else pth + "/")
 
 
 def user():
@@ -60,10 +60,9 @@ def abspath(fl):
 
 def mainfile():
     """Returns main file"""
-    if hasattr(sys.modules["__main__"], "__file__"):
-        return depty(sys.modules["__main__"].__file__)
-    else:
-        return abspath(sys.argv[0])  # TODO: Correct output for console
+    if not hasattr(sys.modules["__main__"], "__file__"):
+        return abspath(sys.argv[0])
+    return depty(sys.modules["__main__"].__file__)
 
 
 def remove_extension(fl):
@@ -86,11 +85,24 @@ def dirname(fl):
     """Returns directory name of a file"""
     return enslash(os.path.dirname(fl))
 
+    
+def filelike(src):
+    """Checks if src is filelike"""
+    return bool(os.path.splitext(src)[1])
+
+
+def pathlike(src):
+    """Checks if src is pathlike"""
+    return not filelike(src)
+    
 
 def pydir():
     """Returns script directory"""
-    return dirname(mainfile())
-
+    main = mainfile()
+    if pathlike(main):
+        return main
+    return dirname(main)
+    
 
 def cwd():
     """Returns current working directory"""
@@ -121,18 +133,6 @@ def check(src):
     """Checks if src exists and raises error"""
     if not exists(src):
         raise FileError(src)
-
-
-def filelike(src):
-    """Checks if src is filelike"""
-    if os.path.splitext(src)[1]:
-        return True
-    return False
-
-
-def pathlike(src):
-    """Checks if src is pathlike"""
-    return not filelike(src)
 
 
 def extension(fl, dot=False):
@@ -172,9 +172,7 @@ def listdir(pth, absolute=False):
 
 def isempty(pth):
     """Checks if directory is empty"""
-    if not listdir(pth):
-        return True
-    return False
+    return not bool(listdir(pth))
 
 
 def date(pattern="%d-%m-%y"):
@@ -258,7 +256,7 @@ def admin():
         sys.exit()
 
 
-def __execute(cmd, stdout, stderr):
+def execute(cmd, stdout, stderr):
     """Executes command"""
     stdout = "" if stdout else " >nul"
     stderr = "" if stderr else " 2>nul"
@@ -273,9 +271,30 @@ def system(cmd, stdout=True, stderr=True):
     stdout -- show standard output
     stderr -- show standard error
     """
-    return __execute(cmd, stdout, stderr)
+    return execute(cmd, stdout, stderr)
 
 
+def copy_file_to_file(src, dst, stdout, stderr):
+    """Copies file to file"""
+    cmd = "echo D | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
+    return execute(cmd, stdout, stderr)
+
+
+def copy_file_to_dir(src, dst, stdout, stderr):
+    """Copies file to directory"""
+    dst = enslash(dst)
+    cmd = "echo V | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
+    return execute(cmd, stdout, stderr)
+
+
+def copy_dir_to_dir(src, dst, stdout, stderr):
+    """Copies directory to directory"""
+    src = deslash(src)
+    dst = deslash(dst)
+    cmd = "xcopy \"{0}\" \"{1}\" /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
+    return execute(cmd, stdout, stderr)
+    
+    
 def copy(src, dst, stdout=False, stderr=True):
     """
     Copies files or directories
@@ -294,34 +313,34 @@ def copy(src, dst, stdout=False, stderr=True):
     """
     check(src)
     if isfile(src) and filelike(dst):
-        return __copy_file_to_file(src, dst, stdout, stderr)
+        return copy_file_to_file(src, dst, stdout, stderr)
     if isfile(src) and pathlike(dst):
-        return __copy_file_to_dir(src, dst, stdout, stderr)
+        return copy_file_to_dir(src, dst, stdout, stderr)
     if isdir(src) and pathlike(dst):
-        return __copy_dir_to_dir(src, dst, stdout, stderr)
+        return copy_dir_to_dir(src, dst, stdout, stderr)
 
 
-def __copy_file_to_file(src, dst, stdout, stderr):
-    """Copies file to file"""
-    cmd = "echo D | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
-    return __execute(cmd, stdout, stderr)
+def move_file_to_file(src, dst, stdout, stderr):
+    """Moves file to file"""
+    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
+    return execute(cmd, stdout, stderr)
 
 
-def __copy_file_to_dir(src, dst, stdout, stderr):
-    """Copies file to directory"""
+def move_file_to_dir(src, dst, stdout, stderr):
+    """Moves file to directory"""
     dst = enslash(dst)
-    cmd = "echo V | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
-    return __execute(cmd, stdout, stderr)
+    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
+    return execute(cmd, stdout, stderr)
 
 
-def __copy_dir_to_dir(src, dst, stdout, stderr):
-    """Copies directory to directory"""
+def move_dir_to_dir(src, dst, stdout, stderr):
+    """Moves directory to directory"""
     src = deslash(src)
     dst = deslash(dst)
-    cmd = "xcopy \"{0}\" \"{1}\" /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
-    return __execute(cmd, stdout, stderr)
-
-
+    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
+    return execute(cmd, stdout, stderr)
+        
+        
 def move(src, dst, stdout=False, stderr=True):
     """
     Moves files or directories
@@ -335,34 +354,26 @@ def move(src, dst, stdout=False, stderr=True):
     if not exists(dst):
         mkdirs(dst)
     if isfile(src) and filelike(dst):
-        return __move_file_to_file(src, dst, stdout, stderr)
+        return move_file_to_file(src, dst, stdout, stderr)
     if isfile(src) and pathlike(dst):
-        return __move_file_to_dir(src, dst, stdout, stderr)
+        return move_file_to_dir(src, dst, stdout, stderr)
     if isdir(src) and pathlike(dst):
-        return __move_dir_to_dir(src, dst, stdout, stderr)
+        return move_dir_to_dir(src, dst, stdout, stderr)
 
 
-def __move_file_to_file(src, dst, stdout, stderr):
-    """Moves file to file"""
-    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
-    return __execute(cmd, stdout, stderr)
+def remove_file(src, stdout, stderr):
+    """Removes file"""
+    cmd = "del \"{0}\"".format(pty(src))
+    return execute(cmd, stdout, stderr)
 
 
-def __move_file_to_dir(src, dst, stdout, stderr):
-    """Moves file to directory"""
-    dst = enslash(dst)
-    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
-    return __execute(cmd, stdout, stderr)
-
-
-def __move_dir_to_dir(src, dst, stdout, stderr):
-    """Moves directory to directory"""
+def remove_dir(src, stdout, stderr):
+    """Removes directory"""
     src = deslash(src)
-    dst = deslash(dst)
-    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
-    return __execute(cmd, stdout, stderr)
-
-
+    cmd = "rd \"{0}\" /s/q".format(pty(src))
+    return execute(cmd, stdout, stderr)
+        
+        
 def remove(src, stdout=False, stderr=True):
     """
     Removes files or directories
@@ -373,22 +384,9 @@ def remove(src, stdout=False, stderr=True):
     """
     check(src)
     if isfile(src):
-        return __remove_file(src, stdout, stderr)
+        return remove_file(src, stdout, stderr)
     if isdir(src):
-        return __remove_dir(src, stdout, stderr)
-
-
-def __remove_file(src, stdout, stderr):
-    """Removes file"""
-    cmd = "del \"{0}\"".format(pty(src))
-    return __execute(cmd, stdout, stderr)
-
-
-def __remove_dir(src, stdout, stderr):
-    """Removes directory"""
-    src = deslash(src)
-    cmd = "rd \"{0}\" /s/q".format(pty(src))
-    return __execute(cmd, stdout, stderr)
+        return remove_dir(src, stdout, stderr)
 
 
 def rename(src, dst, stdout=False, stderr=True):
@@ -401,7 +399,7 @@ def rename(src, dst, stdout=False, stderr=True):
     """
     check(src)
     cmd = "ren \"{0}\" \"{1}\"".format(pty(src), pty(filename(dst)))
-    return __execute(cmd, stdout, stderr)
+    return execute(cmd, stdout, stderr)
 
 
 def remove_empty_dirs(pth):
@@ -469,7 +467,7 @@ def symlink(src, dst, stdout=False, stderr=True):
     if not exists(up(dst)):
         mkdirs(up(dst))
     cmd = "mklink /d \"{0}\" \"{1}\"".format(pty(dst), pty(src))
-    return __execute(cmd, stdout, stderr)
+    return execute(cmd, stdout, stderr)
 
 
 def lzma(dst, *src, stdout=False, stderr=True):
@@ -485,7 +483,7 @@ def lzma(dst, *src, stdout=False, stderr=True):
         check(fl)
         src[idx] = pty(fl)
     cmd = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\" \"{1}\"".format(pty(dst), "\" \"".join(src))
-    return __execute(cmd, stdout, stderr)
+    return execute(cmd, stdout, stderr)
 
 
 def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
@@ -502,36 +500,37 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     rename(src, src_)
     cmd = "gswin32c -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/{0} -dNOPAUSE " \
           "-dQUIET -dBATCH -sOutputFile=\"{1}\" \"{2}\"".format(setting, pty(src), pty(src_))
-    exit_code = __execute(cmd, stdout, stderr)
+    exit_code = execute(cmd, stdout, stderr)
     remove(src_)
     return exit_code
     
     
-def grep_file(key, fl):
+def grep_file(key, fl, case):
     """Searches for a key in a file"""
     result = []
     try:
         with open(fl, "r", encoding="utf-8") as opened_fl:
             for idx, line in enumerate(opened_fl, start=1):
-                if key in line.lower():
+                line = line if case else line.lower()
+                if key in line:
                     result.append((idx, fl))
     except Exception:
         pass
     return result
     
     
-def grep_files(key, fls):
+def grep_files(key, fls, case):
     """Searches for a key in multiple files"""
     result = []
     for fl in fls:
-        result.extend(grep_file(key, fl))
+        result.extend(grep_file(key, fl, case))
     return result
     
     
-def grep_process(key, fls, count):
+def grep_process(key, fls, case, count):
     """Searches for a key in multiple files with multiple processes"""
     pool = multiprocessing.Pool(processes=count)
-    starmap = pool.starmap(grep_file, zip(itertools.repeat(key), fls))
+    starmap = pool.starmap(grep_file, zip(itertools.repeat(key), fls, itertools.repeat(case)))
     pool.close()
     pool.join()
     
@@ -542,22 +541,23 @@ def grep_process(key, fls, count):
     return result
     
 
-def grep(key, src, pattern=None, recursive=True, count=1):
+def grep(key, src, pattern=None, recursive=True, case=False, count=1):
     """
     Searches for a key in a path or file
 
     Keyword arguments:
     pattern   -- file pattern in list ["*.exe", "*.jpg"] or string "*.exe" form
     recursive -- search through sub directories recursively
+    case      -- enable case sensitive line parsing
     count     -- process count (__name__ == "__main__" is necessary if the process count is greater than one)
     """
-    key = key.lower()
+    key = key if case else key.lower()
     fls = [src] if filelike(src) else files(src, pattern=pattern, recursive=recursive)
     
     if count == 1:
-        return grep_files(key, fls)
+        return grep_files(key, fls, case)
     else:
-        return grep_process(key, fls, count)
+        return grep_process(key, fls, case, count)
 
 
 USER = join("C:/Users", user())
