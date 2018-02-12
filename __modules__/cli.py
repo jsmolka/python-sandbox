@@ -3,6 +3,8 @@ from math import ceil, floor
 from shutil import get_terminal_size
 
 __all__ = [
+    "set_color",
+    "get_color",
     "Color",
     "Style",
     "cprint",
