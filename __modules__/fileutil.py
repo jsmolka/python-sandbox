@@ -10,94 +10,150 @@ import re
 import sys
 
 
-# pth  : path
-# pths : paths
-# fl   : file
-# fls  : files
-# src  : source
-# dst  : destination
-
-
 class FileError(Exception):
     def __init__(self, fl):
         super(FileError, self).__init__("{0} not found".format(fl))
 
 
 def pty(pth):
-    """Creates valid cmd path"""
+    """
+    Creates a valid cmd path.
+    
+    :param pth: path to be validated
+    :returns: valid cmd path
+    """
     return pth.replace("/", "\\")
 
 
 def depty(pth):
-    """Creates non valid cmd path"""
+    """
+    Creates a non valid cmd path.
+    
+    :param pth: path to be devalidated
+    :returns: invalid cmd path
+    """
     return pth.replace("\\", "/")
 
 
 def endsslash(pth):
-    """Checks if path ends with slash"""
+    """
+    Checks if path ends with a slash.
+    
+    :param pth: path to be checked
+    :returns: path ends with slash
+    """
     return pth[-1] in ("/", "\\")
 
 
 def deslash(pth):
-    """Removes trailing slash"""
-    return depty(pth[:-1] if endsslash(pth) else pth)
+    """
+    Removes trailing slash from a path.
+    
+    :param pth: path to be deslashed
+    :returns: path without trailing slash
+    """
+    return depty(pth.rstrip("/", "\\"))
 
 
 def enslash(pth):
-    """Adds trailing slash"""
+    """
+    Adds trailing slash to a path.
+    
+    :param pth: path to be enslashed
+    :returns: path with trailing slash
+    """
     return depty(pth if endsslash(pth) else pth + "/")
 
 
 def user():
-    """Returns current user"""
+    """
+    Returns current user.
+    
+    :returns: current user
+    """
     return getpass.getuser()
 
     
 def abspath(fl):
-    """Returns absolute path for a file"""
+    """
+    Returns absolute path for a file.
+    
+    :param fl: file to process
+    :returns: absolute file path
+    """
     return depty(os.path.abspath(fl))
     
 
 def mainfile():
-    """Returns main file"""
+    """
+    Returns main file if run as script or
+    directory if run from console.
+    
+    :returns: main file or directory
+    """
     if not hasattr(sys.modules["__main__"], "__file__"):
         return abspath(sys.argv[0])
     return depty(sys.modules["__main__"].__file__)
 
 
 def remove_extension(fl):
-    """Removes file extension"""
+    """
+    Removes file extension.
+    
+    :param fl: file to be processed
+    :returns: file without extension
+    """
     return os.path.splitext(fl)[0]
 
 
 def filename(fl, ext=True):
     """
-    Returns file name
+    Returns file name.
 
-    Keyword arguments:
-    ext -- return filename with or without extension
+    :param fl: file to be processed
+    :param ext: keep extension
+    :returns: filename of file
     """
     fl = os.path.basename(fl)
     return fl if ext else remove_extension(fl)
 
 
 def dirname(fl):
-    """Returns directory name of a file"""
+    """
+    Returns directory name of a file.
+    
+    :param fl: file to be processed
+    :return: dirname of file
+    """
     return enslash(os.path.dirname(fl))
 
     
 def filelike(src):
-    """Checks if src is filelike"""
+    """
+    Checks if src is filelike.
+    
+    :param src: src to be checked
+    :returns: src is filelike
+    """
     return bool(os.path.splitext(src)[1])
 
 
 def pathlike(src):
-    """Checks if src is pathlike"""
+    """
+    Checks if src is pathlike.
+    
+    :param src: src to be checked
+    :returns: src is pathlike
+    """
     return not filelike(src)
     
 
 def pydir():
-    """Returns script directory"""
+    """
+    Returns script directory.
+    
+    :returns: directory of main file
+    """
     main = mainfile()
     if pathlike(main):
         return main
@@ -105,64 +161,105 @@ def pydir():
     
 
 def cwd():
-    """Returns current working directory"""
+    """
+    Returns current working directory.
+    
+    :returns: current working directory
+    """
     return enslash(os.getcwd())
 
 
 def chdir(pth):
-    """Changes current working directory"""
+    """
+    Changes current working directory.
+    
+    :param pth: directory to change to
+    :returns: success
+    """
     return os.chdir(pth)
 
 
 def isdir(src):
-    """Checks if src is a directory"""
+    """
+    Checks if src is a directory.
+    
+    :param src: src to be checked
+    :returns: src is directory
+    """
     return os.path.isdir(src)
 
 
 def isfile(src):
-    """Checks if src is a file"""
+    """
+    Checks if src is a file.
+    
+    :param src: src to be checked
+    :returns: src is file
+    """
     return os.path.isfile(src)
 
 
 def exists(src):
-    """Checks if src exists"""
+    """
+    Checks if src exists.
+    
+    :param src: src to be checked
+    :returns: src exists
+    """
     return os.path.exists(src)
 
 
 def check(src):
-    """Checks if src exists and raises error"""
+    """
+    Checks if src exists and raises error.
+    
+    :param src: src to be checked
+    :returns: none
+    """
     if not exists(src):
         raise FileError(src)
 
 
 def extension(fl, dot=False):
     """
-    Returns file extension
+    Returns file extension.
 
-    Keyword arguments:
-    dot -- return extension with or without dot
+    :param fl: file to be processed
+    :param dot: keep dot
+    :returns: file extension
     """
     ext = os.path.splitext(fl)[1]
     return ext if dot else ext[1:]
 
 
 def join(*pths):
-    """Combines multiple paths"""
+    """
+    Combines multiple paths.
+    
+    :param pths: paths to be combined
+    :returns: combined paths
+    """
     pth = os.path.join("", *pths)
     return depty(pth) if filelike(pth) else enslash(pth)
 
 
 def split(fl):
-    """Splits file path"""
+    """
+    Splits a file into path and name.
+    
+    :param fl: file to be processed
+    :returns: file path and name
+    """
     return dirname(fl), filename(fl)
 
 
 def listdir(pth, absolute=False):
     """
-    Returns list of files and directories
+    Returns list of files and directories.
 
-    Keyword arguments:
-    absolute -- return absolute instead of dir names
+    :param pth: path to be processed
+    :param absolute: get absolute path
+    :returns: list of files and directories
     """
     pths = os.listdir(pth)
     if absolute:
@@ -171,30 +268,45 @@ def listdir(pth, absolute=False):
 
 
 def isempty(pth):
-    """Checks if directory is empty"""
+    """
+    Checks if directory is empty.
+    
+    :param pth: path to be checked
+    :returns: path is empty
+    """
     return not bool(listdir(pth))
 
 
 def date(pattern="%d-%m-%y"):
     """
-    Returns current date
+    Returns current date.
 
-    Keyword arguments:
-    pattern -- format pattern of datetime
+    :param pattern: pattern to be used
+    :returns: current date with pattern form
     """
     today = datetime.date.today()
     return today if not pattern else today.strftime(pattern)
 
 
 def mkdirs(pth):
-    """Creates directories recursively"""
+    """
+    Creates directories recursively.
+    
+    :param pth: path to create
+    :returns: success
+    """
     if filelike(pth):
         pth = dirname(pth)
     return os.makedirs(pth)
 
 
 def up(pth):
-    """Goes one folder up"""
+    """
+    Goes one folder up.
+    
+    :param pth: directory to go up from
+    :returns: parent directory
+    """
     if filelike(pth):
         pth = dirname(pth)
     return enslash(str(pathlib.Path(pth).parent))
@@ -202,11 +314,12 @@ def up(pth):
 
 def size(src, unit="kb", digits=2):
     """
-    Returns file size of path
-
-    Keyword arguments:
-    unit   -- return size (b, kb, mb, gb)
-    digits -- number of digits
+    Returns file size of path.
+    
+    :param src: src to measure
+    :param unit: unit to convert to (b, kb, mb, gb)
+    :param digits: digits to round to
+    :returns: file size in unit with digits
     """
     check(src)
     div = 1024 ** ("b", "kb", "mb", "gb").index(unit)
@@ -215,11 +328,12 @@ def size(src, unit="kb", digits=2):
 
 def files(pth, pattern=None, recursive=True):
     """
-    Returns all files
+    Returns all files.
 
-    Keyword arguments:
-    pattern   -- file pattern in list ["*.exe", "*.jpg"] or string "*.exe" form
-    recursive -- search through sub directories recursively
+    :param pth: path to get files for
+    :param pattern: file pattern in string or list form
+    :param recursive: search through sub directories
+    :returns: list of files
     """
     if isinstance(pattern, list):
         fls = []
@@ -232,32 +346,35 @@ def files(pth, pattern=None, recursive=True):
     return [depty(p) for p in glob.iglob(join(pth, pattern), recursive=recursive)]
 
 
-def fsort(fls, key=lambda x: x, reverse=False, name=False):
-    """
-    Sorts a file list based on file names
-
-    Keyword arguments:
-    key     -- key for sorted
-    reverse -- reverse for sorted
-    name    -- use file name for sorting
-    """
-    return sorted(fls, key=lambda x: key(filename(x)) if name else key(x), reverse=reverse)
-
-
 def isadmin():
-    """Checks for admin privileges"""
+    """
+    Checks for admin privileges
+    
+    :returns: user is admin
+    """
     return bool(ctypes.windll.shell32.IsUserAnAdmin())
 
 
 def admin():
-    """Restarts as admin"""
+    """
+    Restarts as admin.
+    
+    :returns: none
+    """
     if not isadmin():
         ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, mainfile(), None, 1)
         sys.exit()
 
 
-def execute(cmd, stdout, stderr):
-    """Executes command"""
+def _execute(cmd, stdout, stderr):
+    """
+    Executes a command.
+    
+    :param cmd: command to be executed
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
+    """
     stdout = "" if stdout else " >nul"
     stderr = "" if stderr else " 2>nul"
     return os.system(cmd + stdout + stderr)
@@ -265,39 +382,64 @@ def execute(cmd, stdout, stderr):
 
 def system(cmd, stdout=True, stderr=True):
     """
-    Executes command
-
-    Keyword arguments:
-    stdout -- show standard output
-    stderr -- show standard error
+    Executes a command.
+    
+    :param cmd: command to be executed
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
     """
-    return execute(cmd, stdout, stderr)
+    return _execute(cmd, stdout, stderr)
 
 
-def copy_file_to_file(src, dst, stdout, stderr):
-    """Copies file to file"""
+def _copy_file_to_file(src, dst, stdout, stderr):
+    """
+    Copies file to file.
+    
+    :param src: file to copy
+    :param dst: file copy to
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
+    """
     cmd = "echo D | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
-    return execute(cmd, stdout, stderr)
+    return _execute(cmd, stdout, stderr)
 
 
-def copy_file_to_dir(src, dst, stdout, stderr):
-    """Copies file to directory"""
+def _copy_file_to_dir(src, dst, stdout, stderr):
+    """
+    Copies file to directory.
+    
+    :param src: file to copy
+    :param dst: directory to copy to
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
+    """
     dst = enslash(dst)
     cmd = "echo V | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
-    return execute(cmd, stdout, stderr)
+    return _execute(cmd, stdout, stderr)
 
 
-def copy_dir_to_dir(src, dst, stdout, stderr):
-    """Copies directory to directory"""
+def _copy_dir_to_dir(src, dst, stdout, stderr):
+    """
+    Copies directory to directory.
+    
+    :param src: directory to copy
+    :param dst: directory to copy to
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
+    """
     src = deslash(src)
     dst = deslash(dst)
     cmd = "xcopy \"{0}\" \"{1}\" /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
-    return execute(cmd, stdout, stderr)
+    return _execute(cmd, stdout, stderr)
     
     
 def copy(src, dst, stdout=False, stderr=True):
     """
-    Copies files or directories
+    Copies files or directories.
     /i  assume dst is a directory
     /s  copy folders and sub folders
     /h  copy hidden files and folders
@@ -306,87 +448,130 @@ def copy(src, dst, stdout=False, stderr=True):
     /f  display full src and dst names
     /c  continue copying if an error occurs
     /y  overwrite files
-
-    Keyword arguments:
-    stdout -- show standard output
-    stderr -- show standard error
+    
+    :param src: file or directory to copy
+    :param dst: file or directory to copy to
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
     """
     check(src)
     if isfile(src) and filelike(dst):
-        return copy_file_to_file(src, dst, stdout, stderr)
+        return _copy_file_to_file(src, dst, stdout, stderr)
     if isfile(src) and pathlike(dst):
-        return copy_file_to_dir(src, dst, stdout, stderr)
+        return _copy_file_to_dir(src, dst, stdout, stderr)
     if isdir(src) and pathlike(dst):
-        return copy_dir_to_dir(src, dst, stdout, stderr)
+        return _copy_dir_to_dir(src, dst, stdout, stderr)
 
 
-def move_file_to_file(src, dst, stdout, stderr):
-    """Moves file to file"""
+def _move_file_to_file(src, dst, stdout, stderr):
+    """
+    Moves file to file.
+    
+    :param src: file to move
+    :param dst: file to move to
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
+    """
     cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
-    return execute(cmd, stdout, stderr)
+    return _execute(cmd, stdout, stderr)
 
 
-def move_file_to_dir(src, dst, stdout, stderr):
-    """Moves file to directory"""
+def _move_file_to_dir(src, dst, stdout, stderr):
+    """
+    Move file to directory.
+    
+    :param src: file to move
+    :param dst: directory to move to
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
+    """
     dst = enslash(dst)
     cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
-    return execute(cmd, stdout, stderr)
+    return _execute(cmd, stdout, stderr)
 
 
-def move_dir_to_dir(src, dst, stdout, stderr):
-    """Moves directory to directory"""
+def _move_dir_to_dir(src, dst, stdout, stderr):
+    """
+    Move directory to directory.
+    
+    :param src: directory to move
+    :param dst: directory to move to
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
+    """
     src = deslash(src)
     dst = deslash(dst)
     cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
-    return execute(cmd, stdout, stderr)
+    return _execute(cmd, stdout, stderr)
         
         
 def move(src, dst, stdout=False, stderr=True):
     """
-    Moves files or directories
+    Moves files or directories.
     /y  overwrite files
 
-    Keyword arguments:
-    stdout -- show standard output
-    stderr -- show standard error
+    :param src: file or directory to move
+    :param dst: file or directory to move to
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
     """
     check(src)
     if not exists(dst):
         mkdirs(dst)
     if isfile(src) and filelike(dst):
-        return move_file_to_file(src, dst, stdout, stderr)
+        return _move_file_to_file(src, dst, stdout, stderr)
     if isfile(src) and pathlike(dst):
-        return move_file_to_dir(src, dst, stdout, stderr)
+        return _move_file_to_dir(src, dst, stdout, stderr)
     if isdir(src) and pathlike(dst):
-        return move_dir_to_dir(src, dst, stdout, stderr)
+        return _move_dir_to_dir(src, dst, stdout, stderr)
 
 
-def remove_file(src, stdout, stderr):
-    """Removes file"""
+def _remove_file(src, stdout, stderr):
+    """
+    Removes file.
+    
+    :param src: file to delete
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
+    """
     cmd = "del \"{0}\"".format(pty(src))
-    return execute(cmd, stdout, stderr)
+    return _execute(cmd, stdout, stderr)
 
 
-def remove_dir(src, stdout, stderr):
-    """Removes directory"""
+def _remove_dir(src, stdout, stderr):
+    """
+    Removes directory.
+    
+    :param src: directory to delete
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
+    """
     src = deslash(src)
     cmd = "rd \"{0}\" /s/q".format(pty(src))
-    return execute(cmd, stdout, stderr)
+    return _execute(cmd, stdout, stderr)
         
         
 def remove(src, stdout=False, stderr=True):
     """
-    Removes files or directories
+    Removes file or directory.
 
-    Keyword arguments:
-    stdout -- show standard output
-    stderr -- show standard error
+    :param src: file or directory to delete
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
     """
     check(src)
     if isfile(src):
-        return remove_file(src, stdout, stderr)
+        return _remove_file(src, stdout, stderr)
     if isdir(src):
-        return remove_dir(src, stdout, stderr)
+        return _remove_dir(src, stdout, stderr)
 
 
 def rename(src, dst, stdout=False, stderr=True):
@@ -399,11 +584,16 @@ def rename(src, dst, stdout=False, stderr=True):
     """
     check(src)
     cmd = "ren \"{0}\" \"{1}\"".format(pty(src), pty(filename(dst)))
-    return execute(cmd, stdout, stderr)
+    return _execute(cmd, stdout, stderr)
 
 
 def remove_empty_dirs(pth):
-    """Removes empty folders recursively"""
+    """
+    Removes empty folders recursively.
+    
+    :param pth: path to remove folders from
+    :returns: none
+    """
     if not isdir(pth):
         return
     for d in listdir(pth, absolute=True):
@@ -412,24 +602,38 @@ def remove_empty_dirs(pth):
     if isempty(pth):
         remove(pth)
 
+        
+def _unique(fls, key):
+    """
+    Removes duplicates based on a key.
+    
+    :param fls: list to remove duplicates from
+    :param key: remove duplicates based on key
+    :returns: list without duplicates
+    """
+    seen = set()
+    for pth in fls:
+        val = key(pth)
+        if val in seen:
+            continue
+        seen.add(val)
+        yield pth
+        
 
-def remove_duplicates(fls):
-    """Removes duplicate files"""
-    result = []
-    for i in range(0, len(fls)):
-        duplicate = False
-        for j in range(i + 1, len(fls)):
-            if filename(fls[i]) == filename(fls[j]):
-                duplicate = True
-                break
-        if not duplicate:
-            result.append(fls[i])
-    return result
+def unique(fls, key=lambda x: x):
+    """
+    Removes duplicates based on a key.
+    
+    :param fls: list to remove duplicates from
+    :param key: remove duplicates based on key
+    :returns: list without duplicates
+    """
+    return list(_unique(fls, key))
 
 
 def regex(fls, pattern, name=True, ext=True, other=False):
     """
-    Filters files with regular expressions
+    Filters files with regular expressions.
     .       match any character
     *       match any repetition of characters (.* any sequence)
     \       escape following character
@@ -440,10 +644,12 @@ def regex(fls, pattern, name=True, ext=True, other=False):
     {m, n}  characters must appear m to n times
     (?:1|2) must be one of the options
 
-    Keyword arguments:
-    name  -- apply regular expression to filename
-    ext   -- choose whether to ignore extension or not
-    other -- return list of not matching files
+    :param fls: list to process
+    :param pattern: regex pattern to apply
+    :param name: use filename for regex
+    :param ext: keep extension
+    :param other: return not matching list aswell
+    :returns: matching (and not matching) list
     """
     matching = []
     not_matching = []
@@ -457,56 +663,68 @@ def regex(fls, pattern, name=True, ext=True, other=False):
 
 def symlink(src, dst, stdout=False, stderr=True):
     """
-    Creates symbolic link
+    Creates a symbolic link.
 
-    Keyword arguments:
-    stdout -- show standard output
-    stderr -- show standard error
+    :param src: src to link to
+    :param dst: path for link
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
     """
     check(src)
     if not exists(up(dst)):
         mkdirs(up(dst))
     cmd = "mklink /d \"{0}\" \"{1}\"".format(pty(dst), pty(src))
-    return execute(cmd, stdout, stderr)
+    return _execute(cmd, stdout, stderr)
 
 
 def lzma(dst, *src, stdout=False, stderr=True):
     """
-    Creates a lzma archive with 7zip
+    Creates a lzma archive with 7zip.
 
-    Keyword arguments:
-    stdout -- show standard output
-    stderr -- show standard error
+    :param dst: path for created archive
+    :param src: files to compress
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
     """
     src = list(src)
     for idx, fl in enumerate(src):
         check(fl)
         src[idx] = pty(fl)
     cmd = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\" \"{1}\"".format(pty(dst), "\" \"".join(src))
-    return execute(cmd, stdout, stderr)
+    return _execute(cmd, stdout, stderr)
 
 
 def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     """
-    Compresses a pdf file
-
-    Keyword arguments:
-    setting -- choose which setting to use (screen, ebook, printer, prepress, default)
-    stdout  -- show standard output
-    stderr  -- show standard error
+    Compresses a pdf file.
+    
+    :param src: pdf file to compress
+    :param setting: setting to apply (screen, ebook, printer, prepress, default)
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: exit code
     """
     check(src)
     src_ = src + "_"
     rename(src, src_)
     cmd = "gswin32c -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/{0} -dNOPAUSE " \
           "-dQUIET -dBATCH -sOutputFile=\"{1}\" \"{2}\"".format(setting, pty(src), pty(src_))
-    exit_code = execute(cmd, stdout, stderr)
+    exit_code = _execute(cmd, stdout, stderr)
     remove(src_)
     return exit_code
     
     
-def grep_file(key, fl, case):
-    """Searches for a key in a file"""
+def _grep_file(key, fl, case):
+    """
+    Searches for a key in a file.
+    
+    :param key: key to search for
+    :param fl: file to search through
+    :param case: search case sensitive
+    :returns: list of lines within file
+    """
     result = []
     try:
         with open(fl, "r", encoding="utf-8") as opened_fl:
@@ -519,45 +737,57 @@ def grep_file(key, fl, case):
     return result
     
     
-def grep_files(key, fls, case):
-    """Searches for a key in multiple files"""
+def _grep_files(key, fls, case):
+    """
+    Searches for a key in multiple files.
+    
+    :param key: key to search for
+    :param fls: files to search through
+    :param case: search case sensitive
+    :returns: list of lines within files
+    """
     result = []
     for fl in fls:
-        result.extend(grep_file(key, fl, case))
+        result.extend(_grep_file(key, fl, case))
     return result
     
     
-def grep_process(key, fls, case, count):
-    """Searches for a key in multiple files with multiple processes"""
+def _grep_process(key, fls, case, count):
+    """
+    Searches for a key in multiple files with multiple processes.
+    
+    :param key: key to search for
+    :param fls: files to search through
+    :param case: search case sensitive
+    :param count: process count
+    :returns: list of lines within files
+    """
     pool = multiprocessing.Pool(processes=count)
-    starmap = pool.starmap(grep_file, zip(itertools.repeat(key), fls, itertools.repeat(case)))
+    starmap = pool.starmap(_grep_file, zip(itertools.repeat(key), fls, itertools.repeat(case)))
     pool.close()
     pool.join()
-    
-    result = []
-    for item in starmap:
-        if item:
-            result.extend(item)
-    return result
+    return list(itertools.chain.from_iterable(starmap))
     
 
 def grep(key, src, pattern=None, recursive=True, case=False, count=1):
     """
-    Searches for a key in a path or file
-
-    Keyword arguments:
-    pattern   -- file pattern in list ["*.exe", "*.jpg"] or string "*.exe" form
-    recursive -- search through sub directories recursively
-    case      -- enable case sensitive line parsing
-    count     -- process count (__name__ == "__main__" is necessary if the process count is greater than one)
+    Searches for a key in a path or file.
+    
+    :param key: key to search for
+    :param src: file or directory to search through
+    :param pattern: pattern for files
+    :param recursive: search through sub directories
+    :param case: search case sensitive
+    :param count: process count (if __name__ == "__main__" necessary if greater than one)
+    :returns: list of lines within files
     """
     key = key if case else key.lower()
     fls = [src] if filelike(src) else files(src, pattern=pattern, recursive=recursive)
     
     if count == 1:
-        return grep_files(key, fls, case)
+        return _grep_files(key, fls, case)
     else:
-        return grep_process(key, fls, case, count)
+        return _grep_process(key, fls, case, count)
 
 
 USER = join("C:/Users", user())
