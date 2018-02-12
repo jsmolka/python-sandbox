@@ -1,22 +1,5 @@
 import ctypes as ct
-import getpass
-import inspect
 import numpy as np
-import os
-import sys
-
-
-def join(*pths):
-    return os.path.join("", *pths)
-
-
-def pydir(dll=None):
-    pth = os.path.dirname(sys.modules["__main__"].__file__)
-    return join(pth, dll) if dll else pth
-
-
-def user():
-    return getpass.getuser()
 
 
 def ctype(tp):
@@ -45,7 +28,7 @@ def argtype(arg):
 
 def convert_list(arg):
     if isinstance(arg[0], list):
-        data = [convert_list(arg[row]) for row in range(len(arg))]
+        data = [convert_list(row) for row in arg]
         return (ct.POINTER(ctype(arg[0][0])) * len(arg))(*data)
     return (ctype(arg[0]) * len(arg))(*arg)
 
