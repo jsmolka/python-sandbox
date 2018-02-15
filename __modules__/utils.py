@@ -91,6 +91,44 @@ def unique(lst, key=None):
     return list(_unique(lst, key=key))
     
     
+def _duplicates(lst, key=None):
+    """
+    Finds duplicates in a list.
+    
+    :param lst: list to process
+    :param key: key to apply
+    :returns: generator of duplicates
+    """
+    seen = set()
+    yielded = set()
+    if key is None:
+        for x in lst:
+            if x in seen and x not in yielded:
+                yielded.add(x)
+                yield x
+            else:
+                seen.add(x)
+    else:
+        for x in lst:
+            value = key(x)
+            if value in seen and value not in yielded:
+                yielded.add(value)
+                yield x
+            else:
+                seen.add(value)
+    
+    
+def duplicates(lst, key=None):
+    """
+    Finds duplicates in a list.
+    
+    :param lst: list to process
+    :param key: key to apply
+    :returns: list of duplicates
+    """
+    return list(_duplicates(lst, key=key))
+    
+    
 def _compact(lst):
     """
     Removes all falsey values.
