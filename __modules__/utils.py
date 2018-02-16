@@ -25,14 +25,14 @@ def _sized(lst, n):
 
 
 def sized(lst, n):
-	"""
+    """
     Splits a list into n-sized chunks.
 
     :param lst: list to process
     :param n: size of chunks
     :returns: list of chunks
     """
-	return list(_sized(lst, n))
+    return list(_sized(lst, n))
 
 
 def _chunk(lst, n):
@@ -335,11 +335,11 @@ def _without(lst, *values, key=None):
     :param key: key to apply
     :returns: generator without values
     """
+    values = set(values)
     if key is None:
-        values = set(values)
+        return (x for x in lst if x not in values)
     else:
-        values = set(_apply(values, key))
-    return (x for x in lst if x not in values)
+        return (x for x in _apply(lst, key) if x not in values)
 
 
 def without(lst, *values, key=None):
