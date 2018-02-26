@@ -80,7 +80,7 @@ if algorithm in algorithms_create:
 else:
     total_time = timedelta(0, 0)
     for i in range(0, data.iterations):
-        m.create(row_count, col_count, Maze.Create.BACKTRACKING)
+        m.create(row_count, col_count, Maze.Create.C)
         sw.start()
         m.solve(0, 0, algorithm)
         sw.stop()
