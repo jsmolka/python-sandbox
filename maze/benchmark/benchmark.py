@@ -46,7 +46,7 @@ data.version = input()
 
 line()
 print("Which system are you using? (PC/XPS)")
-data.system = user_input("PC", "XPS")
+data.system = cinput("PC", "XPS")
 
 line()
 print("How many times do you want to repeat the benchmark?")
