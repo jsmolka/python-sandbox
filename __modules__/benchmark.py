@@ -1,37 +1,71 @@
-from time import clock
+import time
 
 
-def benchmark(f, a, n, calibrate=False):
-    """Benchmarks a function"""
-    print("########## {0} ##########".format(f.__name__))
-    r = range(n)
-    offset = 0
-    if calibrate:  # Minimize function call overhead
-        def e(): pass
-        t1 = clock()
-        for i in r:  # Minimize loop overhead
-            e(); e(); e(); e(); e(); e(); e(); e(); e(); e()
-        t2 = clock()
-        offset = t2 - t1
-    t1 = clock()
-    for i in r:  # Minimize loop overhead
-        f(a); f(a); f(a); f(a); f(a); f(a); f(a); f(a); f(a); f(a)
-    t2 = clock()
-    raw_time = t2 - t1 - offset
-    time = round(raw_time, 5)
-    print("total time:", time)
-    print("loop time:", round(raw_time / (10 * n), 5))
-    return time
+def benchmark(n, end="\n"):
+    """
+    Decorator used to benchmark a function.
+
+    :param n: amount of repeats
+    :param end: suffix for last print
+    :returns: total time
+    """
+    def decorate(func):
+        """
+        Main decorator.
+
+        :param func: function to benchmark
+        :returns: total time
+        """
+        def wrap(*args, **kwargs):
+            """
+            Wraps around the function.
+
+            :param args: arguments
+            :param kwargs: keyword arguments
+            :returns: total time
+            """
+            print("########## {} ##########".format(func.__name__))
+            start = time.time()
+            for _ in range(n):
+                func(*args)
+            total = (time.time() - start) * 1000.0
+            print("total time for {} loops: {:.3f} ms".format(n, total))
+            print("average time for each loop: {:.3f} ms".format(total / n), end=end)
+            return total
+
+        return wrap
+
+    return decorate
 
 
-def compare(f1, f2, a1, a2, n, calibrate=False):
-    """Compares two functions"""
-    t1 = benchmark(f1, a1, n, calibrate=calibrate)
-    t2 = benchmark(f2, a2, n, calibrate=calibrate)
+def compare(fun1, res1, fun2, res2):
+    """
+    Compares two benchmark results.
 
-    if t1 / t2 < 1:
-        print("{0} is {2}x faster than {1}".format(f1.__name__, f2.__name__, round(1 / (t1 / t2), 2)))
-    elif t2 / t1 < 1:
-        print("{0} is {2}x faster than {1}".format(f2.__name__, f1.__name__, round(1 / (t2 / t1), 2)))
+    :param fun1, fun2: names
+    :param res1, res2: results
+    :returns: None
+    """
+    res = res1 / res2
+    if res > 1:
+        fun1, fun2 = fun2, fun1
     else:
-        print("{0} and {1} perform exactly the same".format(f1.__name__, f2.__name__))
+        res = 1 / res
+    print("{} is {:.2f}x faster than {}".format(fun1, res, fun2))
+
+
+def versus(fun1, fun2, n, args=()):
+    """
+    Complete benchmark for two functions.
+
+    :param fun1, fun2: functions
+    :param n: amount of repeats
+    :param args: arguments
+    :returns: None
+    """
+    args = args if isinstance(args, tuple) else (args,)
+    dec1 = benchmark(n, end="\n\n")(fun1)
+    dec2 = benchmark(n, end="\n\n")(fun2)
+    res1 = dec1(*args)
+    res2 = dec2(*args)
+    compare(fun1.__name__, res1, fun2.__name__, res2)
