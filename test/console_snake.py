@@ -143,8 +143,8 @@ def render(grid):
     while True:
         cursor.reset()
         string = []
-        for x in range(0, grid.rows):
-            for y in range(0, grid.cols):
+        for x in range(grid.rows):
+            for y in range(grid.cols):
                 string.append(TYPES[grid[x, y]])
             string.append("\n")
         print("".join(string), end="")

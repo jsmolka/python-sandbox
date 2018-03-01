@@ -35,8 +35,8 @@ def increment(arr):
 	"""Increment."""
 	while True:
 		time.sleep(1)
-		for i in range(0, arr.rows):
-			for j in range(0, arr.cols):
+		for i in range(arr.rows):
+			for j in range(arr.cols):
 				arr[i, j] += 1
 				print(arr[0, 0])
 
