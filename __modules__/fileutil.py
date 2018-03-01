@@ -22,7 +22,7 @@ class FileError(Exception):
         :param fl: missing file
         :return: new FileError
         """
-        super(FileError, self).__init__("{0} not found".format(fl))
+        super(FileError, self).__init__("{} not found".format(fl))
 
 
 def pty(pth):
@@ -388,7 +388,7 @@ def _copy_file_to_file(src, dst, stdout, stderr):
     :param stderr: show stderr
     :returns: int
     """
-    cmd = "echo D | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
+    cmd = "echo D | xcopy \"{}\" \"{}\" /y".format(pty(src), pty(dst))
     return shared.execute(cmd, stdout, stderr)
 
 
@@ -403,7 +403,7 @@ def _copy_file_to_dir(src, dst, stdout, stderr):
     :returns: int
     """
     dst = enslash(dst)
-    cmd = "echo V | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
+    cmd = "echo V | xcopy \"{}\" \"{}\" /y".format(pty(src), pty(dst))
     return shared.execute(cmd, stdout, stderr)
 
 
@@ -419,7 +419,7 @@ def _copy_dir_to_dir(src, dst, stdout, stderr):
     """
     src = deslash(src)
     dst = deslash(dst)
-    cmd = "xcopy \"{0}\" \"{1}\" /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
+    cmd = "xcopy \"{}\" \"{}\" /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
     return shared.execute(cmd, stdout, stderr)
 
 
@@ -460,7 +460,7 @@ def _move_file_to_file(src, dst, stdout, stderr):
     :param stderr: show stderr
     :returns: int
     """
-    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
+    cmd = "move /y \"{}\" \"{}\"".format(pty(src), pty(dst))
     return shared.execute(cmd, stdout, stderr)
 
 
@@ -475,7 +475,7 @@ def _move_file_to_dir(src, dst, stdout, stderr):
     :returns: int
     """
     dst = enslash(dst)
-    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
+    cmd = "move /y \"{}\" \"{}\"".format(pty(src), pty(dst))
     return shared.execute(cmd, stdout, stderr)
 
 
@@ -491,7 +491,7 @@ def _move_dir_to_dir(src, dst, stdout, stderr):
     """
     src = deslash(src)
     dst = deslash(dst)
-    cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
+    cmd = "move /y \"{}\" \"{}\"".format(pty(src), pty(dst))
     return shared.execute(cmd, stdout, stderr)
 
 
@@ -526,7 +526,7 @@ def _remove_file(src, stdout, stderr):
     :param stderr: show stderr
     :returns: int
     """
-    cmd = "del \"{0}\"".format(pty(src))
+    cmd = "del \"{}\"".format(pty(src))
     return shared.execute(cmd, stdout, stderr)
 
 
@@ -540,7 +540,7 @@ def _remove_dir(src, stdout, stderr):
     :returns: int
     """
     src = deslash(src)
-    cmd = "rd \"{0}\" /s/q".format(pty(src))
+    cmd = "rd \"{}\" /s/q".format(pty(src))
     return shared.execute(cmd, stdout, stderr)
 
 
@@ -571,7 +571,7 @@ def rename(src, dst, stdout=False, stderr=True):
     :returns: int
     """
     check(src)
-    cmd = "ren \"{0}\" \"{1}\"".format(pty(src), pty(filename(dst)))
+    cmd = "ren \"{}\" \"{}\"".format(pty(src), pty(filename(dst)))
     return shared.execute(cmd, stdout, stderr)
 
 
@@ -662,7 +662,7 @@ def symlink(src, dst, stdout=False, stderr=True):
     check(src)
     if not exists(up(dst)):
         mkdirs(up(dst))
-    cmd = "mklink /d \"{0}\" \"{1}\"".format(pty(dst), pty(src))
+    cmd = "mklink /d \"{}\" \"{}\"".format(pty(dst), pty(src))
     return shared.execute(cmd, stdout, stderr)
 
 
@@ -680,7 +680,7 @@ def lzma(dst, *src, stdout=False, stderr=True):
     for idx, fl in enumerate(src):
         check(fl)
         src[idx] = pty(fl)
-    cmd = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\" \"{1}\"".format(pty(dst), "\" \"".join(src))
+    cmd = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{}\" \"{}\"".format(pty(dst), "\" \"".join(src))
     return shared.execute(cmd, stdout, stderr)
 
 
@@ -697,8 +697,8 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     check(src)
     src_ = src + "_"
     rename(src, src_)
-    cmd = "gswin32c -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/{0} -dNOPAUSE " \
-          "-dQUIET -dBATCH -sOutputFile=\"{1}\" \"{2}\"".format(setting, pty(src), pty(src_))
+    cmd = "gswin32c -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/{} -dNOPAUSE " \
+          "-dQUIET -dBATCH -sOutputFile=\"{}\" \"{}\"".format(setting, pty(src), pty(src_))
     exit_code = shared.execute(cmd, stdout, stderr)
     remove(src_)
     return exit_code
