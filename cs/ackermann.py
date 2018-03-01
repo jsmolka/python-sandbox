@@ -1,8 +1,8 @@
-from cli import *
+import cli
 
 
 def ackermann_recursive(m, n):
-    """Calculates the Ackermann function recursively"""
+    """Calculates the Ackermann function recursively."""
     global calls
     calls += 1
     if m == 0:
@@ -14,7 +14,7 @@ def ackermann_recursive(m, n):
 
 
 def ackermann_while(m, n):
-    """Calculates the Ackerman function with a while loop"""
+    """Calculates the Ackerman function with a while loop."""
     global calls
     calls += 1
     while m != 0:
@@ -27,16 +27,16 @@ def ackermann_while(m, n):
 
 
 if __name__ == "__main__":
-    heading("Ackermann recursive")
+    cli.heading("Ackermann recursive")
     for i in range(1, 4):
         for j in range(1, 4):
             calls = 0
             print("ackermann({0}, {1}) =".format(i, j), ackermann_recursive(i, j), "|", "Calls:", calls)
-    heading("Ackermann while")
+        cli.heading("Ackermann while")
     for i in range(1, 4):
         for j in range(1, 4):
             calls = 0
             print("ackermann({0}, {1}) =".format(i, j), ackermann_while(i, j), "|", "Calls:", calls)
 
-    line(style=LineStyle.HASH)
-    enter("exit")
+    cli.line()
+    cli.enter("exit")

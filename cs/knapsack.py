@@ -1,5 +1,5 @@
+import cli
 import itertools
-from cli import *
 
 
 class Item:
@@ -30,10 +30,10 @@ class Backpack:
     def __init__(self, items, max_weight):
         """Constructor"""
         self.items = list()  # Initialize items
-        self.__parse(items)  # Fill items
+        self._parse(items)  # Fill items
         self.max_weight = max_weight
 
-    def __parse(self, items):
+    def _parse(self, items):
         """Parses a list and creates sorted items"""
         for item in items:
             self.items.append(Item.from_list(item))
@@ -62,7 +62,6 @@ class Backpack:
                     else:  # Backpack is full
                         use = 0
                         break
-
         return use
 
     def calculate_best_order(self, order_list):
@@ -90,7 +89,6 @@ class Backpack:
             self.calculate_use(best_order),
             self.max_weight
         )
-
         return packed_backpack
 
 
@@ -98,7 +96,6 @@ def knapsack_naive(items, max_weight):
     """Naively solves the knapsack problem"""
     # Items [[number, weight, use], [...]]
     backpack = Backpack(items, max_weight)
-
     return backpack.pack()
 
 
@@ -127,4 +124,4 @@ if __name__ == "__main__":
     # print("Use:", pbp.use)
     # print("Weight:", pbp.weight)
 
-    enter("exit")
+    cli.enter("exit")

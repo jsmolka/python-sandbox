@@ -1,7 +1,7 @@
-import itertools
-import math
 import numpy as np
-from cli import *
+import cli
+import math
+import itertools
 
 
 def __permutations(permutation_list):
@@ -30,7 +30,7 @@ def hamiltonian_path(node_count, edges):
     result = list()
     for path in permutations:
         should_add = True
-        for i in range(0, node_count - 1):
+        for i in range(node_count - 1):
             if (path[i], path[i + 1]) not in edges:
                 should_add = False
                 break
@@ -45,4 +45,4 @@ if __name__ == "__main__":
     for l in p:
         print(l)
 
-    enter("exit")
+    cli.enter("exit")

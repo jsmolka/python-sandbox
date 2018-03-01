@@ -7,14 +7,14 @@ def benchmark(n, end="\n"):
 
     :param n: amount of repeats
     :param end: suffix for last print
-    :returns: total time
+    :returns: time
     """
     def decorate(func):
         """
         Main decorator.
 
         :param func: function to benchmark
-        :returns: total time
+        :returns: time
         """
         def wrap(*args, **kwargs):
             """
@@ -22,7 +22,7 @@ def benchmark(n, end="\n"):
 
             :param args: arguments
             :param kwargs: keyword arguments
-            :returns: total time
+            :returns: time
             """
             print("########## {} ##########".format(func.__name__))
             start = time.time()

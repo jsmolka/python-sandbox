@@ -1,7 +1,8 @@
-from cli import *
+import cli
+
 
 def goedel_to_word(number, sigma):
-    """Converts Goedel number to word"""
+    """Converts Goedel number to word."""
     base = len(sigma) + 1
     s = str()
     while number > base:
@@ -10,12 +11,12 @@ def goedel_to_word(number, sigma):
 
     s += sigma[number % base - 1]
 
-    s = "".join(reversed(s))  # Reverse string
+    s = "".join(reversed(s))
     return s
 
 
 def word_to_goedel(word, sigma):
-    """Converts word to Goedel number"""
+    """Converts word to Goedel number."""
     goedel = 0
     base = len(sigma) + 1
     word = list(reversed(word))
@@ -34,4 +35,4 @@ if __name__ == "__main__":
     print("goedel_to_word(number, sigma):", goedel_to_word(n, sig))
     print("word_to_goedel(word, sigma):", word_to_goedel(w, sig))
 
-    enter("exit")
+    cli.enter("exit")

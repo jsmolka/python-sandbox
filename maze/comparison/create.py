@@ -1,17 +1,19 @@
-from benchmark import *
-from maze import *
+import benchmark as bm
+from maze import Maze
 
 
-def pmaze(args):
+def pmaze(rows, cols):
+    """Create maze with recursive backtracking."""
     m = Maze()
-    m.create(args[0], args[1], Maze.Create.BACKTRACKING)
+    m.create(rows, cols, Maze.Create.BACKTRACKING)
 
 
-def cmaze(args):
+def cmaze(rows, cols):
+    """Create maze with recursive backtracking in C."""
     m = Maze()
-    m.create(args[0], args[1], Maze.Create.C)
+    m.create(rows, cols, Maze.Create.C)
 
 
 size = (100, 100)
-compare(pmaze, cmaze, size, size, 10)
+bm.versus(pmaze, cmaze, 10, size)
 input()

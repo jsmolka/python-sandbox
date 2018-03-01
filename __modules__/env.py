@@ -1,17 +1,19 @@
 import os
+import shared
 
 
-def system(cmd, stdout, stderr):
-    """Executes command"""
-    stdout = "" if stdout else " >nul"
-    stderr = "" if stderr else " 2>nul"
-    return os.system(cmd + stdout + stderr)
+def add(env, pth, stdout=True, stderr=True):
+    """
+    Adds path to system environment.
 
-
-def add_to_env(env, pth, stdout=False, stderr=True):
-    """Adds path to system environment"""
+    :param env: environment to add to
+    :param pth: path to add
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: int
+    """
     if env in os.environ:
         if pth not in os.environ[env].split(";"):
-            system("setx {0} \"%{0}%;{1}\"".format(env, pth), stdout, stderr)
+            return shared.execute("setx {0} \"%{0}%;{1}\"".format(env, pth), stdout, stderr)
     else:
-        system("setx {0} \"{1}\"".format(env, pth), stdout, stderr)
+        return shared.execute("setx {} \"{}\"".format(env, pth), stdout, stderr)

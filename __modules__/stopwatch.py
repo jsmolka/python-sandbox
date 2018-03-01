@@ -1,63 +1,102 @@
-from time import time
-from datetime import timedelta
+import time
+import datetime
 
 
 class Stopwatch:
+    """
+    Stopwatch class.
+    """
     def __init__(self):
-        """Constructor"""
-        self.__start = None
-        self.__end = None
-        self.__round_start = None
-        self.__rounds = None
+        """
+        Constructor.
+
+        :return: new instance
+        """
+        self._start = None
+        self._end = None
+        self._round_start = None
+        self._rounds = None
 
     @property
     def elapsed(self):
-        """Returns elapsed time"""
-        if not self.__start or not self.__end:
+        """
+        Returns elapsed time.
+
+        :return: timedelta
+        """
+        if not self._start or not self._end:
             raise Exception("No start or end time assigned")
-        return timedelta(0, (self.__end - self.__start))
+        return datetime.timedelta(0, (self._end - self._start))
 
     @property
     def elapsed_str(self):
-        """Returns string of elapsed time"""
-        return "Elapsed time: " + str(self.elapsed)
+        """
+        Returns string of elapsed time.
+
+        :return: str
+        """
+        return "Elapsed time: {}".format(str(self.elapsed))
 
     @property
     def average(self):
-        """Returns average time"""
-        if len(self.__rounds) == 0:
+        """
+        Returns average time.
+
+        :return: timedelta
+        """
+        if len(self._rounds) == 0:
             raise Exception("Rounds list is empty")
-        total_time = timedelta(0, 0)
-        for round_ in self.__rounds:
+        total_time = datetime.timedelta(0, 0)
+        for round_ in self._rounds:
             total_time += round_
-        return total_time / len(self.__rounds)
+        return total_time / len(self._rounds)
 
     @property
     def average_str(self):
-        """Returns string of average time"""
-        return "Average time for {0} rounds: {1}".format(len(self.__rounds), str(self.average))
+        """
+        Returns string of average time.
+
+        :return: str
+        """
+        return "Average time for {} rounds: {}".format(len(self._rounds), str(self.average))
 
     def start(self):
-        """Starts stopwatch"""
-        self.__start = time()
-        self.__round_start = time()
-        self.__rounds = []
+        """
+        Starts stopwatch.
+
+        :return: None
+        """
+        self._start = time.time()
+        self._round_start = time.time()
+        self._rounds = []
 
     def stop(self):
-        """Stops stopwatch"""
-        self.__end = time()
+        """
+        Stops stopwatch.
+
+        :return: None
+        """
+        self._end = time.time()
 
     def round(self):
-        """Saves time for one round"""
-        if not self.__round_start:
+        """
+        Saves time for one round.
+
+        :return: None
+        """
+        if not self._round_start:
             raise Exception("No round start time assigned")
-        round_time = time() - self.__round_start
-        self.__rounds.append(timedelta(0, round_time))
-        self.__round_start = time()
+        round_time = time.time() - self._round_start
+        self._rounds.append(datetime.timedelta(0, round_time))
+        self._round_start = time.time()
 
     def reset(self):
-        """Resets stopwatch"""
-        self.__start = None
-        self.__end = None
-        self.__round_start = None
-        self.__rounds = None
+        """
+        Resets stopwatch.
+
+        :return: None
+        """
+        self._start = None
+        self._end = None
+        self._round_start = None
+        self._rounds = None

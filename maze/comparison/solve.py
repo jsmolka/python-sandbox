@@ -1,21 +1,22 @@
-from benchmark import *
-from maze import *
+import benchmark as bm
+from maze import Maze
 
 
-def pmaze(args):
+def pmaze(array):
+    """Solves maze with depth-first search."""
     m = Maze()
-    m.maze = args
-    m.solve(0, 0, Maze.Solve.DEPTH)
+    m.maze = array
+    m.solve((), (), Maze.Solve.DEPTH)
 
 
-def cmaze(args):
+def cmaze(array):
+    """Solves maze with depth-first search in C."""
     m = Maze()
-    m.maze = args
-    m.solve(0, 0, Maze.Solve.C)
+    m.maze = array
+    m.solve((), (), Maze.Solve.C)
 
 
-t = Maze()
-t.create(100, 100, Maze.Create.C)
-t = t.maze
-compare(pmaze, cmaze, t, t, 10)
+mz = Maze()
+mz.create(100, 100, Maze.Create.C)
+bm.versus(pmaze, cmaze, 50, mz.maze)
 input()

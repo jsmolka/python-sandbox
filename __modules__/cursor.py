@@ -1,10 +1,12 @@
 from ctypes import *
 
-STD_OUTPUT_HANDLE = -11
-HANDLE = windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
+STD_HANDLE = windll.kernel32.GetStdHandle(-11)
 
 
 class CursorInfo(Structure):
+    """
+    Cursor info structure.
+    """
     _fields_ = [
         ("size", c_int),
         ("visible", c_byte)
@@ -12,6 +14,9 @@ class CursorInfo(Structure):
 
 
 class COORD(Structure):
+    """
+    Coordinate structure.
+    """
     _fields_ = [
         ("X", c_short),
         ("Y", c_short)
@@ -19,26 +24,44 @@ class COORD(Structure):
 
 
 def hide():
-    """Hides cursor"""
+    """
+    Hides cursor.
+
+    :return: None
+    """
     ci = CursorInfo()
-    windll.kernel32.GetConsoleCursorInfo(HANDLE, byref(ci))
+    windll.kernel32.GetConsoleCursorInfo(STD_HANDLE, byref(ci))
     ci.visible = False
-    windll.kernel32.SetConsoleCursorInfo(HANDLE, byref(ci))
+    windll.kernel32.SetConsoleCursorInfo(STD_HANDLE, byref(ci))
 
 
 def show():
-    """Shows cursor"""
+    """
+    Shows cursor.
+
+    :return: None
+    """
     ci = CursorInfo()
-    windll.kernel32.GetConsoleCursorInfo(HANDLE, byref(ci))
+    windll.kernel32.GetConsoleCursorInfo(STD_HANDLE, byref(ci))
     ci.visible = True
-    windll.kernel32.SetConsoleCursorInfo(HANDLE, byref(ci))
+    windll.kernel32.SetConsoleCursorInfo(STD_HANDLE, byref(ci))
 
     
-def set(x, y):
-    """Sets cursor"""
-    windll.kernel32.SetConsoleCursorPosition(HANDLE, COORD(x, y))
+def position(x, y):
+    """
+    Sets cursor position.
+
+    :param x: x position
+    :param y: y position
+    :return: None
+    """
+    windll.kernel32.SetConsoleCursorPosition(STD_HANDLE, COORD(x, y))
 
 
 def reset():
-    """Resets cursor"""
-    set(0, 0)
+    """
+    Resets cursor.
+
+    :return: None
+    """
+    position(0, 0)
