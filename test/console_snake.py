@@ -1,10 +1,9 @@
 import os
-from ctypes import *
-from msvcrt import getch
-from multiprocessing import Process, Value, Array
-from random import randint
-from time import clock
-
+import cursor
+import msvcrt
+import multiprocessing as mp
+import random
+import time
 
 BORDER = 0
 FIELD = 1
@@ -25,54 +24,42 @@ VK_A = 97
 VK_S = 115
 VK_D = 100
 
-STD_OUTPUT_HANDLE = -11
-HANDLE = windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)	
-
-
-class CursorInfo(Structure):
-    _fields_ = [
-        ("size", c_int),
-        ("visible", c_byte)
-    ]
-    
-
-class COORD(Structure): 
-    _fields_ = [
-        ("X", c_short), 
-        ("Y", c_short)
-    ]
-
 
 class Grid:
+    """Grid class."""
     def __init__(self, rows, cols, initial):
-        self.__array = Array("i", rows * cols * [initial])
+        """Constructor."""
+        self.__array = mp.Array("i", rows * cols * [initial])
         self.rows = rows
         self.cols = cols
 
     def __getitem__(self, key):
+        """Numpy-like getter."""
         r, c = key
         if 0 <= r < self.rows and 0 <= c < self.cols:
             return self.__array[r * self.cols + c]
-        else:
-            raise IndexError("Index out of range")
+        raise IndexError("Index out of range")
 
     def __setitem__(self, key, value):
+        """Numpy-like setter."""
         r, c = key
         if 0 <= r < self.rows and 0 <= c < self.cols:
             self.__array[r * self.cols + c] = value
-        else:
-            raise IndexError("Index out of range")
+        raise IndexError("Index out of range")
             
     def create_border(self):
-        for x in range(0, self.rows):
+        """Creates border."""
+        for x in range(self.rows):
             self[x, 0] = self[x, self.cols - 1] = BORDER
-        for y in range(0, self.cols):
+        for y in range(self.cols):
             self[0, y] = self[self.rows - 1, y] = BORDER
             
             
 class Snake:
+    """Snake class."""
     def __init__(self, rows, cols, default=VK_D):
-        self.direction = Value("i", default)
+        """Constructor."""
+        self.direction = mp.Value("i", default)
         self.grid = Grid(rows, cols, FIELD)
         self.grid.create_border()
         
@@ -82,15 +69,18 @@ class Snake:
         self.dead = False
         
     def new_apple(self):
-        return randint(1, self.grid.rows - 1), randint(1, self.grid.cols - 1)
+        """Create new apple."""
+        return random.randint(1, self.grid.rows - 1), random.randint(1, self.grid.cols - 1)
         
     def deploy_apple(self):
+        """Deploys new apple."""
         apple = self.new_apple()
         while self.grid[apple] != FIELD:
             apple = self.new_apple()
         self.grid[apple] = APPLE
         
     def new_head(self):
+        """Sets new head."""
         x, y = self.body[0]
         if self.direction.value == VK_W:
             return x - 1, y
@@ -102,6 +92,7 @@ class Snake:
             return x, y + 1
         
     def move(self):
+        """Moves snake."""
         old_head = self.body[0]
         new_head = self.new_head()
         tail = self.body.pop()
@@ -121,48 +112,36 @@ class Snake:
             
             
 class Timer:
+    """Timer class."""
     def __init__(self, fps):
-        self.__fps = 1 / fps
-        self.__clock = clock()
+        """Constructor."""
+        self._fps = 1 / fps
+        self._clock = time.clock()
 
     def reset(self):
-        self.__clock = clock()
+        """Resets timer."""
+        self._clock = time.clock()
     
     @property
     def ready(self):
-        return self.__fps <= clock() - self.__clock
-
-    
-def cursor_hide():
-    ci = CursorInfo()
-    windll.kernel32.GetConsoleCursorInfo(HANDLE, byref(ci))
-    ci.visible = False
-    windll.kernel32.SetConsoleCursorInfo(HANDLE, byref(ci))
-    
-
-def cursor_show():
-    ci = CursorInfo()
-    windll.kernel32.GetConsoleCursorInfo(HANDLE, byref(ci))
-    ci.visible = True
-    windll.kernel32.SetConsoleCursorInfo(HANDLE, byref(ci))
-
-
-def cursor_reset():
-    windll.kernel32.SetConsoleCursorPosition(HANDLE, COORD(0, 0))
+        """Ready property."""
+        return self._fps <= time.clock() - self._clock
 
         
 def get_key(key):
+    """Read key input."""
     while True:
-        vk = ord(getch())
+        vk = ord(msvcrt.getch())
         if vk in (VK_W, VK_A, VK_S, VK_D):
             key.value = vk
             
             
 def render(grid):
+    """Renders grid"""
     frame = 0
     timer = Timer(1)
     while True:
-        cursor_reset()
+        cursor.reset()
         string = []
         for x in range(0, grid.rows):
             for y in range(0, grid.cols):
@@ -174,23 +153,19 @@ def render(grid):
             print("fps:", frame)
             frame = 0
             timer.reset()
-    
-    
-################################################################################
-##################################### Main #####################################
-################################################################################
 
 
 def main():
+    """Main loop."""
     os.system("cls")
-    cursor_hide()
+    cursor.hide()
 
     snake = Snake(25, 50)
 
-    process_key = Process(target=get_key, args=(snake.direction,))
+    process_key = mp.Process(target=get_key, args=(snake.direction,))
     process_key.daemon = True
     process_key.start()
-    process_render = Process(target=render, args=(snake.grid,))
+    process_render = mp.Process(target=render, args=(snake.grid,))
     process_render.daemon = True
     process_render.start()
     
@@ -204,7 +179,7 @@ def main():
     process_render.terminate()
      
     os.system("cls")
-    cursor_show()
+    cursor.show()
     
     
 if __name__ == "__main__":

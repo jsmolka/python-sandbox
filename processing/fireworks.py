@@ -23,6 +23,7 @@ P_VEL_MAX = 10
 
 
 class Particle:
+    """Particle class."""
     def __init__(self, x, y, c):
         """Constructor."""
         self.x = x
@@ -62,6 +63,7 @@ class Particle:
 
 
 class Fireworks:
+    """Fireworks class."""
     def __init__(self):
         """Constructor."""
         self.x = random.randint(50, WIDTH - 50)

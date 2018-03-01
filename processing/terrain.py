@@ -1,6 +1,6 @@
 import numpy as np
+import opensimplex as px
 from pyprocessing import *
-from opensimplex import *
 
 # Configuration
 WIDTH = 1100
@@ -9,7 +9,7 @@ SCALE = 25
 ROWS = round(HEIGHT / SCALE)
 COLS = round(WIDTH / SCALE)
 terrain = np.zeros((COLS, ROWS))
-simplex = OpenSimplex()
+simplex = px.OpenSimplex()
 FLYING = 0
 FLYING_STEP = 0.15
 OFFSET_STEP = 0.2

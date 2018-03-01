@@ -45,7 +45,7 @@ def get_color():
     """
     Returns the current text color.
 
-    :return: current text color
+    :return: hex
     """
     csbi = CONSOLE_SCREEN_BUFFER_INFO()
     ct.windll.kernel32.GetConsoleScreenBufferInfo(STD_HANDLE, ct.byref(csbi))
@@ -123,6 +123,8 @@ def cprint(*values, end="\n", color=()):
     """
     if not color:
         return print(*values, end=end)
+    if not isinstance(color, tuple):
+        color = (color,)
     set_color(mix_colors(*color))
     print(*values, end=end)
     set_color(Color.DEFAULT)
@@ -226,7 +228,7 @@ def menu(caption, *entries, result=False, color=()):
     :param entries: entries in menu
     :param result: return result
     :param color: color to use
-    :return: result
+    :return: result or None
     """
     cprint(caption, color=color)
     for idx, entry in enumerate(entries, start=1):
@@ -263,7 +265,7 @@ def question(message, color=()):
 
     :param message: question
     :param color: color to use
-    :return: boolean
+    :return: bool
     """
     cprint(message + " (y/n)", color=color)
     while True:

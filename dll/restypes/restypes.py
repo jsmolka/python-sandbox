@@ -18,9 +18,10 @@ def rt_dbl(l, i):
     pass
 
 
-il = [1, 2, 3, 4, 5]
-fl = [1.4, 2.5, 6.7, 3.4]
+if __name__ == "__main__":
+    il = [1, 2, 3, 4, 5]
+    fl = [1.4, 2.5, 6.7, 3.4]
 
-print("rt_none:", rt_none(il, len(il)))
-print("rt_int:", rt_int(il, len(il)))
-print("rt_dbl:", rt_dbl(fl, len(fl)))
+    print("rt_none:", rt_none(il, len(il)))
+    print("rt_int:", rt_int(il, len(il)))
+    print("rt_dbl:", rt_dbl(fl, len(fl)))

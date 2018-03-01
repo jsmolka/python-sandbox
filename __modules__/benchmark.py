@@ -11,14 +11,14 @@ def benchmark(n, end="\n"):
     """
     def decorate(func):
         """
-        Main decorator.
+        Decorator.
 
         :param func: function to benchmark
         :returns: time
         """
         def wrap(*args, **kwargs):
             """
-            Wraps around the function.
+            Wrapper.
 
             :param args: arguments
             :param kwargs: keyword arguments

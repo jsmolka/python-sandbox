@@ -50,6 +50,7 @@ def W(point):
 
 
 class Snake:
+    """Snake class."""
     def __init__(self):
         """Constructor."""
         self.nodes = [Point(0, 0), Point(0, 0)]

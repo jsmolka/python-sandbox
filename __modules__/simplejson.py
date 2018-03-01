@@ -49,7 +49,7 @@ def decode(data, target=None):
 
     :param data: json data
     :param target: target class
-    :return: decoded data
+    :return: target or SimpleNamespace
     """
     namespaces = json.loads(data, object_hook=lambda d: types.SimpleNamespace(**d))
     if not target:  # Return namespaces
@@ -69,7 +69,7 @@ def load(file_name, target=None):
 
     :param file_name: file name
     :param target: target class
-    :return: decoded data
+    :return: target or SimpleNamespace
     """
     if not path.isfile(file_name):
         raise Exception("{} does not exist".format(file_name))

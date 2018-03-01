@@ -7,11 +7,21 @@ import multiprocessing
 import os
 import pathlib
 import re
+import shared
 import sys
 
 
 class FileError(Exception):
+    """
+    File error class.
+    """
     def __init__(self, fl):
+        """
+        Constructor.
+
+        :param fl: missing file
+        :return: new FileError
+        """
         super(FileError, self).__init__("{0} not found".format(fl))
 
 
@@ -40,7 +50,7 @@ def endsslash(pth):
     Checks if path ends with a slash.
 
     :param pth: path to be checked
-    :returns: str
+    :returns: bool
     """
     return pth[-1] in ("/", "\\")
 
@@ -133,7 +143,7 @@ def filelike(src):
     Checks if src is filelike.
 
     :param src: src to be checked
-    :returns: boolean
+    :returns: bool
     """
     return bool(os.path.splitext(src)[1])
 
@@ -143,7 +153,7 @@ def pathlike(src):
     Checks if src is pathlike.
 
     :param src: src to be checked
-    :returns: boolean
+    :returns: bool
     """
     return not filelike(src)
 
@@ -174,7 +184,7 @@ def chdir(pth):
     Changes current working directory.
 
     :param pth: directory to change to
-    :returns: boolean
+    :returns: bool
     """
     return os.chdir(pth)
 
@@ -184,7 +194,7 @@ def isdir(src):
     Checks if src is a directory.
 
     :param src: src to be checked
-    :returns: boolean
+    :returns: bool
     """
     return os.path.isdir(src)
 
@@ -194,7 +204,7 @@ def isfile(src):
     Checks if src is a file.
 
     :param src: src to be checked
-    :returns: boolean
+    :returns: bool
     """
     return os.path.isfile(src)
 
@@ -204,7 +214,7 @@ def exists(src):
     Checks if src exists.
 
     :param src: src to be checked
-    :returns: boolean
+    :returns: bool
     """
     return os.path.exists(src)
 
@@ -272,7 +282,7 @@ def isempty(pth):
     Checks if directory is empty.
 
     :param pth: path to be checked
-    :returns: boolean
+    :returns: bool
     """
     return not bool(listdir(pth))
 
@@ -293,7 +303,7 @@ def mkdirs(pth):
     Creates directories recursively.
 
     :param pth: path to create
-    :returns: boolean
+    :returns: bool
     """
     if filelike(pth):
         pth = dirname(pth)
@@ -350,7 +360,7 @@ def isadmin():
     """
     Checks for admin privileges
 
-    :returns: boolean
+    :returns: bool
     """
     return bool(ctypes.windll.shell32.IsUserAnAdmin())
 
@@ -368,32 +378,6 @@ def admin(fl=None):
         sys.exit()
 
 
-def _execute(cmd, stdout, stderr):
-    """
-    Executes a command.
-
-    :param cmd: command to be executed
-    :param stdout: show stdout
-    :param stderr: show stderr
-    :returns: int
-    """
-    stdout = "" if stdout else " >nul"
-    stderr = "" if stderr else " 2>nul"
-    return os.system(cmd + stdout + stderr)
-
-
-def system(cmd, stdout=True, stderr=True):
-    """
-    Executes a command.
-
-    :param cmd: command to be executed
-    :param stdout: show stdout
-    :param stderr: show stderr
-    :returns: int
-    """
-    return _execute(cmd, stdout, stderr)
-
-
 def _copy_file_to_file(src, dst, stdout, stderr):
     """
     Copies file to file.
@@ -405,7 +389,7 @@ def _copy_file_to_file(src, dst, stdout, stderr):
     :returns: int
     """
     cmd = "echo D | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
-    return _execute(cmd, stdout, stderr)
+    return shared.execute(cmd, stdout, stderr)
 
 
 def _copy_file_to_dir(src, dst, stdout, stderr):
@@ -420,7 +404,7 @@ def _copy_file_to_dir(src, dst, stdout, stderr):
     """
     dst = enslash(dst)
     cmd = "echo V | xcopy \"{0}\" \"{1}\" /y".format(pty(src), pty(dst))
-    return _execute(cmd, stdout, stderr)
+    return shared.execute(cmd, stdout, stderr)
 
 
 def _copy_dir_to_dir(src, dst, stdout, stderr):
@@ -436,7 +420,7 @@ def _copy_dir_to_dir(src, dst, stdout, stderr):
     src = deslash(src)
     dst = deslash(dst)
     cmd = "xcopy \"{0}\" \"{1}\" /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
-    return _execute(cmd, stdout, stderr)
+    return shared.execute(cmd, stdout, stderr)
 
 
 def copy(src, dst, stdout=False, stderr=True):
@@ -477,7 +461,7 @@ def _move_file_to_file(src, dst, stdout, stderr):
     :returns: int
     """
     cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
-    return _execute(cmd, stdout, stderr)
+    return shared.execute(cmd, stdout, stderr)
 
 
 def _move_file_to_dir(src, dst, stdout, stderr):
@@ -492,7 +476,7 @@ def _move_file_to_dir(src, dst, stdout, stderr):
     """
     dst = enslash(dst)
     cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
-    return _execute(cmd, stdout, stderr)
+    return shared.execute(cmd, stdout, stderr)
 
 
 def _move_dir_to_dir(src, dst, stdout, stderr):
@@ -508,7 +492,7 @@ def _move_dir_to_dir(src, dst, stdout, stderr):
     src = deslash(src)
     dst = deslash(dst)
     cmd = "move /y \"{0}\" \"{1}\"".format(pty(src), pty(dst))
-    return _execute(cmd, stdout, stderr)
+    return shared.execute(cmd, stdout, stderr)
 
 
 def move(src, dst, stdout=False, stderr=True):
@@ -543,7 +527,7 @@ def _remove_file(src, stdout, stderr):
     :returns: int
     """
     cmd = "del \"{0}\"".format(pty(src))
-    return _execute(cmd, stdout, stderr)
+    return shared.execute(cmd, stdout, stderr)
 
 
 def _remove_dir(src, stdout, stderr):
@@ -557,7 +541,7 @@ def _remove_dir(src, stdout, stderr):
     """
     src = deslash(src)
     cmd = "rd \"{0}\" /s/q".format(pty(src))
-    return _execute(cmd, stdout, stderr)
+    return shared.execute(cmd, stdout, stderr)
 
 
 def remove(src, stdout=False, stderr=True):
@@ -588,7 +572,7 @@ def rename(src, dst, stdout=False, stderr=True):
     """
     check(src)
     cmd = "ren \"{0}\" \"{1}\"".format(pty(src), pty(filename(dst)))
-    return _execute(cmd, stdout, stderr)
+    return shared.execute(cmd, stdout, stderr)
 
 
 def remove_empty_dirs(pth):
@@ -613,7 +597,7 @@ def _unique(fls, key):
 
     :param fls: list to remove duplicates from
     :param key: remove duplicates based on key
-    :returns: list without duplicates
+    :returns: generator
     """
     seen = set()
     for pth in fls:
@@ -630,7 +614,7 @@ def unique(fls, key=lambda x: x):
 
     :param fls: list to remove duplicates from
     :param key: remove duplicates based on key
-    :returns: list without duplicates
+    :returns: list
     """
     return list(_unique(fls, key))
 
@@ -679,7 +663,7 @@ def symlink(src, dst, stdout=False, stderr=True):
     if not exists(up(dst)):
         mkdirs(up(dst))
     cmd = "mklink /d \"{0}\" \"{1}\"".format(pty(dst), pty(src))
-    return _execute(cmd, stdout, stderr)
+    return shared.execute(cmd, stdout, stderr)
 
 
 def lzma(dst, *src, stdout=False, stderr=True):
@@ -697,7 +681,7 @@ def lzma(dst, *src, stdout=False, stderr=True):
         check(fl)
         src[idx] = pty(fl)
     cmd = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{0}\" \"{1}\"".format(pty(dst), "\" \"".join(src))
-    return _execute(cmd, stdout, stderr)
+    return shared.execute(cmd, stdout, stderr)
 
 
 def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
@@ -715,7 +699,7 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     rename(src, src_)
     cmd = "gswin32c -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/{0} -dNOPAUSE " \
           "-dQUIET -dBATCH -sOutputFile=\"{1}\" \"{2}\"".format(setting, pty(src), pty(src_))
-    exit_code = _execute(cmd, stdout, stderr)
+    exit_code = shared.execute(cmd, stdout, stderr)
     remove(src_)
     return exit_code
 

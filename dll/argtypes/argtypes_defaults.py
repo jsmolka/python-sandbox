@@ -18,6 +18,7 @@ def at_str(s):
     pass
 
 
-at_int(100)
-at_dbl(75.0123456789)
-at_str("this works")
+if __name__ == "__main__":
+    at_int(100)
+    at_dbl(75.0123456789)
+    at_str("this works")

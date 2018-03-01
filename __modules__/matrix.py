@@ -1,5 +1,14 @@
-class MatrixError(MatrixError):
+class MatrixError(Exception):
+    """
+    Matrix error class.
+    """
     def __init__(self, err):
+        """
+        Constructor.
+
+        :param err: error message
+        :return: new MatrixError
+        """
         super(MatrixError, self).__init__(err)
 
 
@@ -9,7 +18,7 @@ class Matrix:
         Constructor.
 
         :param matrix: matrix
-        :return: new Matrix instance
+        :return: new Matrix
         """
         self._matrix = matrix
         if not self._validate():
@@ -17,27 +26,30 @@ class Matrix:
 
     def __getitem__(self, item):
         """
-        Numpy-like indexing.
+        Numpy-like getter.
 
         :param item: index
-        :return: value at index
+        :return: list or int
         """
         if isinstance(item, int):
             if 0 <= item < self.row_count:
                 return self._matrix[item]
-            raise IndexError("Index out of range")
-        if isinstance(item, tuple):
+            else:
+                raise IndexError("Index out of range")
+        elif isinstance(item, tuple):
             if len(item) != 2:
                 raise IndexError("Invalid tuple length")
             r, c = item
             if 0 <= r < self.row_count and 0 <= c < self.col_count:
                 return self._matrix[r][c]
-            raise IndexError("Index out of range")
-        raise IndexError("Index must be tuple or int")
+            else:
+                raise IndexError("Index out of range")
+        else:
+            raise IndexError("Index must be tuple or int")
 
     def __setitem__(self, key, value):
         """
-        Numpy-like indexing.
+        Numpy-like setter.
 
         :param key: index to set
         :param value: value to set index to
@@ -46,22 +58,25 @@ class Matrix:
         if isinstance(key, int):
             if 0 <= key < self.row_count:
                 self._matrix[key] = value
-            raise IndexError("Index out of range")
-        if isinstance(key, tuple):
+            else:
+                raise IndexError("Index out of range")
+        elif isinstance(key, tuple):
             if len(key) != 2:
                 raise IndexError("Invalid tuple length")
             r, c = key
             if 0 <= r < self.row_count and 0 <= c < self.col_count:
                 self._matrix[r][c] = value
-            raise IndexError("Index out of range")
-        raise IndexError("Index must be tuple or int")
+            else:
+                raise IndexError("Index out of range")
+        else:
+            raise IndexError("Index must be tuple or int")
 
     def __add__(self, other):
         """
         Adds matrices.
 
         :param other: other matrix
-        :return: Matrix
+        :return: new Matrix
         """
         if not isinstance(other, Matrix):
             raise ArithmeticError("Invalid type")
@@ -72,7 +87,7 @@ class Matrix:
         Subtracts matrices.
 
         :param other: other matrix
-        :return: Matrix
+        :return: new Matrix
         """
         if not isinstance(other, Matrix):
             raise ArithmeticError("Invalid type")
@@ -83,7 +98,7 @@ class Matrix:
         Multiplies matrices.
 
         :param other: other matrix
-        :return: Matrix
+        :return: new Matrix
         """
         if isinstance(other, Matrix):
             return self._multiply(other)
@@ -96,7 +111,7 @@ class Matrix:
         Multiplies matrices reversely.
 
         :param other: other matrix
-        :return: Matrix
+        :return: new Matrix
         """
         return self.__mul__(other)  # Use scalar from both sides
 
@@ -123,7 +138,7 @@ class Matrix:
         """
         Checks if matrix is regular.
 
-        :return: boolean
+        :return: bool
         """
         return self._regular()
 
@@ -132,7 +147,7 @@ class Matrix:
         """
         Checks if matrix is singular.
 
-        :return: boolean
+        :return: bool
         """
         return self._singular()
 
@@ -159,7 +174,7 @@ class Matrix:
         """
         Checks if matrix is a row.
 
-        :return: boolean
+        :return: bool
         """
         return self.row_count == 1
 
@@ -168,7 +183,7 @@ class Matrix:
         """
         Checks if matrix is a column.
 
-        :return: boolean
+        :return: bool
         """
         return self.col_count == 1
 
@@ -177,7 +192,7 @@ class Matrix:
         """
         Checks if matrix is square matrix.
 
-        :return: boolean
+        :return: bool
         """
         return self.row_count == self.col_count
 
@@ -185,7 +200,7 @@ class Matrix:
         """
         Validates matrix.
 
-        :return: boolean
+        :return: bool
         """
         if not (isinstance(self._matrix, list) and isinstance(self[0], list)):
             return False
@@ -234,7 +249,7 @@ class Matrix:
         """
         Duplicates matrix.
 
-        :return: duplicated Matrix
+        :return: new Matrix
         """
         return Matrix(self._matrix[:])
 
@@ -242,7 +257,7 @@ class Matrix:
         """
         Transposes matrix.
 
-        :return: transposed Matrix
+        :return: new Matrix
         """
         result = Matrix.create(self.col_count, self.row_count)
         for r in range(result.row_count):
@@ -255,7 +270,7 @@ class Matrix:
         Adds matrices.
 
         :param other: other matrix
-        :return: added Matrix
+        :return: new Matrix
         """
         if self.row_count != other.row_count or self.col_count != other.col_count:
             raise MatrixError("Different row or column count")
@@ -270,7 +285,7 @@ class Matrix:
         Subtracts matrices.
 
         :param other: other matrix
-        :return: subtracted Matrix
+        :return: new Matrix
         """
         if self.row_count != other.row_count or self.col_count != other.col_count:
             raise MatrixError("Different row or column count")
@@ -285,7 +300,7 @@ class Matrix:
         Multiplies matrices.
 
         :param other: other matrix
-        :return: multiplied Matrix
+        :return: new Matrix
         """
         if self.row_count != other.col_count or self.col_count != other.row_count:
             raise MatrixError("Different row or column count")
@@ -303,7 +318,7 @@ class Matrix:
         Multiplies matrix with a scalar.
 
         :param scalar: scalar to multiply
-        :return: multiplied Matrix
+        :return: new Matrix
         """
         result = self.duplicate()
         for r in range(result.row_count):
@@ -336,7 +351,7 @@ class Matrix:
         """
         Checks if matrix is regular.
 
-        :return: boolean
+        :return: bool
         """
         # Regular matrix = invertible square matrix (determinant != 0)
         if self.square:
@@ -347,7 +362,7 @@ class Matrix:
         """
         Checks if matrix is singular.
 
-        :return: boolean
+        :return: bool
         """
         # Singular matrix = not invertible square matrix (determinant == 0)
         if self.square:
@@ -418,7 +433,7 @@ class Matrix:
 
         :param rnd: round result
         :param digits: digits to round to
-        :return: Matrix
+        :return: new Matrix
         """
         if self.is_row or self.is_col:
             raise MatrixError("Gaussian elimination is not defined for row or column matrices")
@@ -452,7 +467,7 @@ class Matrix:
 
         :param rnd: round result
         :param digits: digits to round to
-        :return: Matrix
+        :return: new Matrix
         """
         if self.is_row or self.is_col:
             raise MatrixError("Gauss-Jordan elimination is not defined for row or column matrices")
@@ -475,7 +490,7 @@ class Matrix:
         Combines two matrices.
 
         :param other: other matrix
-        :return: Matrix
+        :return: new Matrix
         """
         if self.row_count != other.row_count:
             raise MatrixError("Different row count")
@@ -492,7 +507,7 @@ class Matrix:
 
         :param rnd: round result
         :param digits: digits to round to
-        :return: Matrix
+        :return: new Matrix
         """
         if not (self.square and self.regular):
             raise MatrixError("No regular square matrix")

@@ -121,8 +121,8 @@ def func(pth, res=None):
         """
         Decorator.
 
-        :param pyfunc:
-        :return: wrapped function
+        :param pyfunc: function to wrap around
+        :return: dll function result
         """
         def wrap(*args, **kwargs):
             """

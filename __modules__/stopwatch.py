@@ -10,7 +10,7 @@ class Stopwatch:
         """
         Constructor.
 
-        :return: new instance
+        :return: new Stopwatch
         """
         self._start = None
         self._end = None
