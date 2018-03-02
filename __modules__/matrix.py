@@ -7,7 +7,7 @@ class MatrixError(Exception):
         Constructor.
 
         :param err: error message
-        :return: new MatrixError
+        :return: MatrixError
         """
         super(MatrixError, self).__init__(err)
 
@@ -18,7 +18,7 @@ class Matrix:
         Constructor.
 
         :param matrix: matrix
-        :return: new Matrix
+        :return: Matrix
         """
         self._matrix = matrix
         if not self._validate():
@@ -76,7 +76,7 @@ class Matrix:
         Adds matrices.
 
         :param other: other matrix
-        :return: new Matrix
+        :return: Matrix
         """
         if not isinstance(other, Matrix):
             raise ArithmeticError("Invalid type")
@@ -87,7 +87,7 @@ class Matrix:
         Subtracts matrices.
 
         :param other: other matrix
-        :return: new Matrix
+        :return: Matrix
         """
         if not isinstance(other, Matrix):
             raise ArithmeticError("Invalid type")
@@ -98,7 +98,7 @@ class Matrix:
         Multiplies matrices.
 
         :param other: other matrix
-        :return: new Matrix
+        :return: Matrix
         """
         if isinstance(other, Matrix):
             return self._multiply(other)
@@ -111,7 +111,7 @@ class Matrix:
         Multiplies matrices reversely.
 
         :param other: other matrix
-        :return: new Matrix
+        :return: Matrix
         """
         return self.__mul__(other)  # Use scalar from both sides
 
@@ -218,7 +218,7 @@ class Matrix:
         :param cols: column count
         :param default: fill value
         :param unit: create unit matrix
-        :return: new Matrix
+        :return: Matrix
         """
         if rows <= 0 or cols <= 0:
             raise MatrixError("Invalid row or column count")
@@ -249,7 +249,7 @@ class Matrix:
         """
         Duplicates matrix.
 
-        :return: new Matrix
+        :return: Matrix
         """
         return Matrix(self._matrix[:])
 
@@ -257,7 +257,7 @@ class Matrix:
         """
         Transposes matrix.
 
-        :return: new Matrix
+        :return: Matrix
         """
         result = Matrix.create(self.col_count, self.row_count)
         for r in range(result.row_count):
@@ -270,7 +270,7 @@ class Matrix:
         Adds matrices.
 
         :param other: other matrix
-        :return: new Matrix
+        :return: Matrix
         """
         if self.row_count != other.row_count or self.col_count != other.col_count:
             raise MatrixError("Different row or column count")
@@ -285,7 +285,7 @@ class Matrix:
         Subtracts matrices.
 
         :param other: other matrix
-        :return: new Matrix
+        :return: Matrix
         """
         if self.row_count != other.row_count or self.col_count != other.col_count:
             raise MatrixError("Different row or column count")
@@ -300,7 +300,7 @@ class Matrix:
         Multiplies matrices.
 
         :param other: other matrix
-        :return: new Matrix
+        :return: Matrix
         """
         if self.row_count != other.col_count or self.col_count != other.row_count:
             raise MatrixError("Different row or column count")
@@ -318,7 +318,7 @@ class Matrix:
         Multiplies matrix with a scalar.
 
         :param scalar: scalar to multiply
-        :return: new Matrix
+        :return: Matrix
         """
         result = self.duplicate()
         for r in range(result.row_count):
@@ -409,7 +409,7 @@ class Matrix:
         Duplicates row.
 
         :param row: row index
-        :return: new Matrix
+        :return: Matrix
         """
         result = Matrix.create(1, self.col_count)
         for c in range(self.col_count):
@@ -433,7 +433,7 @@ class Matrix:
 
         :param rnd: round result
         :param digits: digits to round to
-        :return: new Matrix
+        :return: Matrix
         """
         if self.is_row or self.is_col:
             raise MatrixError("Gaussian elimination is not defined for row or column matrices")
@@ -467,7 +467,7 @@ class Matrix:
 
         :param rnd: round result
         :param digits: digits to round to
-        :return: new Matrix
+        :return: Matrix
         """
         if self.is_row or self.is_col:
             raise MatrixError("Gauss-Jordan elimination is not defined for row or column matrices")
@@ -490,7 +490,7 @@ class Matrix:
         Combines two matrices.
 
         :param other: other matrix
-        :return: new Matrix
+        :return: Matrix
         """
         if self.row_count != other.row_count:
             raise MatrixError("Different row count")
@@ -507,7 +507,7 @@ class Matrix:
 
         :param rnd: round result
         :param digits: digits to round to
-        :return: new Matrix
+        :return: Matrix
         """
         if not (self.square and self.regular):
             raise MatrixError("No regular square matrix")
