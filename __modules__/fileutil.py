@@ -591,34 +591,6 @@ def remove_empty_dirs(pth):
         remove(pth)
 
 
-def _unique(fls, key):
-    """
-    Removes duplicates based on a key.
-
-    :param fls: list to remove duplicates from
-    :param key: remove duplicates based on key
-    :returns: generator
-    """
-    seen = set()
-    for pth in fls:
-        val = key(pth)
-        if val in seen:
-            continue
-        seen.add(val)
-        yield pth
-
-
-def unique(fls, key=lambda x: x):
-    """
-    Removes duplicates based on a key.
-
-    :param fls: list to remove duplicates from
-    :param key: remove duplicates based on key
-    :returns: list
-    """
-    return list(_unique(fls, key))
-
-
 def regex(fls, pattern, name=True, ext=True, other=False):
     """
     Filters files with regular expressions.
