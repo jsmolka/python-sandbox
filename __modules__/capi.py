@@ -86,7 +86,7 @@ def convert(arg):
     raise TypeError(arg)
 
 
-dlls = []
+dlls = {}
 
 
 def load_dll(pth):
@@ -97,12 +97,9 @@ def load_dll(pth):
     :return: loaded dll
     """
     global dlls
-    for pth_, dll_ in dlls:
-        if pth == pth_:
-            return dll_
-    dll = ct.cdll.LoadLibrary(pth)
-    dlls.append((pth, dll))
-    return dll
+    if pth not in dlls:
+        dlls[pth] = ct.cdll.LoadLibrary(pth)
+    return dlls[pth]
 
 
 def func(pth, res=None):
