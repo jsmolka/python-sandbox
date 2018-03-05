@@ -7,7 +7,6 @@ import multiprocessing
 import os
 import pathlib
 import re
-import shared
 import sys
 
 
@@ -378,6 +377,20 @@ def admin(fl=None):
         sys.exit()
 
 
+def call(cmd, stdout=True, stderr=True):
+    """
+    Executes command.
+
+    :param cmd: command to execute
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: int
+    """
+    stdout = "" if stdout else " >nul"
+    stderr = "" if stderr else " 2>nul"
+    return os.system(cmd + stdout + stderr)
+
+
 def _copy_file_to_file(src, dst, stdout, stderr):
     """
     Copies file to file.
@@ -389,7 +402,7 @@ def _copy_file_to_file(src, dst, stdout, stderr):
     :returns: int
     """
     cmd = "echo D | xcopy \"{}\" \"{}\" /y".format(pty(src), pty(dst))
-    return shared.execute(cmd, stdout, stderr)
+    return call(cmd, stdout, stderr)
 
 
 def _copy_file_to_dir(src, dst, stdout, stderr):
@@ -404,7 +417,7 @@ def _copy_file_to_dir(src, dst, stdout, stderr):
     """
     dst = enslash(dst)
     cmd = "echo V | xcopy \"{}\" \"{}\" /y".format(pty(src), pty(dst))
-    return shared.execute(cmd, stdout, stderr)
+    return call(cmd, stdout, stderr)
 
 
 def _copy_dir_to_dir(src, dst, stdout, stderr):
@@ -420,7 +433,7 @@ def _copy_dir_to_dir(src, dst, stdout, stderr):
     src = deslash(src)
     dst = deslash(dst)
     cmd = "xcopy \"{}\" \"{}\" /y/i/s/h/e/k/f/c".format(pty(src), pty(dst))
-    return shared.execute(cmd, stdout, stderr)
+    return call(cmd, stdout, stderr)
 
 
 def copy(src, dst, stdout=False, stderr=True):
@@ -461,7 +474,7 @@ def _move_file_to_file(src, dst, stdout, stderr):
     :returns: int
     """
     cmd = "move /y \"{}\" \"{}\"".format(pty(src), pty(dst))
-    return shared.execute(cmd, stdout, stderr)
+    return call(cmd, stdout, stderr)
 
 
 def _move_file_to_dir(src, dst, stdout, stderr):
@@ -476,7 +489,7 @@ def _move_file_to_dir(src, dst, stdout, stderr):
     """
     dst = enslash(dst)
     cmd = "move /y \"{}\" \"{}\"".format(pty(src), pty(dst))
-    return shared.execute(cmd, stdout, stderr)
+    return call(cmd, stdout, stderr)
 
 
 def _move_dir_to_dir(src, dst, stdout, stderr):
@@ -492,7 +505,7 @@ def _move_dir_to_dir(src, dst, stdout, stderr):
     src = deslash(src)
     dst = deslash(dst)
     cmd = "move /y \"{}\" \"{}\"".format(pty(src), pty(dst))
-    return shared.execute(cmd, stdout, stderr)
+    return call(cmd, stdout, stderr)
 
 
 def move(src, dst, stdout=False, stderr=True):
@@ -527,7 +540,7 @@ def _remove_file(src, stdout, stderr):
     :returns: int
     """
     cmd = "del \"{}\"".format(pty(src))
-    return shared.execute(cmd, stdout, stderr)
+    return call(cmd, stdout, stderr)
 
 
 def _remove_dir(src, stdout, stderr):
@@ -541,7 +554,7 @@ def _remove_dir(src, stdout, stderr):
     """
     src = deslash(src)
     cmd = "rd \"{}\" /s/q".format(pty(src))
-    return shared.execute(cmd, stdout, stderr)
+    return call(cmd, stdout, stderr)
 
 
 def remove(src, stdout=False, stderr=True):
@@ -572,7 +585,7 @@ def rename(src, dst, stdout=False, stderr=True):
     """
     check(src)
     cmd = "ren \"{}\" \"{}\"".format(pty(src), pty(filename(dst)))
-    return shared.execute(cmd, stdout, stderr)
+    return call(cmd, stdout, stderr)
 
 
 def remove_empty_dirs(pth):
@@ -635,7 +648,7 @@ def symlink(src, dst, stdout=False, stderr=True):
     if not exists(up(dst)):
         mkdirs(up(dst))
     cmd = "mklink /d \"{}\" \"{}\"".format(pty(dst), pty(src))
-    return shared.execute(cmd, stdout, stderr)
+    return call(cmd, stdout, stderr)
 
 
 def lzma(dst, *src, stdout=False, stderr=True):
@@ -653,7 +666,7 @@ def lzma(dst, *src, stdout=False, stderr=True):
         check(fl)
         src[idx] = pty(fl)
     cmd = "7z a -t7z -m0=lzma2 -mx=9 -aoa -mfb=64 -md=32m -ms=on -mhe \"{}\" \"{}\"".format(pty(dst), "\" \"".join(src))
-    return shared.execute(cmd, stdout, stderr)
+    return call(cmd, stdout, stderr)
 
 
 def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
@@ -671,7 +684,7 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     rename(src, src_)
     cmd = "gswin32c -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/{} -dNOPAUSE " \
           "-dQUIET -dBATCH -sOutputFile=\"{}\" \"{}\"".format(setting, pty(src), pty(src_))
-    exit_code = shared.execute(cmd, stdout, stderr)
+    exit_code = call(cmd, stdout, stderr)
     remove(src_)
     return exit_code
 

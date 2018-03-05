@@ -1,4 +1,18 @@
-import shared
+import os
+
+
+def call(cmd, stdout=True, stderr=True):
+    """
+    Executes command.
+
+    :param cmd: command to execute
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: int
+    """
+    stdout = "" if stdout else " >nul"
+    stderr = "" if stderr else " 2>nul"
+    return os.system(cmd + stdout + stderr)
 
 
 def install(package, stdout=True, stderr=True):
@@ -10,7 +24,7 @@ def install(package, stdout=True, stderr=True):
     :param stderr: show stderr
     :returns: int
     """
-    return shared.execute("pip install {}".format(package), stdout, stderr)
+    return call("pip install {}".format(package), stdout, stderr)
 
 
 def uninstall(package, stdout=True, stderr=True):
@@ -22,4 +36,4 @@ def uninstall(package, stdout=True, stderr=True):
     :param stderr: show stderr
     :returns: int
     """
-    return shared.execute("pip uninstall -y {}".format(package), stdout, stderr)
+    return call("pip uninstall -y {}".format(package), stdout, stderr)
