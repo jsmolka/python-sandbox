@@ -39,23 +39,9 @@ class Change:
         return self.pth == other.pth and self.action != other.action
 
 
-def call(cmd, stdout=True, stderr=True):
+def _insert(env, change):
     """
-    Executes command.
-
-    :param cmd: command to execute
-    :param stdout: show stdout
-    :param stderr: show stderr
-    :returns: int
-    """
-    stdout = "" if stdout else " >nul"
-    stderr = "" if stderr else " 2>nul"
-    return os.system(cmd + stdout + stderr)
-
-
-def insert(env, change):
-    """
-    Inserts an change in the changes dict.
+    Inserts a change into the changes dict.
 
     :param env: environment to insert into
     :param change: change to push
@@ -83,7 +69,7 @@ def push(env, pth):
     :param pth: path to add
     :return: None
     """
-    insert(env, Change(pth, _PUSH))
+    _insert(env, Change(pth, _PUSH))
 
 
 def pull(env, pth):
@@ -94,7 +80,7 @@ def pull(env, pth):
     :param pth: path to remove
     :return: None
     """
-    insert(env, Change(pth, _PULL))
+    _insert(env, Change(pth, _PULL))
 
 
 def current(env):
@@ -117,6 +103,20 @@ def current(env):
     return ";".join(pths)
 
 
+def call(cmd, stdout=True, stderr=True):
+    """
+    Executes command.
+
+    :param cmd: command to execute
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: int
+    """
+    stdout = "" if stdout else " >nul"
+    stderr = "" if stderr else " 2>nul"
+    return os.system(cmd + stdout + stderr)
+
+
 def set_to(env, pths, stdout=True, stderr=True):
     """
     Set env to paths.
@@ -125,38 +125,10 @@ def set_to(env, pths, stdout=True, stderr=True):
     :param pths: paths to set
     :param stdout: show stdout
     :param stderr: show stderr
-    :return: None
+    :return: int
     """
     cmd = "powershell [Environment]::SetEnvironmentVariable('{}', '{}', 'User')"
     return call(cmd.format(env, pths), stdout, stderr)
-
-
-def add(env, pth, stdout=True, stderr=True):
-    """
-    Adds path to environment variable.
-
-    :param env: environment to add to
-    :param pth: path to add
-    :param stdout: show stdout
-    :param stderr: show stderr
-    :returns: int
-    """
-    push(env, pth)
-    return set_to(env, current(env), stdout, stderr)
-
-
-def remove(env, pth, stdout=True, stderr=True):
-    """
-    Removes path from environment variable.
-
-    :param env: environment to remove from
-    :param pth: path to remove
-    :param stdout: show stdout
-    :param stderr: show stderr
-    :returns: int
-    """
-    pull(env, pth)
-    return set_to(env, current(env), stdout, stderr)
 
 
 def apply(env, stdout=True, stderr=True):
@@ -166,11 +138,11 @@ def apply(env, stdout=True, stderr=True):
     :param env: environment to apply to
     :param stdout: show stdout
     :param stderr: show stderr
-    :return: None
+    :return: int
     """
     if env not in _changes:
         return
-    set_to(env, current(env), stdout, stderr)
+    return set_to(env, current(env), stdout, stderr)
 
 
 def apply_all(stdout=True, stderr=True):
@@ -185,3 +157,31 @@ def apply_all(stdout=True, stderr=True):
         return
     for env in _changes.keys():
         apply(env, stdout, stderr)
+
+
+def add(env, pth, stdout=True, stderr=True):
+    """
+    Adds path to environment variable.
+
+    :param env: environment to add to
+    :param pth: path to add
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: int
+    """
+    push(env, pth)
+    return apply(env, stdout, stderr)
+
+
+def remove(env, pth, stdout=True, stderr=True):
+    """
+    Removes path from environment variable.
+
+    :param env: environment to remove from
+    :param pth: path to remove
+    :param stdout: show stdout
+    :param stderr: show stderr
+    :returns: int
+    """
+    pull(env, pth)
+    return apply(env, stdout, stderr)
