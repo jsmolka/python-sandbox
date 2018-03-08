@@ -58,12 +58,12 @@ def convert_ndarray(arg):
     :param arg: ndarray to convert
     :return: ndarray
     """
-    if len(arg.shape) == 1:
+    if arg.ndim == 1:
         return arg
-    if len(arg.shape) == 2:
+    if arg.ndim == 2:
         return (arg.__array_interface__['data'][0] +
                 np.arange(arg.shape[0]) * arg.strides[0]).astype(np.uintp)
-    raise ValueError("Invalid shape {0}".format(arg.shape))
+    raise ValueError("Invalid dimension {0}".format(arg.ndim))
 
 
 def convert(arg):
