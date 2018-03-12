@@ -61,7 +61,7 @@ def deslash(pth):
     :param pth: path to be deslashed
     :returns: str
     """
-    return depty(pth.rstrip("/", "\\"))
+    return depty(pth.rstrip("/\\"))
 
 
 def enslash(pth):
