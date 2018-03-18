@@ -1,4 +1,5 @@
 import os
+import utils
 
 _changes = {}
 _PUSH = 0
@@ -52,9 +53,7 @@ def _insert(env, change):
     if env not in _changes:
         _changes[env] = []
 
-    change.pth = change.pth.replace("/", "\\")
-    if change.pth[-1] == "\\":
-        change.pth = change.pth[:-1]
+    change.pth = change.pth.replace("/", "\\").rstrip("\\")
 
     if change in _changes[env]:
         return
@@ -87,28 +86,14 @@ def pull(env, pth):
     _insert(env, Change(pth, _PULL))
 
 
-def _unique_gen(lst):
+def path_key(pth):
     """
-    Removes duplicates from a list.
+    Key for unique method.
 
-    :param lst: list to process
-    :return: generator
+    :param pth: pth to process
+    :return: str
     """
-    seen = set()
-    for x in lst:
-        if x not in seen:
-            seen.add(x)
-            yield x
-
-
-def _unique(lst):
-    """
-    Removes duplicates from a list.
-
-    :param lst: list to process
-    :return: list
-    """
-    return list(_unique_gen(lst))
+    return pth.lower().replace("/", "\\").rstrip("\\")
 
 
 def current(env):
@@ -119,7 +104,7 @@ def current(env):
     :return: str
     """
     if env in os.environ:
-        pths = _unique(os.environ[env].rstrip(";").split(";"))
+        pths = utils.unique(os.environ[env].rstrip(";").split(";"), key=path_key)
     if env in _changes:
         for change in _changes[env]:
             if change.action == _PUSH:
