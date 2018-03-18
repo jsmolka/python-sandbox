@@ -51,7 +51,11 @@ def _insert(env, change):
         raise Exception("Invalid path <{}>".format(change.pth))
     if env not in _changes:
         _changes[env] = []
+
     change.pth = change.pth.replace("/", "\\")
+    if change.pth[-1] == "\\":
+        change.pth = change.pth[:-1]
+
     if change in _changes[env]:
         return
     for idx, chg in enumerate(_changes[env]):
@@ -83,6 +87,30 @@ def pull(env, pth):
     _insert(env, Change(pth, _PULL))
 
 
+def _unique_gen(lst):
+    """
+    Removes duplicates from a list.
+
+    :param lst: list to process
+    :return: generator
+    """
+    seen = set()
+    for x in lst:
+        if x not in seen:
+            seen.add(x)
+            yield x
+
+
+def _unique(lst):
+    """
+    Removes duplicates from a list.
+
+    :param lst: list to process
+    :return: list
+    """
+    return list(_unique_gen(lst))
+
+
 def current(env):
     """
     Read the current value of an environment variable.
@@ -90,13 +118,13 @@ def current(env):
     :param env: environment variable
     :return: str
     """
-    pths = []
     if env in os.environ:
-        pths = os.environ[env].rstrip(";").split(";")
+        pths = _unique(os.environ[env].rstrip(";").split(";"))
     if env in _changes:
         for change in _changes[env]:
             if change.action == _PUSH:
-                pths.append(change.pth)
+                if change.pth not in pths:
+                    pths.append(change.pth)
             else:
                 if change.pth in pths:
                     pths.remove(change.pth)
@@ -110,7 +138,7 @@ def call(cmd, stdout=True, stderr=True):
     :param cmd: command to execute
     :param stdout: show stdout
     :param stderr: show stderr
-    :returns: int
+    :return: int
     """
     stdout = "" if stdout else " >nul"
     stderr = "" if stderr else " 2>nul"
