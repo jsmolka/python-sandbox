@@ -86,7 +86,7 @@ def pull(env, pth):
     _insert(env, Change(pth, _PULL))
 
 
-def path_key(pth):
+def _path_key(pth):
     """
     Key for unique method.
 
@@ -104,7 +104,7 @@ def current(env):
     :return: str
     """
     if env in os.environ:
-        pths = utils.unique(os.environ[env].rstrip(";").split(";"), key=path_key)
+        pths = utils.unique(os.environ[env].rstrip(";").split(";"), key=_path_key)
     if env in _changes:
         for change in _changes[env]:
             if change.action == _PUSH:
