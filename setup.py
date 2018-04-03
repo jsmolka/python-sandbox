@@ -11,8 +11,7 @@ env.add("PYTHONPATH", modules, stdout=False)
 packages = [
     "Pillow",
     "NumPy",
-    "Pyglet",
-    "OpenSimplex"
+    "Pyglet"
 ]
 
 for pkg in packages:
