@@ -1,5 +1,4 @@
 import os
-import utils
 
 _changes = {}
 _PUSH = 0
@@ -86,6 +85,39 @@ def pull(env, pth):
     _insert(env, Change(pth, _PULL))
 
 
+def _unique_gen(lst, key=None):
+    """
+    Removes duplicates from a list.
+
+    :param lst: list to process
+    :param key: key to apply
+    :return: generator
+    """
+    seen = set()
+    if key is None:
+        for x in lst:
+            if x not in seen:
+                seen.add(x)
+                yield x
+    else:
+        for x in lst:
+            value = key(x)
+            if value not in seen:
+                seen.add(value)
+                yield x
+
+
+def _unique(lst, key=None):
+    """
+    Removes duplicates from a list.
+
+    :param lst: list to process
+    :param key: key to apply
+    :return: list
+    """
+    return list(_unique_gen(lst, key=key))
+
+
 def _path_key(pth):
     """
     Key for unique method.
@@ -104,7 +136,7 @@ def current(env):
     :return: str
     """
     if env in os.environ:
-        pths = utils.unique(os.environ[env].rstrip(";").split(";"), key=_path_key)
+        pths = _unique(os.environ[env].rstrip(";").split(";"), key=_path_key)
     if env in _changes:
         for change in _changes[env]:
             if change.action == _PUSH:
