@@ -137,6 +137,8 @@ def current(env):
     """
     if env in os.environ:
         pths = _unique(os.environ[env].rstrip(";").split(";"), key=_path_key)
+    else:
+        pths = []
     if env in _changes:
         for change in _changes[env]:
             if change.action == _PUSH:
