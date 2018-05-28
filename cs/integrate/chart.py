@@ -7,7 +7,7 @@ _colors = [("#FF0000", "#FFA500"), ("#0000FF", "#800080")]
 
 def reset():
     """
-    Resets the current chart.
+    Setzt das momentane Diagramm zurück.
 
     :return: None
     """
@@ -18,16 +18,18 @@ def reset():
 
 def draw(f, a, b, n, graph=True, dots=False, dots_name="", graph_name=""):
     """
-    Draws a function.
+    Zeichnet eine Funktion, indem für n-Werte im Interval [a, b] die y-Werte
+    berechnet werden. Die Werte werden dann als Punkte dargestellt und mit einer
+    Linie verbunden, welche den Graph darstellen soll.
 
-    :param f: function
-    :param a: interval left
-    :param b: interval right
-    :param n: data points
-    :param graph: show graph, default true
-    :param dots: show dots, default false
-    :param dots_name: dot name
-    :param graph_name: graph name
+    :param f: Funktion
+    :param a: linke Intervallgrenze
+    :param b: rechte Intervallgrenze
+    :param n: Anzahl der Datenpunkte
+    :param graph: Graph anzeigen, default True
+    :param dots: Punkte anzeigen, default False
+    :param dots_name: Legende für Punkte
+    :param graph_name: Legende für Graphen
     :return: None
     """
     global _chart, _count
@@ -46,10 +48,10 @@ def draw(f, a, b, n, graph=True, dots=False, dots_name="", graph_name=""):
 
 def save(title, path):
     """
-    Saves a function as svg.
+    Speichert das momentane Diagram im angegebenen Pfad.
 
-    :param title: title
-    :param path: path
+    :param title: Titel
+    :param path: Speicherpfad
     :return: None
     """
     global _chart

@@ -3,32 +3,48 @@ import integrate
 import math
 
 if __name__ == "__main__":
-    # Define variables
-    # f = function
-    # i = interval
-    # n = trapez count
-    # e = epsilon
-    f = lambda x: math.e ** (-(x - 2)**2 / 0.05) + math.e**(-(x - 5)**2 / 0.1) + 0.1 * x - math.e**(-(x - 3.5)**2 / 0.1)
+    # Benötigte Variablen definieren
+    # f = Funktion
+    # i = Interval [a, b]
+    # n = Anzahl der betrachteten Trapeze
+    # e = Epsilon
+    f = lambda x: math.e**(-(x - 2)**2 / 0.05) + math.e**(-(x - 5)**2 / 0.1) + 0.1 * x - math.e**(-(x - 3.5)**2 / 0.1)
     i = (1, 7)
     n = 10
     e = 0.001
 
-    # Draw function, save it under "graphics/function.svg"
-    # Use 1000 data points to get a smooth graph
+    # Funktion darstellen, wird unter "graphics/function.svg" gespeichert
+    # Die Anzahl der verwendeten Datenpunkte wird auf 1000 gesetzt, damit eine
+    # ausreichend genaue Funktion entsteht
     chart.draw(f, i[0], i[1], 1000)
     chart.save("Graph", "graphics/graph.svg")
     chart.reset()
 
-    # Calculate the interval using trapezoidal integration
-    trapez_res = integrate.trapezoidal(f, i[0], i[1], 10)
-    print("Trapezoidal integration result =", trapez_res)
+    # Das Integral der Funktion f im Interval [a, b] mit n = 10 gleichgroßen
+    # Teilintervallen berechnen
+    trapez_int = integrate.trapezoidal(f, i[0], i[1], 10)
+    print("Integral Trapezregel (optimiert):", round(trapez_int, 5))
 
-    # Calculate the integral using adaptive integration
-    adaptive_res, adaptive_n = integrate.adaptive(f, i[0], i[1], n, e)
-    print("Adaptive integration result =", adaptive_res, "using n =", adaptive_n)
+    # Als Test den Wert der unoptimierten Funktion berechnen
+    print("Integral Trapezregel (unoptimiert):", round(integrate.trapezoidal_unoptimized(f, i[0], i[1], 10), 5))
 
-    # Draw a chart comparing the two
-    chart.draw(f, i[0], i[1], 10, dots=True, graph_name="trapezoidal", dots_name="trapezoidal interval borders")
-    chart.draw(f, i[0], i[1], adaptive_n, dots=True, graph_name="adaptive", dots_name="adaptive interval borders")
-    chart.save("Comparison", "graphics/comparison.svg")
+    # Das Integral der Funktion f im Interval [a, b] mit n = 10 als Startwert
+    # berechnen
+    adaptive_int, adaptive_n = integrate.adaptive(f, i[0], i[1], n, e)
+    print("Integral adaptive Integration:", round(adaptive_int, 5), "für n =", adaptive_n)
+
+    # Ergebnisse vergleichen
+    l = "Trapezregel"
+    r = "adaptiven Integration"
+    if adaptive_int > trapez_int:
+        l, r = r, l
+    print("Das Ergebnis der {} ist größer als das der {}.".format(l, r))
+
+    # Zum vergleich der beiden verfahren werden deren Graphen für die Anzahl der
+    # betrachteten Trapeze gezeichnet.
+    chart.draw(f, i[0], i[1], 10, dots=True, graph_name="Trapezregel", dots_name="Trapezregel Trapezkanten")
+    chart.draw(f, i[0], i[1], adaptive_n, dots=True, graph_name="Adaptiv", dots_name="Adaptiv Trapezkanten")
+    chart.save("Vergleich", "graphics/comparison.svg")
     chart.reset()
+
+    input("\nZum Beenden Enter drücken...")
