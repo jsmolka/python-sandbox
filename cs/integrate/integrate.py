@@ -11,14 +11,12 @@ def trapezoidal_unoptimized(f, a, b, n):
     """
     # Schrittlänge für Intervalle berechnen
     step = abs(b - a) / n
-    # Variable s = Summe der Trapezhöhen (y-Werte)
+    # Variable s = Summe der Trapezflächen
     s = 0
-    # Über alle Trapeze iterieren und das Mittel deren Außenkantenhöhe addieren
+    # Über alle Trapeze iterieren und deren Fläche aufsummieren
     for i in range(1, n + 1):
-        s += (f(a + i * step) + f(a + (i - 1) * step)) / 2
-    # Summe der Trapezhöhen mit der Schrittlänge multiplizieren um die Fläche,
-    # also das Integral, zu erhalten
-    return s * step
+        s += ((f(a + i * step) + f(a + (i - 1) * step)) / 2) * step
+    return s
 
 
 def trapezoidal(f, a, b, n):
@@ -37,7 +35,7 @@ def trapezoidal(f, a, b, n):
     # Variable s = Summe der Trapezhöhen (y-Werte)
     # Die Funktionswerte der linken und rechten Intervallgrenze gehen nur zur
     # Hälfte in das Integral ein, da sie nur einmal vorkommen
-    s = f(a) / 2 + f(b) / 2
+    s = (f(a) + f(b)) / 2
     # Über alle Trapezhöhen iterieren und zur Summe addieren
     # Dies kann so gemacht werden, da alle diese Kanten von zwei Trapezen
     # geteilt werden

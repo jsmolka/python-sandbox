@@ -25,6 +25,11 @@ if __name__ == "__main__":
     trapez_int = integrate.trapezoidal(f, i[0], i[1], 10)
     print("Integral Trapezregel (optimiert):", round(trapez_int, 5))
 
+    # Funktion darstellen, wird unter "graphics/trapezoidal.svg" gespeichert
+    chart.draw(f, i[0], i[1], 10, dots=True, graph_name="Trapezregel", dots_name="Trapezkanten")
+    chart.save("Trapezregel", "graphics/trapezoidal.svg")
+    chart.reset()
+
     # Als Test den Wert der unoptimierten Funktion berechnen
     print("Integral Trapezregel (unoptimiert):", round(integrate.trapezoidal_unoptimized(f, i[0], i[1], 10), 5))
 
@@ -32,6 +37,11 @@ if __name__ == "__main__":
     # berechnen
     adaptive_int, adaptive_n = integrate.adaptive(f, i[0], i[1], n, e)
     print("Integral adaptive Integration:", round(adaptive_int, 5), "für n =", adaptive_n)
+
+    # Funktion darstellen, wird unter "graphics/adaptive.svg" gespeichert
+    chart.draw(f, i[0], i[1], adaptive_n, dots=True, graph_name="Adaptive Integration", dots_name="Trapezkanten")
+    chart.save("Adaptive Integration", "graphics/adaptive.svg")
+    chart.reset()
 
     # Ergebnisse vergleichen
     l = "Trapezregel"
@@ -41,7 +51,8 @@ if __name__ == "__main__":
     print("Das Ergebnis der {} ist größer als das der {}.".format(l, r))
 
     # Zum vergleich der beiden verfahren werden deren Graphen für die Anzahl der
-    # betrachteten Trapeze gezeichnet.
+    # betrachteten Trapeze gezeichnet. Wird unter "graphics/comparison.svg"
+    # gespeichert
     chart.draw(f, i[0], i[1], 10, dots=True, graph_name="Trapezregel", dots_name="Trapezregel Trapezkanten")
     chart.draw(f, i[0], i[1], adaptive_n, dots=True, graph_name="Adaptiv", dots_name="Adaptiv Trapezkanten")
     chart.save("Vergleich", "graphics/comparison.svg")
