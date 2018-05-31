@@ -2,7 +2,7 @@ import leather
 
 _chart = leather.Chart()
 _count = 0
-_colors = [("#FF0000", "#FFA500"), ("#0000FF", "#800080")]
+_colors = [("#FF0000", "#0000FF"), ("#006400", "#EE7600")]
 
 
 def reset():
