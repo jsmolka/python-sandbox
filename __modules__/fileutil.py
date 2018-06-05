@@ -636,7 +636,7 @@ def regex(fls, pattern, name=True, ext=True, other=False):
 
 def symlink(src, dst, stdout=False, stderr=True):
     """
-    Creates a symbolic link.
+    Creates a symbolic link. Removes the destination if it exists already.
 
     :param src: src to link to
     :param dst: path for link
@@ -645,6 +645,8 @@ def symlink(src, dst, stdout=False, stderr=True):
     :returns: int
     """
     check(src)
+    if exists(dst):
+        remove(dst)
     if not exists(up(dst)):
         mkdirs(up(dst))
     cmd = "mklink /d \"{}\" \"{}\"".format(pty(dst), pty(src))
@@ -766,4 +768,9 @@ def grep(key, src, pattern=None, recursive=True, case=False, count=1):
 USER = join("C:/Users", user())
 DESKTOP = join(USER, "Desktop")
 ONEDRIVE = join(USER, "OneDrive")
-PYDIR = pydir()
+
+PYIDR = ""
+try:
+    PYDIR = pydir()
+except:
+    print("Cannot get pydir. It will be an empty string.")
