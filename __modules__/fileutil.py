@@ -208,14 +208,25 @@ def isfile(src):
     return os.path.isfile(src)
 
 
+def islink(src):
+    """
+    Checks if src is a link.
+
+    :param src: src to be checked
+    :return: bool
+    """
+    return os.path.islink(src)
+
+
 def exists(src):
     """
-    Checks if src exists.
+    Checks if src exists. Needs to check for symbolic links aswell because
+    exists does not cover those.
 
     :param src: src to be checked
     :returns: bool
     """
-    return os.path.exists(src)
+    return os.path.exists(src) or islink(src)
 
 
 def check(src):
@@ -569,7 +580,7 @@ def remove(src, stdout=False, stderr=True):
     check(src)
     if isfile(src):
         return _remove_file(src, stdout, stderr)
-    if isdir(src):
+    if isdir(src) or islink(src):
         return _remove_dir(src, stdout, stderr)
 
 
@@ -645,7 +656,7 @@ def symlink(src, dst, stdout=False, stderr=True):
     :returns: int
     """
     check(src)
-    if exists(dst):
+    if exists(dst) or islink(dst):
         remove(dst)
     if not exists(up(dst)):
         mkdirs(up(dst))
