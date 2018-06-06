@@ -38,17 +38,20 @@ class Grid:
         r, c = key
         if 0 <= r < self.rows and 0 <= c < self.cols:
             return self.__array[r * self.cols + c]
-        raise IndexError("Index out of range")
+        else:
+            raise IndexError("Index ({}, {}) out of range".format(r, c))
 
     def __setitem__(self, key, value):
         """Numpy-like setter."""
         r, c = key
         if 0 <= r < self.rows and 0 <= c < self.cols:
             self.__array[r * self.cols + c] = value
-        raise IndexError("Index out of range")
+        else:
+            raise IndexError("Index ({}, {}) out of range".format(r, c))
             
     def create_border(self):
         """Creates border."""
+        print(self.rows, self.cols)
         for x in range(self.rows):
             self[x, 0] = self[x, self.cols - 1] = BORDER
         for y in range(self.cols):
