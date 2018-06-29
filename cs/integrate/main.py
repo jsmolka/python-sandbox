@@ -4,8 +4,8 @@ import math
 
 if __name__ == "__main__":
     # Benötigte Variablen definieren
-    # f = Funktion
-    # i = Interval [a, b]
+    # 1. f = Funktion
+    # 2. i = Interval [a, b]
     # n = Anzahl der betrachteten Trapeze
     # e = Epsilon
     f = lambda x: math.e**(-(x - 2)**2 / 0.05) + math.e**(-(x - 5)**2 / 0.1) + 0.1 * x - math.e**(-(x - 3.5)**2 / 0.1)
@@ -13,14 +13,14 @@ if __name__ == "__main__":
     n = 10
     e = 0.001
 
-    # Funktion darstellen, wird unter "graphics/function.svg" gespeichert
+    # 3. Funktion darstellen, wird unter "graphics/function.svg" gespeichert
     # Die Anzahl der verwendeten Datenpunkte wird auf 1000 gesetzt, damit eine
     # ausreichend genaue Funktion entsteht
     chart.draw(f, i[0], i[1], 1000)
     chart.save("Graph", "graphics/graph.svg")
     chart.reset()
 
-    # Das Integral der Funktion f im Interval [a, b] mit n = 10 gleichgroßen
+    # 5. Das Integral der Funktion f im Interval [a, b] mit n = 10 gleichgroßen
     # Teilintervallen berechnen
     trapez_int = integrate.trapezoidal(f, i[0], i[1], 10)
     print("Integral Trapezregel (optimiert):", round(trapez_int, 5))
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     # Als Test den Wert der unoptimierten Funktion berechnen
     print("Integral Trapezregel (unoptimiert):", round(integrate.trapezoidal_unoptimized(f, i[0], i[1], 10), 5))
 
-    # Das Integral der Funktion f im Interval [a, b] mit n = 10 als Startwert
+    # 6. Das Integral der Funktion f im Interval [a, b] mit n = 10 als Startwert
     # berechnen
     adaptive_int, adaptive_n = integrate.adaptive(f, i[0], i[1], n, e)
     print("Integral adaptive Integration:", round(adaptive_int, 5), "für n =", adaptive_n)
@@ -43,14 +43,14 @@ if __name__ == "__main__":
     chart.save("Adaptive Integration", "graphics/adaptive.svg")
     chart.reset()
 
-    # Ergebnisse vergleichen
+    # 7. Ergebnisse vergleichen
     l = "Trapezregel"
     r = "adaptiven Integration"
     if adaptive_int > trapez_int:
         l, r = r, l
     print("Das Ergebnis der {} ist größer als das der {}.".format(l, r))
 
-    # Zum vergleich der beiden verfahren werden deren Graphen für die Anzahl der
+    # 8. Zum vergleich der beiden verfahren werden deren Graphen für die Anzahl der
     # betrachteten Trapeze gezeichnet. Wird unter "graphics/comparison.svg"
     # gespeichert
     chart.draw(f, i[0], i[1], 10, dots=True, graph_name="Trapezregel", dots_name="Trapezregel Trapezkanten")
