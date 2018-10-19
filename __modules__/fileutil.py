@@ -695,10 +695,13 @@ def compress_pdf(src, setting="ebook", stdout=False, stderr=True):
     check(src)
     src_ = src + "_"
     rename(src, src_)
-    cmd = "gswin32c -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/{} -dNOPAUSE " \
+    cmd = "gswin64c -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/{} -dNOPAUSE " \
           "-dQUIET -dBATCH -sOutputFile=\"{}\" \"{}\"".format(setting, pty(src), pty(src_))
     exit_code = call(cmd, stdout, stderr)
-    remove(src_)
+    if exists(src):
+        remove(src_)
+    else:
+        rename(src_, src)
     return exit_code
 
 
