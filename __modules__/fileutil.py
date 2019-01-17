@@ -361,9 +361,9 @@ def files(pth, pattern=None, recursive=True):
             fls.extend(files(pth, pattern=p, recursive=recursive))
         return fls
 
-    pth = join(pth, "**") if recursive else pth
+    pth = os.path.join(pth, "**") if recursive else pth
     pattern = pattern if pattern else "*.*"
-    return [depty(p) for p in glob.iglob(join(pth, pattern), recursive=recursive)]
+    return [depty(p) for p in glob.iglob(os.path.join(pth, pattern), recursive=recursive)]
 
 
 def isadmin():
