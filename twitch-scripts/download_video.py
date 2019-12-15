@@ -8,13 +8,22 @@ from video import Video
 def _finalize(video, parts):
     name = "{} {}".format(video.user, video.created_at.split("T")[0].replace("-", ""))
 
-    output = os.path.join(video.id, name + ".mp4")
+    pattern = os.path.join(video.id, "*.ts")
+    output_ts = os.path.join(video.id, name + ".ts")
+    output_mp = os.path.join(video.id, name + ".mp4")
 
-    if os.system("ffmpeg -i \"concat:{}\" -c copy -bsf:a aac_adtstoasc \"{}\"".format("|".join(parts), output)) == 0:
-        for part in parts:
-            os.remove(part)
-    else:
+    if os.system("copy /b \"{}\" \"{}\" >nul".format(pattern, output_ts)) != 0:
         print("Cannot concatenate parts")
+        return
+
+    for part in parts:
+        os.remove(part)
+
+    if os.system("ffmpeg -hide_banner -loglevel panic -i \"{}\" -acodec copy -bsf:a aac_adtstoasc -vcodec copy \"{}\"".format(output_ts, output_mp)) != 0:
+        print("Cannot convert concatenated parts")
+        return
+
+    os.remove(output_ts)
 
 
 def download_video(id):

@@ -17,7 +17,7 @@ class VideoSegment:
 
     @property
     def file_name(self):
-        return "{}.ts".format(self.id)
+        return "{}.ts".format(str(self.id).zfill(5))
 
 
 class Video:
