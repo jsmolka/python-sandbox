@@ -1,4 +1,8 @@
+import ssl
 import requests
+
+# Fixes windows server usage
+ssl._create_default_https_context = ssl._create_unverified_context
 
 API_BASE = "https://api.twitch.tv"
 CLIENT_ID = "msnpl814eots3kcj4yq43yuuojw2zt"
