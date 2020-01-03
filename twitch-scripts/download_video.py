@@ -12,7 +12,13 @@ def _finalize(video, parts):
     output_ts = os.path.join(video.id, name + ".ts")
     output_mp = os.path.join(video.id, name + ".mp4")
 
-    if os.system("copy /b \"{}\" \"{}\" >nul".format(pattern, output_ts)) != 0:
+    code = 0
+    if sys.platform == "win32":
+        code = os.system("copy /b \"{}\" \"{}\" >nul".format(pattern, output_ts))
+    else:
+        code = os.system("cat {} > \"{}\"".format(pattern, output_ts))
+
+    if code != 0:
         print("Cannot concatenate parts")
         return
 
