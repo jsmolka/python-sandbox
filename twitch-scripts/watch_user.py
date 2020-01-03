@@ -1,8 +1,9 @@
 import api
-import sys
+import argparse
 import time
 from download_video import download_video
-from user import User
+from logger import *
+from user import *
 
 
 def _get_video_ids(user_id):
@@ -19,16 +20,16 @@ def watch_user(name):
     user = None
     try:
         user = User(name)
-        print("Watching user", name)
+        log("Watching user", name)
     except Exception as e:
-        print("Failed requesting user", name)
-        print(str(e))
+        log("Failed user request", name)
+        log(str(e))
         return
 
     old = _get_video_ids(user.id)
 
     while True:
-        print("Waiting 1 hour")
+        log("Waiting 1 hour")
         time.sleep(3600)
 
         new = _get_video_ids(user.id)
@@ -40,7 +41,12 @@ def watch_user(name):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        watch_user(sys.argv[1])
-    else:
-        print("Please provide a user name")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-u", help="user name", required=True)
+    parser.add_argument("-l", help="log file")
+
+    args = parser.parse_args()
+
+    init_logger(args.l)
+
+    watch_user(args.u)
