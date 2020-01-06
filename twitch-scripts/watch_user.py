@@ -34,6 +34,10 @@ def watch_user(name):
 
         new = _get_video_ids(user.id)
 
+        log("Old videos: ", old)
+        log("New videos: ", new)
+        log("Difference: ", new.difference(old))
+
         for video_id in new.difference(old):
             download_video(video_id)
 
