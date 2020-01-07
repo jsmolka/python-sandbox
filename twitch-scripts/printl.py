@@ -3,12 +3,15 @@ import logging
 _logger = None
 
 
-def init_logger(filename = None):
+def printl_init(filename = None):
     global _logger
-    _logger = logging.getLogger("twitch")
+    _logger = logging.getLogger("printl")
     _logger.setLevel(logging.INFO)
 
-    formatter = logging.Formatter("%(asctime)s - %(message)s")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(message)s",
+        "%Y-%m-%d %H:%M:%S"
+    )
 
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
@@ -20,6 +23,9 @@ def init_logger(filename = None):
         _logger.addHandler(file_handler)
 
 
-def log(*args):
+def printl(*args, level="info", sep=" "):
     global _logger
-    _logger.info(" ".join(str(arg) for arg in args))
+    if not _logger:
+        printl_init()
+    message = sep.join(map(str, args))
+    getattr(_logger, level)(message)

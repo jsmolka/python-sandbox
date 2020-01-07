@@ -1,8 +1,8 @@
 import api
 import argparse
 import time
-from download_video import download_video
-from logger import *
+from download_video import *
+from printl import *
 from user import *
 
 
@@ -20,28 +20,29 @@ def watch_user(name):
     user = None
     try:
         user = User(name)
-        log("Watching user", name)
+        printl("Watching user", name)
     except Exception as e:
-        log("Failed user request", name)
-        log(str(e))
+        printl("Failed user request", name)
+        printl(str(e))
         return
 
     old = _get_video_ids(user.id)
 
     while True:
-        log("Waiting 1 hour")
+        printl("Waiting 1 hour")
         time.sleep(3600)
 
         new = _get_video_ids(user.id)
+        dif = new.difference(old)
 
-        log("Old videos: ", old)
-        log("New videos: ", new)
-        log("Difference: ", new.difference(old))
+        printl("Old videos: ", old)
+        printl("New videos: ", new)
+        printl("Difference: ", dif)
 
-        for video_id in new.difference(old):
+        for video_id in dif:
             download_video(video_id)
 
-        old = new
+        old.update(dif)
 
 
 if __name__ == "__main__":
@@ -51,6 +52,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    init_logger(args.l)
+    printl_init(args.l)
 
     watch_user(args.u)
