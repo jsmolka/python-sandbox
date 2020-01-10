@@ -90,7 +90,7 @@ def download_video(id):
             printl(str(e))
             break
 
-    log("Processing segments")
+    printl("Processing segments")
     _process(video, parts)
 
 
