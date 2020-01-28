@@ -28,7 +28,8 @@ def _process(video, parts):
         return
 
     for part in parts:
-        os.remove(part)
+        if os.path.exists(part):
+            os.remove(part)
 
     if os.system("ffmpeg -hide_banner -loglevel panic -i \"{}\" -acodec copy -bsf:a aac_adtstoasc -vcodec copy \"{}\"".format(output_ts, output_mp)) != 0:
         printl("Failed converting video")
