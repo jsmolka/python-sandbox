@@ -93,7 +93,7 @@ def download_video(id):
             printl(str(e))
             break
 
-    printl("Downloaded", len(parts), "/", len(video.segments), "segments"))
+    printl("Downloaded", len(parts), "/", len(video.segments), "segments")
     printl("Processing segments")
     _process(video, parts)
 
