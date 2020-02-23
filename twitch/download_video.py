@@ -28,8 +28,7 @@ def _process(video, parts):
         return
 
     for part in parts:
-        if os.path.exists(part):
-            os.remove(part)
+        os.remove(part)
 
     if os.system("ffmpeg -hide_banner -loglevel panic -i \"{}\" -acodec copy -bsf:a aac_adtstoasc -vcodec copy \"{}\"".format(output_ts, output_mp)) != 0:
         printl("Failed converting video")
@@ -59,19 +58,22 @@ def download_video(id):
             if segment.id in finished:
                 continue
 
-            printl("Downloading segment", segment.id + 1, "/", len(video.segments))
+            if (segment.id + 1) % 25 == 0:
+                printl("Downloading segment", segment.id + 1, "/", len(video.segments))
+
             try:
                 response = api.get(segment.uri, stream=True)
                 filename = "{}/{}".format(video.id, segment.file_name)
                 with open(filename, "wb") as data:
                     for chunk in response.iter_content(chunk_size=128):
                         data.write(chunk)
+
+                parts.append(filename)
+                finished.add(segment.id)
+
             except Exception as e:
                 printl("Failed downloading segment", segment.id)
                 printl(str(e))
-
-            parts.append(filename)
-            finished.add(segment.id)
 
         if not video.is_live and not was_live:
             break
@@ -91,6 +93,7 @@ def download_video(id):
             printl(str(e))
             break
 
+    printl("Downloaded", len(parts), "/", len(video.segments), "segments"))
     printl("Processing segments")
     _process(video, parts)
 

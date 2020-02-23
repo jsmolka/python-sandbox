@@ -35,8 +35,6 @@ def watch_user(name):
         new = _get_video_ids(user.id)
         dif = new.difference(old)
 
-        printl("Old videos: ", old)
-        printl("New videos: ", new)
         printl("Difference: ", dif)
 
         for video_id in dif:
