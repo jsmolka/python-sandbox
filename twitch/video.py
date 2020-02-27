@@ -7,7 +7,7 @@ class VideoSegment:
         self.id = int(seg.uri.replace(".ts", ""))
         self.uri_base = seg.base_uri
         self.uri_name = seg.uri
-        
+
         if self.id in muted_segs:
             self.uri_name = self.uri_name.replace(".ts", "-muted.ts")
 
@@ -42,7 +42,7 @@ class Video:
         self._status = json.get("status")
         self._preview_url = json.get("animated_preview_url")
         self._muted_segs = set()
-        
+
         for seg in json.get("muted_segments", []):
             self._muted_segs.update(range(
                 seg["offset"] // 10,

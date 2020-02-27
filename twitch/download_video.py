@@ -58,7 +58,7 @@ def download_video(id):
             if segment.id in finished:
                 continue
 
-            if (segment.id + 1) % 25 == 0:
+            if (segment.id + 1) % 100 == 0:
                 printl("Downloading segment", segment.id + 1, "/", len(video.segments))
 
             try:

@@ -28,7 +28,7 @@ def _handle_error(response):
 
 
 def get(url, **kwargs):
-    response = requests.get(url, **_inject_headers(**kwargs))
+    response = requests.get(url, **_inject_headers(**kwargs), timeout=60)
 
     if response.status_code != 200:
         _handle_error(response)

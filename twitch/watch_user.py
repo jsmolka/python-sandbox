@@ -26,21 +26,17 @@ def watch_user(name):
         printl(str(e))
         return
 
-    old = _get_video_ids(user.id)
+    ids = _get_video_ids(user.id)
 
     while True:
-        printl("Waiting 1 hour")
-        time.sleep(3600)
+        time.sleep(1800)
 
-        new = _get_video_ids(user.id)
-        dif = new.difference(old)
+        new_ids = _get_video_ids(user.id).difference(ids)
 
-        printl("Difference: ", dif)
-
-        for video_id in dif:
+        for video_id in new_ids:
             download_video(video_id)
 
-        old.update(dif)
+        ids.update(new_ids)
 
 
 if __name__ == "__main__":
