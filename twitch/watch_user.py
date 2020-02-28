@@ -7,7 +7,12 @@ from user import *
 
 
 def _get_video_ids(user_id):
-    json = api.get_json("helix/videos", params={"user_id": user_id})
+    try:
+        json = api.get_json("helix/videos", params={"user_id": user_id})
+    except Exception as e:
+        printl("Failed getting video ids")
+        printl(str(e))
+        return set()
 
     video_ids = set()
     for video in json.get("data", []):
@@ -30,6 +35,7 @@ def watch_user(name):
 
     while True:
         time.sleep(1800)
+        printl("Updating video ids")
 
         new_ids = _get_video_ids(user.id).difference(ids)
 
